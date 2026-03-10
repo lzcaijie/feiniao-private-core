@@ -1,0 +1,208 @@
+{extend name="common/base"/}
+<!-- 主体 -->
+{block name="body"}
+<style>
+.layui-form-label {
+	min-width: 150px;
+}
+.layui-inline {
+	width: auto;
+}
+</style>
+<form class="layui-form p-4">
+	<h3 class="pb-3">内容配置</h3>
+	<div class="layui-card layui-form-pane">
+		<div class="layui-card-body">
+			<div class="layui-form-item">
+				<label class="layui-form-label">章节保存类型</label>
+				<div class="layui-input-block">
+					{empty name="$config.chapter_save_type"}
+						<input type="radio" name="chapter_save_type" value="1" title="数据库" checked>
+						<input type="radio" name="chapter_save_type" value="2" title="TXT">
+					{else/}
+						<input type="radio" name="chapter_save_type" value="1" title="数据库" {eq name="$config.chapter_save_type" value="1"} checked{/eq}>
+						<input type="radio" name="chapter_save_type" value="2" title="TXT" {eq name="$config.chapter_save_type" value="2"} checked{/eq}>
+					{/empty}
+				</div>
+				<div class="layui-form-mid layui-word-aux">如果之前是保存数据库，改为txt类型后，系统会自动将数据库里的内容转成txt，并删除数据库对应的章节数据。</div>
+			</div>			
+			<div class="layui-form-item">
+				<label class="layui-form-label">是否开启章节压缩</label>
+				<div class="layui-input-block">
+					{empty name="$config.chapter_compress_open"}
+						<input type="radio" name="chapter_compress_open" value="0" title="关闭" checked lay-filter="compressOpen">					
+						<input type="radio" name="chapter_compress_open" value="1" title="开启" lay-filter="compressOpen">
+					{else/}
+						<input type="radio" name="chapter_compress_open" value="0" title="关闭" {eq name="$config.chapter_compress_open" value="0"} checked{/eq} lay-filter="compressOpen">
+						<input type="radio" name="chapter_compress_open" value="1" title="开启" {eq name="$config.chapter_compress_open" value="1"} checked{/eq} lay-filter="compressOpen">
+					{/empty}
+				</div>
+				<div class="layui-form-mid layui-word-aux">是否启用章节压缩，启用后会降低空间占用大小，也会增加一些计算性能。</div>
+			</div>
+			<div class="chapter_compress_seting" {if !isset($config.chapter_compress_open) || $config.chapter_compress_open == 0}style="display: none;"{/if}>
+				<div class="layui-form-item">
+					<label class="layui-form-label">数据压缩等级</label>
+					<div class="layui-input-inline">
+						<select name="compress_level">
+							<option value="0"{empty name="$config.compress_level"} selected{/empty}>不压缩</option>
+							<option value="1"{if isset($config.compress_level) && $config.compress_level == 1} selected{/if}>普通</option>
+							<option value="6"{if isset($config.compress_level) && $config.compress_level == 6} selected{/if}>一般</option>
+							<option value="9"{if isset($config.compress_level) && $config.compress_level == 9} selected{/if}>最高</option>
+						</select>					
+					</div>
+					<div class="layui-form-mid layui-word-aux">开启章节压缩后有效，压缩等级越高，性能消耗越大，请合理选择。</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">数据压缩算法</label>
+					<div class="layui-input-block">
+						{empty name="$config.compress_algorithm"}
+							<input type="radio" name="compress_algorithm" value="gzip" title="gzip" checked>
+							<input type="radio" name="compress_algorithm" value="zlib" title="zlib">
+							<input type="radio" name="compress_algorithm" value="brotli" title="brotli">
+						{else/}
+							<input type="radio" name="compress_algorithm" value="gzip" title="gzip" {eq name="$config.compress_algorithm" value="gzip"} checked{/eq}>
+							<input type="radio" name="compress_algorithm" value="zlib" title="zlib" {eq name="$config.compress_algorithm" value="zlib"} checked{/eq}>
+							<input type="radio" name="compress_algorithm" value="brotli" title="brotli" {eq name="$config.compress_algorithm" value="brotli"} checked{/eq}>
+						{/empty}
+					</div>
+					<div class="layui-form-mid layui-word-aux">开启章节压缩后有效，按自己的需求及环境来设置，设置后不要更改。</div>
+				</div>
+			</div>			
+			<div class="layui-form-item">
+				<label class="layui-form-label">章节字数限制</label>
+				<div class="layui-input-block">
+					<div class="layui-inline">
+						<label class="layui-form-label">最小字数</label>
+						<div class="layui-input-inline" style="max-width: 100px;">
+							<input type="text" name="chapter_min_num" value="{$config.chapter_min_num ? $config.chapter_min_num : 0}" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-inline">
+						<label class="layui-form-label">最大字数</label>
+						<div class="layui-input-inline" style="max-width: 100px;">
+							<input type="text" name="chapter_max_num" value="{$config.chapter_max_num ? $config.chapter_max_num : 0}" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+				</div>
+				<div class="layui-inline layui-text-em">设为0时为不限制，但最大字数不可超过数据库最大限制。</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">章节内容开启</label>
+				<div class="layui-input-block">
+					{empty name="$config.chapter_pages_content_open"}
+						<input type="radio" name="chapter_pages_content_open" value="1" title="开启">
+						<input type="radio" name="chapter_pages_content_open" value="0" title="关闭" checked>
+					{else/}
+						<input type="radio" name="chapter_pages_content_open" value="1" title="开启" {eq name="$config.chapter_pages_content_open" value="1"} checked{/eq}>
+						<input type="radio" name="chapter_pages_content_open" value="0" title="关闭" {eq name="$config.chapter_pages_content_open" value="0"} checked{/eq}>
+					{/empty}
+				</div>
+				<div class="layui-form-mid layui-word-aux">开启后章节内容不会JS方式填充，而是直接显示章节内容，搜索可识别到章节内容，更利于SEO。</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">详情页显示首章</label>
+				<div class="layui-input-inline layui-input-wrap">
+					{empty name="$config.book_detail_first_chapter_isshow"}
+						<input type="radio" name="book_detail_first_chapter_isshow" value="1" title="是">
+						<input type="radio" name="book_detail_first_chapter_isshow" value="0" title="否" checked>
+					{else/}
+						<input type="radio" name="book_detail_first_chapter_isshow" value="1" title="是"{eq name="$config.book_detail_first_chapter_isshow" value="1"} checked{/eq}>
+						<input type="radio" name="book_detail_first_chapter_isshow" value="0" title="否"{eq name="$config.book_detail_first_chapter_isshow" value="0"} checked{/eq}>
+					{/empty}
+				</div>
+				<div class="layui-form-mid layui-text-em">开启后，作品详情页会显示第一章节的内容以及作品简介，如不显示，则只显示作品简介。</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">评论功能开启</label>
+				<div class="layui-input-block">
+					{empty name="$config.comment_open"}
+						<input type="radio" name="comment_open" value="1" title="开启">
+						<input type="radio" name="comment_open" value="0" title="关闭" checked>
+					{else/}
+						<input type="radio" name="comment_open" value="1" title="开启" {eq name="$config.comment_open" value="1"} checked{/eq}>
+						<input type="radio" name="comment_open" value="0" title="关闭" {eq name="$config.comment_open" value="0"} checked{/eq}>
+					{/empty}
+				</div>
+				<div class="layui-form-mid layui-word-aux">如开启此功能，请关闭其他评论，如畅言评论插件。</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">评论审核开启</label>
+				<div class="layui-input-block">
+					{empty name="$config.comment_verify_open"}
+						<input type="radio" name="comment_verify_open" value="1" title="开启">
+						<input type="radio" name="comment_verify_open" value="0" title="关闭" checked>
+					{else/}
+						<input type="radio" name="comment_verify_open" value="1" title="开启" {eq name="$config.comment_verify_open" value="1"} checked{/eq}>
+						<input type="radio" name="comment_verify_open" value="0" title="关闭" {eq name="$config.comment_verify_open" value="0"} checked{/eq}>
+					{/empty}
+				</div>
+				<div class="layui-form-mid layui-word-aux">如开启此功能，请关闭其他评论，如畅言评论插件。</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">听书功能开启</label>
+				<div class="layui-input-block">
+					{empty name="$config.listen_book_open"}
+						<input type="radio" name="listen_book_open" value="1" title="开启">
+						<input type="radio" name="listen_book_open" value="0" title="关闭" checked>
+					{else/}
+						<input type="radio" name="listen_book_open" value="1" title="开启" {eq name="$config.listen_book_open" value="1"} checked{/eq}>
+						<input type="radio" name="listen_book_open" value="0" title="关闭" {eq name="$config.listen_book_open" value="0"} checked{/eq}>
+					{/empty}
+				</div>
+				<div class="layui-form-mid layui-word-aux">基于浏览器自带的听书功能实现，较老的浏览器可能不支持相关功能。</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">开启防采集</label>
+				<div class="layui-input-block">
+					{empty name="$config.chapter_refuse_collection_open"}
+						<input type="radio" name="chapter_refuse_collection_open" value="1" title="开启">
+						<input type="radio" name="chapter_refuse_collection_open" value="0" title="关闭" checked>
+					{else/}
+						<input type="radio" name="chapter_refuse_collection_open" value="1" title="开启" {eq name="$config.chapter_refuse_collection_open" value="1"} checked{/eq}>
+						<input type="radio" name="chapter_refuse_collection_open" value="0" title="关闭" {eq name="$config.chapter_refuse_collection_open" value="0"} checked{/eq}>
+					{/empty}
+				</div>
+				<div class="layui-form-mid layui-word-aux">开启后，章节源码模式是乱序的，但不影响阅读，搜索抓取也是乱序的，请自行斟酌是否开启。</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="py-3">
+		<input type="hidden" name="id" value="{$id}">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function feiniaoInit() {
+		var form = layui.form, tool = layui.tool, upload = layui.upload;
+
+		form.on('radio(compressOpen)', function(data) {
+			if(data.value == 1) {
+				$('.chapter_compress_seting').show();
+			} else {
+				$('.chapter_compress_seting').hide();
+			}
+		});
+
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					parent.layui.tool.close(1000);
+				}
+			}
+			tool.post("{:url('conf/edit')}", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

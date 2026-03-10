@@ -1,0 +1,173 @@
+{extend name="common/base"/}
+<!-- 主体 -->
+{block name="body"}
+<style>
+.layui-td-gray {
+    min-width: 200px;
+}
+.layui-form-label {
+    width: 50px;
+}
+.layui-form-item .layui-input-inline {
+    width: 150px;
+}
+</style>
+<form class="layui-form p-4">
+	<h3 class="pb-3">充值设置</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray-2">开启状态</td>
+			<td colspan="5">
+                {empty name="$config.open"}
+                    <input type="radio" name="open" value="2" title="禁止" checked>
+                    <input type="radio" name="open" value="1" title="开启">
+                {else/}
+                    <input type="radio" name="open" value="2" title="禁止"{eq name="$config.open" value="2"} checked{/eq}>
+                    <input type="radio" name="open" value="1" title="开启"{eq name="$config.open" value="1"} checked{/eq}>
+                {/empty}
+            </td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">充值套餐</td>
+			<td colspan="5">
+                <div class="layui-form-item">
+                    <div class="layui-form-mid layui-text-em">套餐名称</div>
+                    <div class="layui-input-inline layui-input-wrap">
+                        {empty name="$config.title_1"}
+                            <input type="text" value="" name="title_1" placeholder="请输入套餐名称" class="layui-input">
+                        {else/}
+                            <input type="text" value="{$config.title_1}" name="title_1" placeholder="请输入套餐名称" class="layui-input">
+                        {/empty}
+                    </div>                    
+                    <div class="layui-input-inline layui-input-wrap">
+                        {empty name="$config.price_1"}
+                            <input type="text" value="" name="price_1" placeholder="请输入价格" class="layui-input">
+                        {else/}
+                            <input type="text" value="{$config.price_1}" name="price_1" placeholder="请输入价格" class="layui-input">
+                        {/empty}
+                    </div>
+                    <div class="layui-form-mid layui-text-em">元</div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-form-mid layui-text-em">套餐名称</div>
+                    <div class="layui-input-inline layui-input-wrap">
+                        {empty name="$config.title_2"}
+                            <input type="text" value="" name="title_2" placeholder="请输入套餐名称" class="layui-input">
+                        {else/}
+                            <input type="text" value="{$config.title_2}" name="title_2" placeholder="请输入套餐名称" class="layui-input">
+                        {/empty}
+                    </div>                    
+                    <div class="layui-input-inline layui-input-wrap">
+                        {empty name="$config.price_2"}
+                            <input type="text" value="" name="price_2" placeholder="请输入价格" class="layui-input">
+                        {else/}
+                            <input type="text" value="{$config.price_2}" name="price_2" placeholder="请输入价格" class="layui-input">
+                        {/empty}
+                    </div>
+                    <div class="layui-form-mid layui-text-em">元</div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-form-mid layui-text-em">套餐名称</div>
+                    <div class="layui-input-inline layui-input-wrap">
+                        {empty name="$config.title_3"}
+                            <input type="text" value="" name="title_3" placeholder="请输入套餐名称" class="layui-input">
+                        {else/}
+                            <input type="text" value="{$config.title_3}" name="title_3" placeholder="请输入套餐名称" class="layui-input">
+                        {/empty}
+                    </div>                    
+                    <div class="layui-input-inline layui-input-wrap">
+                        {empty name="$config.price_3"}
+                            <input type="text" value="" name="price_3" placeholder="请输入价格" class="layui-input">
+                        {else/}
+                            <input type="text" value="{$config.price_3}" name="price_3" placeholder="请输入价格" class="layui-input">
+                        {/empty}
+                    </div>
+                    <div class="layui-form-mid layui-text-em">元</div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-form-mid layui-text-em">套餐名称</div>
+                    <div class="layui-input-inline layui-input-wrap">
+                        {empty name="$config.title_4"}
+                            <input type="text" value="" name="title_4" placeholder="请输入套餐名称" class="layui-input">
+                        {else/}
+                            <input type="text" value="{$config.title_4}" name="title_4" placeholder="请输入套餐名称" class="layui-input">
+                        {/empty}
+                    </div>                   
+                    <div class="layui-input-inline layui-input-wrap">
+                        {empty name="$config.price_4"}
+                            <input type="text" value="" name="price_4" placeholder="请输入价格" class="layui-input">
+                        {else/}
+                            <input type="text" value="{$config.price_4}" name="price_4" placeholder="请输入价格" class="layui-input">
+                        {/empty}
+                    </div>
+                    <div class="layui-form-mid layui-text-em">元</div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-form-mid layui-text-em">套餐名称</div>
+                    <div class="layui-input-inline layui-input-wrap">
+                        {empty name="$config.title_5"}
+                            <input type="text" value="" name="title_5" placeholder="请输入套餐名称" class="layui-input">
+                        {else/}
+                            <input type="text" value="{$config.title_5}" name="title_5" placeholder="请输入套餐名称" class="layui-input">
+                        {/empty}
+                    </div>                    
+                    <div class="layui-input-inline layui-input-wrap">
+                        {empty name="$config.price_5"}
+                            <input type="text" value="" name="price_5" placeholder="请输入价格" class="layui-input">
+                        {else/}
+                            <input type="text" value="{$config.price_5}" name="price_5" placeholder="请输入价格" class="layui-input">
+                        {/empty}
+                    </div>
+                    <div class="layui-form-mid layui-text-em">元</div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-form-mid layui-text-em">套餐名称</div>
+                    <div class="layui-input-inline layui-input-wrap">
+                        {empty name="$config.title_6"}
+                            <input type="text" value="" name="title_6" placeholder="请输入套餐名称" class="layui-input">
+                        {else/}
+                            <input type="text" value="{$config.title_6}" name="title_6" placeholder="请输入套餐名称" class="layui-input">
+                        {/empty}
+                    </div>                    
+                    <div class="layui-input-inline layui-input-wrap">
+                        {empty name="$config.price_6"}
+                            <input type="text" value="" name="price_6" placeholder="请输入价格" class="layui-input">
+                        {else/}
+                            <input type="text" value="{$config.price_6}" name="price_6" placeholder="请输入价格" class="layui-input">
+                        {/empty}
+                    </div>
+                    <div class="layui-form-mid layui-text-em">元</div>
+                </div>
+			</td>
+		</tr>       
+	</table>
+	<div class="py-3">
+        <input type="hidden" name="id" value="{$id}">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function feiniaoInit() {
+		var form = layui.form, tool = layui.tool;
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					parent.layui.tool.close(1000);
+				}
+			}
+			tool.post("{:url('conf/edit')}", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

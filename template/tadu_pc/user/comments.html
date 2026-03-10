@@ -1,0 +1,102 @@
+{extend name="common/base"/}
+{block name="style"}
+<link rel="stylesheet" href="{__STATIC__}/home/feiniao/css/user.css?v={$version}">
+{/block}
+{block name="title"}
+<title>个人中心-{$conf.title|default=''}</title>
+{/block}
+{block name="keywords"}
+<meta name="keywords" content="个人中心" />
+<meta name="description" content="个人中心" />
+{/block}
+<!-- 主体 -->
+{block name="body"}
+{include file="common/headerucenter" /}
+{if defined('JWT_UID') && JWT_UID}
+    {php} $userinfo = model('user')->field('id,nickname,username,author_id,name,headimgurl,qrcode_invite,coin')->where('id', JWT_UID)->find();{/php}
+    <div class="personal_box clearfix">
+        <div class="left_box">            
+            {include file="common/menuucenter" /}
+        </div>
+        <div class="right_box">
+            <div class="listBox">
+                <h4 class="bookrack">我的评论</h4>
+                {if get_system_config('content', 'comment_open')}
+                <div class="bookrack_table">
+                    <table class="table_box " width="100%">
+                        <tbody>
+                            <tr class="table_th">
+                                <th style="width: 200px;">评论对象</th>
+                                <th style="width: calc(100% - 320px);">评论内容</th>
+                                <th style="width: 120px;">时间</th>
+                            </tr>
+                            {php}
+                                $param = get_params();
+                                $order = empty($param['order']) ? 'create_time desc' : $param['order'];
+                                if (!isset($param['limit']) || intval($param['limit']) <= 0) {
+                                    $param['limit'] = get_config('app.page_size');
+                                }
+                                $paginator = model('comment')->where(['user_id' => JWT_UID])->order($order)->paginate($param['limit'], true);
+                                $list = $paginator->items();
+                                $page = $paginator->render();
+                            {/php}
+                            {volist name="$list" id="vo"}
+                                {php}
+                                if($vo['target_type'] == 1) {
+                                    $item = model('book')->field('id,title,filename')->where(['id' => $vo['target_id']])->find();
+                                }
+                                if($vo['target_type'] == 2) {
+                                    $item = model('chapter')->field('id,title,bookid')->where(['id' => $vo['target_id']])->find();
+                                    $book = model('book')->field('id,title,filename')->where(['id' => $item['bookid']])->find();
+                                }
+                                {/php}
+                                {if $item}
+                                    <tr class="td_con">
+                                        <td style="text-align: left;padding-left: 10px;" class="headerR">
+                                            {if $vo['target_type'] == 1}
+                                                <a href="{:url('book_detail', ['id' => $item['filename'] ? $item['filename'] : $vo['target_id']])}" target="_blank">{$item['title']}</a>
+                                            {/if}
+                                            {if $vo['target_type'] == 2}
+                                                <a href="{:furl('chapter_detail', ['bookid' => $book['filename'] ? $book['filename'] : $item['bookid'], 'id' => $vo['target_id']])}" target="_blank">{$item['title']}</a>
+                                            {/if}
+                                        </td>                      
+                                        <td style="text-align: left;padding-left: 10px;">{$vo['content']}</td>                          
+                                        <td>
+                                            <p>{:time_format($vo.create_time, 'm-d H:i')}</p>
+                                        </td>
+                                    </tr>
+                                {/if}
+                            {/volist}
+                        </tbody>
+                    </table>
+                    {if $page}
+                        {$page|raw}
+                    {/if}                    
+                </div>
+                {/if}
+            </div>
+        </div>
+    </div>
+{else/}
+    <div style="width: 100%; height: 50vh; display: flex; align-items: center; justify-content: center; flex-direction: column; font-size: 15px;">
+        <img src="{__STATIC__}/home/feiniao/images/search_kong.png" alt="" style="width: 200px;">
+        <p style="margin-top: 20px;">请 <a href="{:furl('login', [], true, 'home')}" style=" color: #bb3b00;">登录</a> ！</p>
+    </div>
+{/if}
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script src="{__STATIC__}/home/feiniao/js/jquery-1-22.min.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/purify.min.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/common.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/dialog.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/userinfo.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/user.js?v={$version}"></script>
+<script>
+$(function() {
+});
+</script>
+{/block}
+<!-- /脚本 -->

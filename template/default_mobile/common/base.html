@@ -1,0 +1,74 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    {php}
+    if (get_addons_is_enable('sitegroup')) {
+        $systemconf = app('feiniaowebconfig');
+    } else {
+	    $systemconf = get_system_config('web');
+    }
+    $version = get_config('upgrade.version');
+	{/php}
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    {block name="title"}
+        <title>{$systemconf.title|default=''}</title>		
+    {/block}
+    {block name="keywords"}
+        <meta name="keywords" content="{$systemconf.title|default=''}"/>
+        <meta name="description" content="{$systemconf.title|default=''}"/>
+    {/block}
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <link rel="icon" href="{$systemconf.favicon|default='/favicon.ico'}" type="image/x-icon" />
+    {block name="css"}
+        <link rel="stylesheet" href="{__STATIC__}/font-awesome/css/font-awesome.min.css?v={$version}" />
+        <link rel="stylesheet" href="{__ASSETS__}/layui/css/layui.css?v={$version}">
+        <link rel="stylesheet" href="{__STATIC__}/bui/css/bui.css?v={$version}" />
+        <link rel="stylesheet" href="{__MOBILE__}/default/css/style.css?v={$version}" />
+    {/block}
+    {block name="style"}{/block}
+    {block name="js"}
+        <script>
+            var tokenurl = "{:furl('v1/gettoken', [], true, 'api')}";
+            var loginurl = "{:furl('login', [], true, 'home')}";
+            var sessionname = "{:get_config('app.session_user')}";
+            var sessioninvitename = "{:get_config('app.session_invite')}";
+            var is_official_open = "{:get_system_config('wechat','official_open')}";
+        </script>
+        <script src="{__ASSETS__}/layui/layui.js?v={$version}"></script>
+        <script src="{__STATIC__}/bui/js/zepto.js?v={$version}"></script>        
+        <script src="{__STATIC__}/bui/js/bui.js?v={$version}"></script>
+        <script src="{__MOBILE__}/default/js/init.js?v={$version}"></script>
+        {if condition="isWeChat()"}
+            <script src="https://res.wx.qq.com/open/js/jweixin-1.4.0.js" type="text/javascript" charset="utf-8"></script>
+            {notempty name="$appconfig"}
+                <script type="text/javascript" charset="utf-8">                
+                    wx.config({$appconfig});                
+                </script>
+            {/notempty}
+        {/if}
+    {/block}
+</head>
+<body>
+	<!-- 主体 -->
+	{block name="body"}{/block}
+	<!-- /主体 -->
+
+	<!-- 底部 -->
+	{block name="footer"}
+	    {include file="common/footer" /}
+        {:load_addons_run()}
+	{/block}
+	<!-- /底部 -->
+	
+	<!-- 脚本 -->
+	{block name="script"}{/block}
+	<!-- /脚本 -->
+	
+	<!-- 统计代码 -->
+	{block name="code"}
+    <div style="display: none;">{$systemconf.code|raw|default=''}</div>
+    {/block}
+	<!-- /统计代码 -->
+</body>
+</html>

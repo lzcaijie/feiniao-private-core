@@ -1,0 +1,252 @@
+{extend name="common/base"/}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-3">
+	<form class="layui-form gg-form-bar border-t border-x">
+		<div class="layui-input-inline" style="width:300px;">
+			<input type="text" name="keywords" placeholder="请输入关键字" class="layui-input" autocomplete="off" />
+		</div>
+		<div class="layui-input-inline">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="searchform">提交搜索</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="chapter" lay-filter="chapter"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+	<div class="layui-btn-container">
+		<span class="layui-btn layui-btn-sm" lay-event="add" data-title="添加章节">+ 添加章节</span>	
+		<span class="layui-btn layui-btn-sm layui-bg-blue" lay-event="caiji" data-title="采集章节">采集章节</span>
+		<span class="layui-btn layui-btn-sm layui-bg-purple" lay-event="chapterSort" data-title="章节管理">章节管理</span>
+		《{$title}》		
+	</div>
+</script>
+
+<script type="text/html" id="barDemo">
+<div class="layui-btn-group">
+	<!--<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="read">章节</a>-->
+	
+	<button type="button" class="layui-btn layui-btn-xs" lay-event="edit">编辑</button>
+	<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</div>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function feiniaoInit() {
+		var table = layui.table,tool = layui.tool, form = layui.form;
+		layui.pageTable = table.render({
+			elem: '#chapter',
+			title: '章节列表',
+			toolbar: '#toolbarDemo',
+			url: "{:url('chapter/datalist')}?bid={$bid}",
+			page: true,
+			limit: 20,
+			// height: 'full-35',
+     		// lineStyle: 'height: auto;', // 定义表格的多行样式
+			// cellMinWidth: 300,
+			cols: [
+				[{
+					field: 'title',
+					title: '章节标题',
+					width: 300
+				},{
+					field: 'chaps',
+					title: '章节序号',
+					align: 'center',
+					width: 100
+				},{
+					field: 'status',
+					title: '状态',
+					align: 'center',
+					width: 60,
+					templet:function(d) {
+						return parseInt(d.status) ? (parseInt(d.status) === 1 ? '<i class="layui-icon layui-icon-ok" style="color: #16b777;"></i>' : '<i class="layui-icon layui-icon-close"></i>') : '--';
+					}
+				},{
+					field: 'wordnum',
+					title: '字数',
+					align: 'center',
+					width: 80
+				},{
+					field: 'verify',
+					title: '审核',
+					align: 'center',
+					width: 60,
+					templet:function(d) {
+						return parseInt(d.verify) === 2 ? '<button type="button" class="layui-btn layui-btn-xs layui-btn-danger">拒绝</button>' : (parseInt(d.verify) === 1 ? '<i class="layui-icon layui-icon-ok" style="color: #16b777;"></i>' : '--');
+					}
+				},{
+					field: 'verifyresult',
+					title: '审核结果',
+					width: 200,
+					templet:function(d) {
+						return d.verifyresult ? d.verifyresult : '--';
+					}
+				},{
+					field: 'verifypeople',
+					title: '审核人',
+					align: 'center',
+					width: 120
+				},{
+					field: 'verifytime',
+					title: '审核时间',
+					align: 'center',
+					width: 150,
+					templet:function(d) {
+						return (d.verifytime && d.verifytime != 9999) ? layui.util.toDateString((parseInt(d.verifytime) * 1000), 'yyyy-MM-dd HH:mm:ss') : '--';
+					}
+				},{
+					field: 'trial_time',
+					title: '定时发布',
+					align: 'center',
+					width: 150,
+					templet:function(d) {
+						return d.trial_time ? layui.util.toDateString((parseInt(d.trial_time) * 1000), 'yyyy-MM-dd HH:mm:ss') : '--';
+					}
+				},{
+					field: 'create_time',
+					title: '创建时间',
+					align: 'center',
+					width: 150
+				},{
+					field: 'update_time',
+					title: '更新时间',
+					align: 'center',
+					width: 150
+				},{
+					field: 'firstpasstime',
+					title: '首次审核通过时间',
+					align: 'center',
+					width: 150,
+					templet:function(d) {
+						return d.firstpasstime ? layui.util.toDateString((parseInt(d.firstpasstime) * 1000), 'yyyy-MM-dd HH:mm:ss') : '--';
+					}
+				},{
+					field: 'firstverifyword',
+					title: '首次过审字数',
+					align: 'center',
+					width: 100
+				},
+				{
+					fixed: 'right',
+					field: 'right',
+					title: '操作',
+					toolbar: '#barDemo',
+					align: 'center',
+					width: 120
+				}				
+				]
+			]
+		});
+		function retryAjax(options) {
+			const config = {
+				maxRetries: 10,
+				retryDelay: 1000,
+				...options
+			};
+			const deferred = $.Deferred();
+			function attemptRequest() {
+				$.ajax(config)
+					.done((res) => {
+						deferred.resolve(res); // 请求成功，解析结果
+					})
+					.fail((xhr, status, error) => {
+						config.maxRetries--; // 剩余重试次数减 1
+						if (config.maxRetries > 0 && (status === 'timeout' || status === 'error')) {
+							console.log(`请求失败（${status}），剩余重试次数：${config.maxRetries}，${config.retryDelay/1000}秒后重试...`);
+							setTimeout(() => attemptRequest(), config.retryDelay); // 递归重试
+						} else {
+							if (options.error) {
+								options.error(xhr, status, error); // 无重试次数时触发原始错误回调
+							}
+							deferred.reject({ xhr, status, error }); // 最终拒绝 Promise
+						}
+					});
+			}
+			attemptRequest(); // 启动首次请求
+			return deferred.promise(); // 返回 Promise 对象
+		}
+		//监听表头工具栏事件
+		table.on('toolbar(chapter)', function(obj){
+			if (obj.event === 'add') {
+				tool.side("{:url('chapter/add',['bid'=>$bid])}");
+				return false;
+			} else if(obj.event === 'caiji') {
+				var loadIndex = layer.load(2);	
+				retryAjax({
+					url: "{:url('chapter/caiji')}",
+					method: 'POST',
+					data: {bid: parseInt('{$bid}')},
+					timeout: 0,
+					success: function(res) {
+						layer.close(loadIndex);
+						layer.msg(res.msg);
+						if (res.code == 0) {
+							layui.pageTable.reload({
+								page: {
+									curr: 1
+								}
+							});
+						}
+					},
+					error: function(xhr, status, error) {
+						console.error('最终请求失败（无重试次数）:', status, error);
+					}
+				});		
+				return false;
+			} else if(obj.event === 'chapterSort') {
+				tool.side("{:url('chapter/chaptersort',['bid'=>$bid])}");
+				return false;
+			}
+		});
+
+		//监听表格行工具事件
+		table.on('tool(chapter)', function(obj) {
+			var data = obj.data;
+			if (obj.event === 'read') {
+				tool.side("{:url('chapter/read')}?id="+obj.data.id+'&bid={$bid}');
+			}
+			else if (obj.event === 'edit') {
+				tool.side("{:url('chapter/edit')}?id="+obj.data.id);
+			}
+			else if (obj.event === 'del') {
+				layer.confirm('确定要删除该记录吗?', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("{:url('chapter/del')}", { id: data.id }, callback);
+					layer.close(index);
+				});
+			}
+			return false;
+		});
+
+		//监听搜索提交
+		form.on('submit(searchform)', function(data) {
+			layui.pageTable.reload({
+				where: {
+					keywords: data.field.keywords
+				},
+				page: {
+					curr: 1
+				}
+			});
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

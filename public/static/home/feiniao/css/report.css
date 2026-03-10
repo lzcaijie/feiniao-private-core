@@ -1,0 +1,175 @@
+@import url("common.css");
+
+
+/* 容器样式 */
+.report_container {
+    margin: 30px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+/* 主标题 */
+.report h1 {
+    text-align: center;
+    color: #333;
+    font-size: 28px;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+/* 副标题 */
+.febk_bigtit {
+    color: #666;
+    font-size: 16px;
+    text-align: center;
+    margin: 20px 0;
+    line-height: 1.6;
+}
+
+/* 必填项红星 */
+.report_need {
+    color: #ff4d4f;
+    margin-right: 4px;
+}
+
+/* 表单盒子 */
+.reportbox {
+    margin: 25px 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+/* 表单行 */
+.report_line {
+    display: flex;
+    gap: 15px;
+    margin: 15px 0;
+}
+
+.report_line_t {
+    flex-shrink: 0;
+    color: #666;
+    font-size: 14px;
+    padding-top: 8px;
+}
+
+/* 输入框样式 */
+.report_line_ipt input,
+.code_ipt input,
+#report_content {
+    width: calc(100% - 26px);
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.report_line_ipt input:focus,
+.code_ipt input:focus,
+#report_content:focus {
+    border-color: #1890ff;
+    box-shadow: 0 0 0 2px rgba(24,144,255,0.2);
+    outline: none;
+}
+
+/* 错误状态 */
+.report_line_ipt.error input,
+#report_content.error {
+    border-color: #ff4d4f;
+    box-shadow: 0 0 0 2px rgba(255,77,79,0.1);
+}
+
+/* 文本域容器 */
+.report_textbox {
+    margin-top: 15px;
+}
+
+#report_content {
+    min-height: 150px;
+    resize: vertical;
+}
+
+/* 验证码区域 */
+.checkercod {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin: 25px 0;
+}
+
+.code_ipt {
+    flex: 1;
+    max-width: 200px;
+}
+
+.code_img {
+    flex-shrink: 0;
+}
+.code_img img {
+    height: 40px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+}
+
+/* 提交按钮 */
+.submit_btn {
+    text-align: center;
+    margin-top: 30px;
+}
+
+#doreportBtn {
+    background: #1890ff;
+    color: #fff;
+    border: none;
+    padding: 12px 40px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+#doreportBtn:hover {
+    background: #40a9ff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(24,144,255,0.3);
+}
+
+#doreportBtn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* 响应式适配 */
+@media (max-width: 768px) {
+    .report_container {
+        margin: 15px;
+        padding: 15px;
+    }
+
+    .report_line {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .report_line_t {
+        width: 100%;
+        padding-top: 0;
+    }
+
+    .checkercod {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .code_ipt {
+        max-width: 100%;
+    }
+}

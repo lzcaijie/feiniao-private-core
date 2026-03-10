@@ -1,0 +1,110 @@
+{extend name="common/base"/}
+{block name="style"}
+<link rel="stylesheet" href="{__STATIC__}/home/feiniao/css/login.css?v={$version}">
+{/block}
+{block name="title"}
+<title>注册-{:get_seo_str('home','home_title')}</title>	
+{/block}
+{block name="keywords"}
+<meta name="keywords" content="{:get_seo_str('home','home_keywords')}"/>
+<meta name="description" content="{:get_seo_str('home','home_description')}"/>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+    {php}$power = get_system_config('power');{/php}
+    <header class="header">
+        <div class="header-left">
+            <img src="{$conf.logo|default=''}" alt="{$conf.title|default=''}" class="logo">
+            <h1 class="site-name">{$conf.title|default=''}登录</h1>
+        </div>
+        <a href="{:url('/')}" class="home-link">返回首页</a>
+    </header>
+
+    <div class="login-container">
+        {if !empty($power['register_open'])}
+            <h2 class="form-title">用户注册</h2>        
+            <form id="registerForm" class="login-form" data-url="{:furl('v1/register', [], true, 'api')}" data-loginurl="{:furl('login', [], true, 'home')}">
+                <!-- 账号输入 -->
+                <div class="form-group">
+                    <input type="text" class="form-input" 
+                        id="account" 
+                        placeholder="手机号/邮箱/用户名">
+                    <div class="error-tip" id="accountError"></div>
+                </div>
+
+                <!-- 昵称输入 -->
+                <div class="form-group">
+                    <input type="text" class="form-input"
+                        id="nickname"
+                        placeholder="用户昵称（2-10个字符）">
+                    <div class="error-tip" id="nicknameError"></div>
+                </div>
+
+                <!-- 密码输入 -->
+                <div class="form-group">
+                    <input type="password" class="form-input"
+                        id="password"
+                        placeholder="设置密码（6-16位）">
+                    <div class="error-tip" id="passwordError"></div>
+                </div>
+
+                <!-- 确认密码 -->
+                <div class="form-group">
+                    <input type="password" class="form-input"
+                        id="confirmPassword"
+                        placeholder="确认密码">
+                    <div class="error-tip" id="confirmError"></div>
+                </div>
+
+                <!-- 用户协议 -->
+                <div class="protocol-group">
+                    <label>
+                        <input type="checkbox" id="agreeProtocol">
+                        我已阅读并同意
+                    </label>
+                    <span class="protocol-links">
+                        <a href="javascript:;" onclick="showUserProtocol()">《用户协议》</a>
+                        和
+                        <a href="javascript:;" onclick="showPrivacyPolicy()">《隐私政策》</a>
+                    </span>
+                    <div class="error-tip" id="protocolError"></div>
+                </div>
+
+                <button type="submit" class="submit-btn">立即注册</button>
+            </form>
+        {else/}
+            <div class="login-form">
+                <div style="font-size: 20px; color: #000;text-align: center;">禁止注册</div>
+            </div>
+        {/if}
+        {if !empty($power['login_open'])}
+        <div class="footer-links">
+            <span>已有账号？</span>
+            <a href="{:furl('login', [], true, 'home')}" class="link">立即登录</a>
+        </div>
+        {/if}
+    </div>
+    {php}
+    $agreement = model('pages')->where(['status' => 1, 'name' => 'agreement'])->value('content');
+    $privacy = model('pages')->where(['status' => 1, 'name' => 'privacy'])->value('content');
+    {/php}
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script src="{__STATIC__}/home/feiniao/js/jquery-1-22.min.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/common.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/dialog.js?v={$version}"></script>
+<script>
+    // 协议内容
+    const protocolContent = {
+        userProtocol: `<div style="max-height:400px;overflow:auto;text-align:left;line-height: 2;">{$agreement|raw}</div>`,
+        privacyPolicy: `<div style="max-height:400px;overflow:auto;text-align:left;line-height: 2;">{$privacy|raw}</div>`
+    };
+</script>
+{if !empty($power['register_open'])}
+<script src="{__STATIC__}/home/feiniao/js/register.js?v={$version}"></script>
+{/if}
+{/block}
+<!-- /脚本 -->

@@ -1,0 +1,305 @@
+{extend name="common/base"/}
+{block name="style"}
+{/block}
+{block name="body"}
+{php}
+$site_title = '登录';
+{/php}
+{include file="common/header"/}
+{php}
+$power = get_system_config('power');
+$isSmsLogin = get_addons_type('smssend');
+{/php}
+<link rel="stylesheet" href="{__MOBILE__}/default/css/login.css" />
+<style>
+.bui-dialog-fullscreen .bui-dialog-main {
+    text-align: left;
+}
+.login-form .bui-menu-bottom {
+    background: #fff;
+    z-index: 22;
+}
+.login-form .bui-menu-bottom li {
+    margin-bottom: 0!important;
+    padding: .25rem 0!important;
+}
+.login-form .bui-list {
+    overflow: unset;
+}
+.login-form #loginType .bui-btn {
+    margin-bottom: 0!important;
+}
+.login-form .clearactive {
+    display: flex;
+}
+.login-form .close {
+    display: none;
+}
+.login-item {
+    color: #666;
+    padding: .5rem 0
+}
+</style>
+<div class="container">
+    <div class="subtitle logo">
+        <h1>{$systemconf.title|default=''}</h1>
+    </div>
+    <div class="login-form">
+        {if !empty($power['login_open'])}
+            <div class="subtitle">快捷登录</div>
+            <ul class="bui-list">
+                <li class="bui-btn bui-box">
+                    <label class="bui-label">
+                        <div id="loginType" class="bui-dropdown">
+                            <div class="bui-btn bui-box" >
+                                <div class="span1">请选择</div>
+                                <i class="icon-dropdown"></i>
+                            </div>
+                        </div>
+                    </label>
+                    <div class="span1">
+                        <div class="bui-input user-input">
+                            <i class="icon-phone">&#xe603;</i>
+                            <input type="text" name="mobile" placeholder="请输入对应账号" b-model="login.userinfo.mobile" tip="请输入正确账号">
+                            <i class="icon-remove" b-show="login.userinfo.mobile" b-click="login.clear('userinfo.mobile')"></i>
+                        </div>
+                    </div>
+                </li>
+                <li class="bui-btn bui-box" b-if="(login.loginType==3)">
+                    <div class="span1">
+                        <div class="bui-input password-input">
+                            <i class="icon-lock"></i>
+                            <input type="password" name="password" placeholder="请输入密码" b-model="login.userinfo.password" tip="请输入密码">
+                            <i class="icon-remove" b-show="login.userinfo.password" b-click="login.clear('userinfo.password')"></i>
+                        </div>
+                    </div>
+                </li>
+                <li class="bui-btn bui-box clearactive" b-class="login.captcha">
+                    <div class="span1">
+                        <div class="bui-input">
+                            <i class="icon-safe"></i>
+                            <input type="text" name="code" placeholder="验证码" value="" b-model="login.userinfo.code" maxlength="6">
+                            <i class="icon-remove" b-show="login.userinfo.code" b-click="login.clear('userinfo.code')"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="btn-getcode primary" b-text="login.codetext" b-class="login.disabled" b-click="login.getcode">获取验证码</div>
+                    </div>
+                </li>
+            </ul>        
+            <div class="container">
+                <div class="bui-btn ring primary loginbtn" b-click="login.sign">立即登录</div>
+                <div class="bui-box-center">
+                    <label><input type="checkbox" class="bui-choose" b-model="login.agree">同意</label> <span b-click="login.agreement">《用户协议》</span><span b-click="login.privacy">《隐私政策》</span>
+                </div>
+            </div>
+            {php}$thirdlogin = auto_run_addons('login');{/php}
+            {if (array_filter($thirdlogin))}
+            <div class="container" style="margin-top: 20px;">
+                <hr>
+                <div class="bui-align-center" style="margin-top: 20px;">第三方登录</div>                
+                <div class="bui-box-center" style="margin-top: 20px; display: flex;flex-direction: row;justify-content: space-around;flex-wrap: wrap;">
+                    {volist name="$thirdlogin" id="v"}
+                        {notempty name="$v"}
+                            {volist name="$v" id="item"}
+                                <div class="login-item" b-click="login.widthOther('{$item['link']}')">
+                                    <span class="span1">{$item['title']}</span>
+                                </div>
+                            {/volist}
+                        {/notempty}                        
+                    {/volist}
+                </div>
+            </div>
+            {/if}
+        {else/}
+            <div class="center" style="font-size: 20px; color: #000;text-align: center;"><i class="layui-icon layui-icon-face-surprised" style="font-size: 20px;"></i> 未开启登录</div>
+        {/if}
+    </div>    
+</div>
+{php}
+$agreement = model('pages')->where(['status' => 1, 'name' => 'agreement'])->value('content');
+$privacy = model('pages')->where(['status' => 1, 'name' => 'privacy'])->value('content');
+{/php}
+{/block}
+{block name="script"}
+<script>
+    bui.ready(function () {
+
+        $(".footer").hide();
+        $(".bui-navbar").hide();
+        $(".bui-bar-right").css('visibility', 'hidden');
+        
+        var refererUrl = '{$refererUrl}';
+        {if !empty($power['login_open'])}
+        // 初始化数据行为存储
+        var bs = bui.store({
+            el: `.login-form`,
+            scope: "login",
+            data: {
+                userinfo: {
+                    mobile: "",
+                    code: "",
+                    password: "0",
+                },
+                remember: false,
+                agree: false,
+                auto: false,
+                disabled: false,
+                codetext: "获取验证码",
+                loginType: 1,
+                captcha: 'clearactive'
+            },
+            methods: {
+                loginTypes() {
+                    let that =this;
+                    var dropdown = bui.dropdown({
+                        id: "#loginType",
+                        data: [{
+                            name:"手机登录",
+                            value:1
+                        },{
+                            name:"邮箱登录",
+                            value:2
+                        },{
+                            name:"账号密码",
+                            value:3
+                        }],
+                        value:1,
+                        relative: false,
+                        callback: function (e) {
+                            that.loginType = this.value();
+                            if(that.loginType == 3) {
+                                that.captcha = 'close';
+                                that.userinfo.code = '0';
+                                that.userinfo.password = '';
+                            } else {
+                                that.captcha = 'clearactive';
+                                that.userinfo.password = '0';
+                                that.userinfo.code = '';
+                            }
+                        }
+                    });
+                    return dropdown;
+                },
+                agreement(e) {
+                    var uiDialog = bui.popover({
+                        content:`{$agreement|raw}`,
+                        title:"《用户协议》",
+                        onClickMain:function(e){
+                            uiDialog.close();
+                        }
+                    })
+                },
+                privacy(e) {
+                    var uiDialog = bui.popover({
+                        content:`{$privacy|raw}`,
+                        title:"《隐私政策》",
+                        onClickMain:function(e){
+                            uiDialog.close();
+                        }
+                    })
+                },
+                sign(e) {
+                    var that = this;
+                    let userinfo = that.userinfo;
+                    // 检测是否为空
+                    let canSign = that.checkEmpty(userinfo);
+                    if (!canSign) {
+                        return bui.hint("必填项为空！");;
+                    }
+                    if(!that.agree) return bui.hint('请选同意相关协议！');
+                    // 登陆
+                    var invite_code = getCookie(sessioninvitename);
+                    if(that.loginType == 1) var postData = {"mobile": that.userinfo.mobile, "code": that.userinfo.code, "invite_code": invite_code};
+                    if(that.loginType == 2) var postData = {"email": that.userinfo.mobile, "code": that.userinfo.code, "invite_code": invite_code};
+                    if(that.loginType == 3) var postData = {"username": that.userinfo.mobile, "password": that.userinfo.password, "invite_code": invite_code};
+                    post("{:furl('v1/login', [], true, 'api')}", postData, function(result) {
+                        if(parseInt(result.code) === 0) {
+                            setCookie("{:get_config('app.session_user')}", result.data.token, 1, { path: "/" });
+                            storage.set("token", result.data.token);
+                            window.location.href = refererUrl;
+                        } else {
+                            bui.hint(result.msg);
+                        }
+                    });
+                    return false;
+                },
+                checkEmpty(userinfo) {
+                    for (let keyname in userinfo) {
+                        if (userinfo[keyname] == "") {
+                            return false;
+                        }
+                    }
+                    return true;
+                },
+                check(e) {
+                    // 校验
+                    let val = e.target.value;
+                    let rule = e.target.getAttribute('rule');
+                    let tip = e.target.getAttribute('tip');
+                    let name = e.target.getAttribute('name');
+                    if (rule && new RegExp(rule).test(val)) {
+                        return true;
+                    } else {
+                        // 清空输入值
+                        this.setState(`userinfo.${name}`, "");
+                        tip && bui.hint(tip);
+                        return false;
+                    }
+                },
+                getcode(e) {
+                    var that = this;
+                    if (that.disabled) {
+                        return;
+                    }                    
+                    if (!that.disabled) {
+                        if(!that.userinfo.mobile) return bui.hint('请输入手机号！');
+                        if (that.loginType == 1 && !(/^1\d{10}$/.test(that.userinfo.mobile))) {
+                            return bui.hint('手机号不正确！');
+                        }
+                        if(!that.agree) return bui.hint('请选同意相关协议！');
+                        var postData = {mobile: that.userinfo.mobile};
+                        post("{:furl('v1/smssend', [], true, 'api')}", postData, function(result) {
+                            if(result.code == 0) {
+                                // 禁止点击，直到计时器恢复
+                                that.disabled = true;
+                                    var timer = bui.timer({
+                                        type: "number",
+                                        time: 60,
+                                        onProcess: (time) => {
+                                            that.codetext = time.value + "秒后重新获取";
+                                        },
+                                        onEnd: () => {
+                                            that.disabled = false;
+                                            that.codetext = "重新获取验证码";
+                                        }
+                                    })
+                                    timer.start();
+                            } else {
+                                bui.hint(result.msg);
+                            }
+                        });                      
+                    }
+                },
+                clear(str) {
+                    // 清空值
+                    this.setState(str, "");
+                },
+                widthOther(url) {
+                    bui.load({
+                        url: url
+                    });
+                },
+            },
+            watch: {},
+            computed: {},
+            templates: {},
+            mounted: function () {
+                // 数据解析后执行
+                this.loginTypes();
+            }
+        })
+        {/if}
+    })
+</script>
+{/block}

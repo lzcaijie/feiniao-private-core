@@ -1,0 +1,53 @@
+{extend name="common/base"/}
+{block name="style"}
+<link rel="stylesheet" href="{__STATIC__}/home/feiniao/css/info.css?v={$version}">
+{/block}
+{block name="title"}
+<title>{$detail.title}-{$conf.title|default=''}</title>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<div class="navSecond">
+    {include file="common/headermini" /}
+</div>
+
+<div class="boxCenter box clearfix">
+    <div class="body-con-left fl">
+        <div class="post-all">
+            <div class="post-title">
+                <span class="text">{$detail.title}</span>
+            </div>
+            <div class="post-content">
+                <div class="images"></div>
+                <div class="post-content-info">{$detail.content|raw}</div>
+            </div>
+        </div>
+    </div>
+    <div class="body-con-right fr">
+        <div class="boxcont"><span class="titmenu">最新公告</span>
+            <ul class="boxlist latest-news">
+                {php}$list = model('advsr')->where(['status' => 1, 'adver_id' => get_system_config('page', 'home_notice'), 'type' => 6])->order('create_time desc')->limit(5)->select()->toArray();{/php}
+                {notempty name="$list"}
+                    {volist name="$list" id="v"}
+                    <li><a target="_blank" href="{:url('notice_detail',['id' => $v['id']])}" class="ellipsis link">{$v.title}</a></li>
+                    {/volist}
+                {/notempty} 
+            </ul>
+        </div>
+    </div>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script src="{__STATIC__}/home/feiniao/js/jquery-1-22.min.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/purify.min.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/common.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/userinfo.js?v={$version}"></script>
+<script>
+$(function() {
+});
+</script>
+{/block}
+<!-- /脚本 -->

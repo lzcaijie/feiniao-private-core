@@ -1,0 +1,282 @@
+@import url("common.css");
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+}
+
+/* 顶部导航 */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 20px 5%;
+    background: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.home-link {
+    color: #636e72;
+    text-decoration: none;
+    font-size: 15px;
+    transition: all 0.3s;
+    position: relative;
+    padding-right: 20px;
+}
+
+.home-link:hover {
+    color: #0984e3;
+    transform: translateX(-5px);
+}
+
+.home-link::after {
+    content: "→";
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: right 0.3s;
+}
+
+.home-link:hover::after {
+    right: -5px;
+}
+
+/* 响应式调整 */
+@media (max-width: 480px) {
+    .header {
+        padding: 15px 20px;
+    }
+    
+    .site-name {
+        font-size: 20px;
+    }
+    
+    .home-link {
+        font-size: 14px;
+        padding-right: 15px;
+    }
+}
+
+.logo {
+    width: 150px;
+    margin-right: 15px;
+}
+
+.site-name {
+    font-size: 24px;
+    color: #0984e3;
+    font-weight: bold;
+}
+
+/* 登录容器 */
+.login-container {
+    background: white;
+    width: 90%;
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+/* Tab切换 */
+.tab-nav {
+    display: flex;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #eee;
+}
+
+.tab-item {
+    flex: 1;
+    text-align: center;
+    padding: 15px;
+    cursor: pointer;
+    color: #636e72;
+    transition: all 0.3s;
+}
+
+.tab-item.active {
+    color: #0984e3;
+    border-bottom: 3px solid #0984e3;
+}
+
+/* 表单样式 */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.form-input:focus {
+    border-color: #0984e3;
+    outline: none;
+}
+
+.code-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 5px; /* 为错误提示留出空间 */
+}
+
+.code-input {
+    flex: 1;
+}
+
+.send-btn {
+    background: #0984e3;
+    color: white;
+    border: none;
+    padding: 0 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.send-btn.disabled {
+    background: #b2bec3;
+    cursor: not-allowed;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 14px;
+    background: #0984e3;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+/* 底部链接 */
+.footer-links {
+    text-align: center;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.link {
+    color: #636e72;
+    text-decoration: none;
+    margin: 0 10px;
+    font-size: 14px;
+}
+
+.link:hover {
+    color: #0984e3;
+}
+
+/* 错误提示 */
+.error-tip {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 5px;
+    display: none;
+}
+.error-tip#codeError {
+    width: 100%;
+    order: 3; /* 确保显示在最后 */
+}
+.third-login {
+    margin-top: 30px;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    color: #95a5a6;
+}
+
+.divider-line {
+    flex: 1;
+    height: 1px;
+    background: #ddd;
+}
+
+.divider-text {
+    padding: 0 15px;
+    font-size: 14px;
+}
+
+.third-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.third-btn {
+    flex: 1;
+    max-width: 120px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.third-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.icon {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+}
+.form-title {
+    margin-bottom: 20px;
+}
+.protocol-group {
+    margin: 20px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.protocol-links {
+    display: inline-block;
+    margin-left: 5px;
+}
+
+.protocol-links a {
+    color: #0984e3;
+    text-decoration: none;
+}
+
+.protocol-links a:hover {
+    text-decoration: underline;
+}
+
+#confirmError {
+    margin-top: -10px;
+    margin-bottom: 15px;
+}

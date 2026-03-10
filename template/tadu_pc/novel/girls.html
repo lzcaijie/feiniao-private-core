@@ -1,0 +1,970 @@
+{extend name="common/base"/}
+{block name="style"}
+<link rel="stylesheet" href="{__STATIC__}/home/feiniao/css/index.css?v={$version}">
+<link rel="stylesheet" href="{__STATIC__}/home/feiniao/css/girl.css?v={$version}">
+{/block}
+{block name="title"}
+<title>{:get_seo_str('girl','girl_title')}</title>	
+{/block}
+{block name="keywords"}
+<meta name="keywords" content="{:get_seo_str('girl','girl_keywords')}"/>
+<meta name="description" content="{:get_seo_str('girl','girl_description')}"/>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+{include file="common/header" /}
+
+<div class="wrap">
+
+
+    <div class="tonglan">
+        <!-- 左侧 -->
+        <div class="left hotWrap">
+            <h1 class="clearfix"><strong>编辑推荐</strong><a href="javascript:;" class="change" data-page="1" data-type="{$pageconf.home_editor_main|default='0'}" data-url="{:furl('/v1/advert', [], true, 'api')}"><i></i>换一换</a></h1>
+            {php}
+            // 1. 获取总记录数
+            $total = model('book')->where(['status' => 1, 'genre' => $params['girlgenre']])->count();
+            // 2. 设置要获取的数量
+            $limit = 2;
+            // 3. 生成随机偏移量（确保不超过总数）
+            $offset = $total > $limit ? mt_rand(0, $total - $limit) : 0;
+            // 4. 执行查询
+            $list = model('book')->field('id,title,cover,filename,words,author,remark')->where(['status' => 1, 'genre' => $params['girlgenre']])->limit($offset, $limit)->select()->toArray();
+            {/php}
+            {notempty name="list"}
+                {volist name="$list" id="v"}
+                    <a href="{:url('book_detail', ['id' => $v['filename'] ? $v['filename'] : $v['id']])}" class="bookLink spBL">
+                        <div class="bookImg">
+                            <img src="/static/home/feiniao/images/coverBg.jpg" data-src="{:get_file($v['cover'])}">
+                        </div>
+                        <div class="bookIntro">
+                            <em>{$v['author']|default='--'}</em>
+                            <h2>{$v['title']|default='--'}</h2>
+                            <span>{$v['remark'] ? dsubstr($v['remark'],60) : '无'}</span>
+                        </div>
+                    </a>
+                {/volist}
+            {/notempty}
+        </div>            
+        <!-- 中间轮播 -->
+        <div class="slidemain slideBox">
+            <div class="focus-box" id="boxCenter">
+                <div class="slide-track">
+                    {php}$slide = isset($pageconf['girl_home_slide']) ? model('slide_info')->where(['slide_id'=> $pageconf['girl_home_slide'], 'status' => 1, 'type' => 1])->order('sort desc')->select()->toArray() : '';{/php}
+                    {volist name="$slide" id="v"}
+                    <a href="{$v.src}" class="slide-item" style="background-image: url('{:get_file($v.img)}')" title="{$v.title}"></a>
+                    {/volist}
+                </div>
+                <a class="slide-prev" id="to_Left"></a>
+                <a class="slide-next" id="to_Right"></a>
+                <ul class="slidepage"></ul>
+            </div>
+        </div>        
+        <!-- 右侧公告 (动态渲染) -->
+        {php}$notice = isset($pageconf['home_notice']) ? model('advsr')->where(['status' => 1, 'adver_id' => $pageconf['home_notice'], 'type' => 6])->order('level desc')->limit(6)->select()->toArray() : '';{/php}
+        {notempty name="notice"}
+        <div class="right">
+            <h1>网站公告</h1>
+            {volist name="$notice" id="v"}
+            <a href="{:url('notice_detail',['id' => $v['id']])}" target="_blank" title="{$v.title}"><i></i>{:dsubstr($v.title,46)}</a>
+            {/volist}
+        </div>
+        {/notempty}
+    </div>
+
+    <div class="boxCenter zbWrap clearfix">
+        <div class="lf">
+            <h1 class="clearfix"><strong>主编推荐</strong><i></i><i></i><i></i><i></i></h1>
+            {php}$carousel1 = model('book')->field('id,title,cover,filename,words,author,remark')->where(['status' => 1, 'genre' => $params['girlgenre']])->order('hits desc')->limit(3)->select()->toArray();{/php}
+            <div class="wrapBox">
+                <div class="imgSlide" style="width: 190px; height: 166px; overflow: hidden;">
+                    <ul class="roundabout" id="myroundabout1" style="height: 160px;">  
+                        {notempty name="carousel1"}
+                            {volist name="$carousel1" id="v"}
+                                <li data-id='{$key}'>
+                                    <a href="{:url('book_detail', ['id' => $v['filename'] ? $v['filename'] : $v['id']])}" target="_blank">
+                                        <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($v['cover'])}" alt="{$v['title']|default='--'}" class="carousel-img"/>
+                                    </a>
+                                </li>
+                            {/volist}
+                        {/notempty}                        
+                    </ul>
+                </div>
+                <div class="verbal_box">
+                    {notempty name="carousel1"}
+                        {volist name="$carousel1" id="v"}
+                            <div class="verbal {if $key > 0}hidden{/if}">
+                                <a href="{:url('book_detail', ['id' => $v['filename'] ? $v['filename'] : $v['id']])}" class="bkName" target="_blank">{$v['title']|default='--'}</a>
+                                <p class="author">{$v['author']|default='--'}/著</p>
+                                <p class="istt">{:wordCount($v.words)}</p>
+                                <p class="itdt">{$v['remark'] ? dsubstr($v['remark'],60) : '无'}</p>
+                                <a href="{:url('book_detail', ['id' => $v['filename'] ? $v['filename'] : $v['id']])}" target="_blank" class="rdNow">立即阅读</a>
+                            </div>
+                        {/volist}
+                    {/notempty}
+                </div>
+            </div>
+        </div>
+        {php}
+        $category = model('category')->where(['status' => 1, 'pid' => $params['girlgenre']])->order('ordernum ASC')->select()->toArray();
+        foreach ($category as $k => $vo) {
+            $category[$k]['list'] = model('book')->field('id,genre,title,cover,filename,create_time,words,author,remark')->where(['status' => 1, 'subgenre' => $vo['id']])->order('hits desc')->limit(10)->select()->toArray(); 
+        }    
+        {/php}
+        {if $category && isset($category[0]['list']) && $category[0]['list']}
+            <div class="centerO centerFr top">
+                <h1 class="clearfix"><strong>{$category[0]['name']}</strong><a href="{:url('novelfilter', [
+                    'channel' => 2,
+                    'status'  => 'a',
+                    'cat'     => $category[0]['id'],        
+                    'word'    => 0,
+                    'order'   => 'a',
+                    'page'    => 1,
+                    'cid'     => 0,
+                    'mode'    => 1
+                ])}" target="_blank">更多<i></i></a></h1>
+                {if isset($category[0]['list'][0]) && $category[0]['list'][0]}
+                <a href="{:url('book_detail', ['id' => $category[0]['list'][0]['filename'] ? $category[0]['list'][0]['filename'] : $category[0]['list'][0]['id']])}" target="_blank" class="bookList first ">
+                    <div class="bookImg">
+                        <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($category[0]['list'][0]['cover'])}" alt="{$category[0]['list'][0]['title']|default='--'}">
+                    </div>
+                    <div class="intro">
+                        <h2>{$category[0]['list'][0]['title']|default='--'}</h2>
+                        <p>{$category[0]['list'][0]['remark'] ? dsubstr($category[0]['list'][0]['remark'],120) : '无'}</p>
+                        <div class="">
+                            <em>{$category[0]['list'][0]['author']|default='--'}</em>
+                        </div>
+                    </div>
+                </a>
+                {/if}
+                {if isset($category[0]['list'][1]) && $category[0]['list'][1]}
+                <a href="{:url('book_detail', ['id' => $category[0]['list'][1]['filename'] ? $category[0]['list'][1]['filename'] : $category[0]['list'][1]['id']])}" target="_blank" class="bookList first ">
+                    <div class="bookImg">
+                        <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($category[0]['list'][1]['cover'])}" alt="{$category[0]['list'][1]['title']|default='--'}">
+                    </div>
+                    <div class="intro">
+                        <h2>{$category[0]['list'][1]['title']|default='--'}</h2>
+                        <p>{$category[0]['list'][1]['remark'] ? dsubstr($category[0]['list'][1]['remark'],120) : '无'}</p>
+                        <div class="">
+                            <em>{$category[0]['list'][1]['author']|default='--'}</em>
+                        </div>
+                    </div>
+                </a>
+                {/if}
+            </div>
+        {/if}
+        {if $category && isset($category[1]['list']) && $category[1]['list']}
+            <div class="centerO centerFr top">
+                <h1 class="clearfix"><strong>{$category[1]['name']}</strong><a href="{:url('novelfilter', [
+                    'channel' => 2,
+                    'status'  => 'a',
+                    'cat'     => $category[1]['id'],        
+                    'word'    => 0,
+                    'order'   => 'a',
+                    'page'    => 1,
+                    'cid'     => 0,
+                    'mode'    => 1
+                ])}" target="_blank">更多<i></i></a></h1>
+                {if isset($category[1]['list'][0]) && $category[1]['list'][0]}
+                <a href="{:url('book_detail', ['id' => $category[1]['list'][0]['filename'] ? $category[1]['list'][0]['filename'] : $category[1]['list'][0]['id']])}" target="_blank" class="bookList first">
+                    <div class="bookImg">
+                        <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($category[1]['list'][0]['cover'])}" alt="{$category[1]['list'][0]['title']|default='--'}">
+                    </div>
+                    <div class="intro">
+                        <h2>{$category[1]['list'][0]['title']|default='--'}</h2>
+                        <p>{$category[1]['list'][0]['remark'] ? dsubstr($category[1]['list'][0]['remark'],120) : '无'}</p>
+                        <div class="">
+                            <em>{$category[1]['list'][0]['author']|default='--'}</em>
+                        </div>
+                    </div>
+                </a>
+                {/if}
+                {if isset($category[1]['list'][1]) && $category[1]['list'][1]}
+                <a href="{:url('book_detail', ['id' => $category[1]['list'][1]['filename'] ? $category[1]['list'][1]['filename'] : $category[1]['list'][1]['id']])}" target="_blank" class="bookList first">
+                    <div class="bookImg">
+                        <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($category[1]['list'][1]['cover'])}" alt="{$category[1]['list'][1]['title']|default='--'}">
+                    </div>
+                    <div class="intro">
+                        <h2>{$category[1]['list'][1]['title']|default='--'}</h2>
+                        <p>{$category[1]['list'][1]['remark'] ? dsubstr($category[1]['list'][1]['remark'],120) : '无'}</p>
+                        <div class="">
+                            <em>{$category[1]['list'][1]['author']|default='--'}</em>
+                        </div>
+                    </div>
+                </a>
+                {/if}
+            </div>
+        {/if}
+        {if $category && isset($category[2]['list']) && $category[1]['list']}
+            <div class="centerO centerFr">
+                <h1 class="clearfix"><strong>{$category[2]['name'] ?? '--'}</strong><a href="{:url('novelfilter', [
+                    'channel' => 2,
+                    'status'  => 'a',
+                    'cat'     => $category[2]['id'],        
+                    'word'    => 0,
+                    'order'   => 'a',
+                    'page'    => 1,
+                    'cid'     => 0,
+                    'mode'    => 1
+                ])}" target="_blank">更多<i></i></a></h1>
+                {if isset($category[2]['list'][0]) && $category[2]['list'][0]}
+                <a href="{:url('book_detail', ['id' => $category[2]['list'][0]['filename'] ? $category[2]['list'][0]['filename'] : $category[2]['list'][0]['id']])}" target="_blank" class="bookList">
+                    <div class="bookImg">
+                        <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($category[2]['list'][0]['cover'])}" alt="{$category[2]['list'][0]['title']|default='--'}">
+                    </div>
+                    <div class="intro">
+                        <h2>{$category[2]['list'][0]['title']|default='--'}</h2>
+                        <p>{$category[2]['list'][0]['remark'] ? dsubstr($category[2]['list'][0]['remark'],120) : '无'}</p>
+                        <div class="">
+                            <em>{$category[2]['list'][0]['author']|default='--'}</em>
+                        </div>
+                    </div>
+                </a>
+                {/if}
+            </div>
+        {/if}
+        {if $category && isset($category[3]['list']) && $category[1]['list']}
+            <div class="centerO centerFr">
+                <h1 class="clearfix"><strong>{$category[3]['name']}</strong><a href="{:url('novelfilter', [
+                    'channel' => 2,
+                    'status'  => 'a',
+                    'cat'     => $category[3]['id'],        
+                    'word'    => 0,
+                    'order'   => 'a',
+                    'page'    => 1,
+                    'cid'     => 0,
+                    'mode'    => 1
+                ])}" target="_blank">更多<i></i></a></h1>
+                {if isset($category[3]['list'][0]) && $category[3]['list'][0]}
+                <a href="{:url('book_detail', ['id' => $category[3]['list'][0]['filename'] ? $category[3]['list'][0]['filename'] : $category[3]['list'][0]['id']])}" target="_blank" class="bookList">
+                    <div class="bookImg">
+                        <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($category[3]['list'][0]['cover'])}" alt="{$category[3]['list'][0]['title']|default='--'}">
+                    </div>
+                    <div class="intro">
+                        <h2>{$category[3]['list'][0]['title']|default='--'}</h2>
+                        <p>{$category[3]['list'][0]['remark'] ? dsubstr($category[3]['list'][0]['remark'],120) : '无'}</p>
+                        <div class="">
+                            <em>{$category[3]['list'][0]['author']|default='--'}</em>
+                        </div>
+                    </div>
+                </a>
+                {/if}
+            </div>
+        {/if}
+    </div>
+
+
+    <div class="boxCenter xbWrap clearfix">
+        <div class="lf">
+            <h1 class="clearfix"><strong>小编力荐</strong><i></i><i></i><i></i></h1>
+            {php}$carousel2 = model('book')->field('id,title,cover,filename,words,author,remark')->where(['status' => 1, 'genre' => $params['girlgenre']])->order('words desc')->limit(3)->select()->toArray();{/php}
+            <div class="wrapBox">
+                <div class="imgSlide" style="width: 190px; height: 166px; overflow: hidden;">
+                    <ul class="roundabout" id="myroundabout2" style="height: 160px;">  
+                        {notempty name="carousel2"}
+                            {volist name="$carousel2" id="v"}
+                                <li data-id='{$key}'>
+                                    <a href="{:url('book_detail', ['id' => $v['filename'] ? $v['filename'] : $v['id']])}" target="_blank">
+                                        <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($v['cover'])}" alt="{$v['title']|default='--'}" class="carousel-img"/>
+                                    </a>
+                                </li>
+                            {/volist}
+                        {/notempty}                        
+                    </ul>
+                </div>
+                <div class="verbal_box">
+                    {notempty name="carousel2"}
+                        {volist name="$carousel2" id="v"}
+                            <div class="verbal {if $key > 0}hidden{/if}">
+                                <a href="{:url('book_detail', ['id' => $v['filename'] ? $v['filename'] : $v['id']])}" class="bkName" target="_blank">{$v['title']|default='--'}</a>
+                                <p class="author">{$v['author']|default='--'}/著</p>
+                                <p class="istt">{:wordCount($v.words)}</p>
+                                <p class="itdt">{$v['remark'] ? dsubstr($v['remark'],60) : '无'}</p>
+                                <a href="{:url('book_detail', ['id' => $v['filename'] ? $v['filename'] : $v['id']])}" target="_blank" class="rdNow">立即阅读</a>
+                            </div>
+                        {/volist}
+                    {/notempty}
+                </div>
+            </div>
+        </div>
+        {if $category && isset($category[4]['list']) && $category[1]['list']}
+            <div class="centerO centerFr centerSp top">
+                <h1 class="clearfix"><strong>{$category[4]['name']}</strong><a href="{:url('novelfilter', [
+                    'channel' => 2,
+                    'status'  => 'a',
+                    'cat'     => $category[4]['id'],        
+                    'word'    => 0,
+                    'order'   => 'a',
+                    'page'    => 1,
+                    'cid'     => 0,
+                    'mode'    => 1
+                ])}" target="_blank">更多<i></i></a></h1>
+                {if isset($category[4]['list'][0]) && $category[4]['list'][0]}
+                <a href="{:url('book_detail', ['id' => $category[4]['list'][0]['filename'] ? $category[4]['list'][0]['filename'] : $category[4]['list'][0]['id']])}" target="_blank" class="bookList">
+                    <div class="bookImg">
+                        <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($category[4]['list'][0]['cover'])}" alt="{$category[4]['list'][0]['title']|default='--'}">
+                    </div>
+                    <div class="intro">
+                        <h2>{$category[4]['list'][0]['title']|default='--'}</h2>
+                        <p>{$category[4]['list'][0]['remark'] ? dsubstr($category[4]['list'][0]['remark'],120) : '无'}</p>
+                        <div class="">
+                            <em>{$category[4]['list'][0]['author']|default='--'}</em>
+                        </div>
+                    </div>
+                </a>
+                {/if}
+                <div class="linkT clearfix">
+                    {if isset($category[4]['list'][1]) && $category[4]['list'][1]}
+                    <a href="{:url('book_detail', ['id' => $category[4]['list'][1]['filename'] ? $category[4]['list'][1]['filename'] : $category[4]['list'][1]['id']])}" target="_blank" class="bookListSm"><strong>{$category[4]['list'][1]['title']|default='--'}</strong></a>
+                    {/if}
+                    {if isset($category[4]['list'][2]) && $category[4]['list'][2]}
+                    <a href="{:url('book_detail', ['id' => $category[4]['list'][2]['filename'] ? $category[4]['list'][2]['filename'] : $category[4]['list'][2]['id']])}" target="_blank" class="bookListSm"><strong>{$category[4]['list'][2]['title']|default='--'}</strong></a>
+                    {/if}
+                </div>
+            </div>
+        {/if}
+        {if $category && isset($category[5]['list']) && $category[1]['list']}
+            <div class="centerO centerFr centerSp top">
+                <h1 class="clearfix"><strong>{$category[5]['name']}</strong><a href="{:url('novelfilter', [
+                    'channel' => 2,
+                    'status'  => 'a',
+                    'cat'     => $category[5]['id'],        
+                    'word'    => 0,
+                    'order'   => 'a',
+                    'page'    => 1,
+                    'cid'     => 0,
+                    'mode'    => 1
+                ])}" target="_blank">更多<i></i></a></h1>
+                {if isset($category[5]['list'][0]) && $category[5]['list'][0]}
+                <a href="{:url('book_detail', ['id' => $category[5]['list'][0]['filename'] ? $category[5]['list'][0]['filename'] : $category[5]['list'][0]['id']])}" target="_blank" class="bookList">
+                    <div class="bookImg">
+                        <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($category[5]['list'][0]['cover'])}" alt="{$category[5]['list'][0]['title']|default='--'}">
+                    </div>
+                    <div class="intro">
+                        <h2>{$category[5]['list'][0]['title']|default='--'}</h2>
+                        <p>{$category[5]['list'][0]['remark'] ? dsubstr($category[5]['list'][0]['remark'],120) : '无'}</p>
+                        <div class="">
+                            <em>{$category[5]['list'][0]['author']|default='--'}</em>
+                        </div>
+                    </div>
+                </a>
+                {/if}
+                <div class="linkT clearfix">
+                    {if isset($category[5]['list'][1]) && $category[5]['list'][1]}
+                    <a href="{:url('book_detail', ['id' => $category[5]['list'][1]['filename'] ? $category[5]['list'][1]['filename'] : $category[5]['list'][1]['id']])}" target="_blank" class="bookListSm"><strong>{$category[5]['list'][1]['title']|default='--'}</strong></a>
+                    {/if}
+                    {if isset($category[5]['list'][2]) && $category[5]['list'][2]}
+                    <a href="{:url('book_detail', ['id' => $category[5]['list'][2]['filename'] ? $category[5]['list'][2]['filename'] : $category[5]['list'][2]['id']])}" target="_blank" class="bookListSm"><strong>{$category[5]['list'][2]['title']|default='--'}</strong></a>
+                    {/if}
+                </div>
+            </div>
+        {/if}
+        {if $category && isset($category[6]['list']) && $category[1]['list']}
+            <div class="centerO centerFr centerSp top">
+                <h1 class="clearfix"><strong>{$category[6]['name']}</strong><a href="{:url('novelfilter', [
+                    'channel' => 2,
+                    'status'  => 'a',
+                    'cat'     => $category[6]['id'],        
+                    'word'    => 0,
+                    'order'   => 'a',
+                    'page'    => 1,
+                    'cid'     => 0,
+                    'mode'    => 1
+                ])}" target="_blank">更多<i></i></a></h1>
+                {if isset($category[6]['list'][0]) && $category[6]['list'][0]}
+                <a href="{:url('book_detail', ['id' => $category[6]['list'][0]['filename'] ? $category[6]['list'][0]['filename'] : $category[6]['list'][0]['id']])}" target="_blank" class="bookList">
+                    <div class="bookImg">
+                        <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($category[6]['list'][0]['cover'])}" alt="{$category[6]['list'][0]['title']|default='--'}">
+                    </div>
+                    <div class="intro">
+                        <h2>{$category[6]['list'][0]['title']|default='--'}</h2>
+                        <p>{$category[6]['list'][0]['remark'] ? dsubstr($category[6]['list'][0]['remark'],120) : '无'}</p>
+                        <div class="">
+                            <em>{$category[6]['list'][0]['author']|default='--'}</em>
+                        </div>
+                    </div>
+                </a>
+                {/if}
+                <div class="linkT clearfix">
+                    {if isset($category[6]['list'][1]) && $category[6]['list'][1]}
+                    <a href="{:url('book_detail', ['id' => $category[6]['list'][1]['filename'] ? $category[6]['list'][1]['filename'] : $category[6]['list'][1]['id']])}" target="_blank" class="bookListSm"><strong>{$category[6]['list'][1]['title']|default='--'}</strong></a>
+                    {/if}
+                    {if isset($category[6]['list'][2]) && $category[6]['list'][2]}
+                    <a href="{:url('book_detail', ['id' => $category[6]['list'][2]['filename'] ? $category[6]['list'][2]['filename'] : $category[6]['list'][2]['id']])}" target="_blank" class="bookListSm"><strong>{$category[6]['list'][2]['title']|default='--'}</strong></a>
+                    {/if}
+                </div>
+            </div>
+        {/if}
+        {if $category && isset($category[7]['list']) && $category[1]['list']}
+            <div class="centerO centerFr centerSp">
+                <h1 class="clearfix"><strong>{$category[7]['name']}</strong><a href="{:url('novelfilter', [
+                    'channel' => 2,
+                    'status'  => 'a',
+                    'cat'     => $category[7]['id'],        
+                    'word'    => 0,
+                    'order'   => 'a',
+                    'page'    => 1,
+                    'cid'     => 0,
+                    'mode'    => 1
+                ])}" target="_blank">更多<i></i></a></h1>
+                {if isset($category[7]['list'][0]) && $category[7]['list'][0]}
+                <a href="{:url('book_detail', ['id' => $category[7]['list'][0]['filename'] ? $category[7]['list'][0]['filename'] : $category[7]['list'][0]['id']])}" target="_blank" class="bookList">
+                    <div class="bookImg">
+                        <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($category[7]['list'][0]['cover'])}" alt="{$category[7]['list'][0]['title']|default='--'}">
+                    </div>
+                    <div class="intro">
+                        <h2>{$category[7]['list'][0]['title']|default='--'}</h2>
+                        <p>{$category[7]['list'][0]['remark'] ? dsubstr($category[7]['list'][0]['remark'],120) : '无'}</p>
+                        <div class="">
+                            <em>{$category[7]['list'][0]['author']|default='--'}</em>
+                        </div>
+                    </div>
+                </a>
+                {/if}
+                <div class="linkT clearfix">
+                    {if isset($category[7]['list'][1]) && $category[7]['list'][1]}
+                    <a href="{:url('book_detail', ['id' => $category[7]['list'][1]['filename'] ? $category[7]['list'][1]['filename'] : $category[7]['list'][1]['id']])}" target="_blank" class="bookListSm"><strong>{$category[7]['list'][1]['title']|default='--'}</strong></a>
+                    {/if}
+                    {if isset($category[7]['list'][2]) && $category[7]['list'][2]}
+                    <a href="{:url('book_detail', ['id' => $category[7]['list'][2]['filename'] ? $category[7]['list'][2]['filename'] : $category[7]['list'][2]['id']])}" target="_blank" class="bookListSm"><strong>{$category[7]['list'][2]['title']|default='--'}</strong></a>
+                    {/if}
+                </div>
+            </div>
+        {/if}        
+    </div>
+    <div>
+        <div class="boxCenter xsWrap clearfix">
+            <div class="lf">
+                <h1 class="clearfix"><strong>晋级新书</strong><i></i><i></i></h1>
+                {php}$carousel3 = model('book')->field('id,title,cover,filename,words,author,remark')->where(['status' => 1, 'genre' => $params['girlgenre']])->order('update_time desc')->limit(3)->select()->toArray();{/php}
+                <div class="wrapBox">
+                    <div class="imgSlide" style="width: 190px; height: 166px; overflow: hidden;">
+                        <ul class="roundabout" id="myroundabout3" style="height: 160px;">  
+                            {notempty name="carousel3"}
+                                {volist name="$carousel3" id="v"}
+                                    <li data-id='{$key}'>
+                                        <a href="{:url('book_detail', ['id' => $v['filename'] ? $v['filename'] : $v['id']])}" target="_blank">
+                                            <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($v['cover'])}" alt="{$v['title']|default='--'}" class="carousel-img"/>
+                                        </a>
+                                    </li>
+                                {/volist}
+                            {/notempty}                        
+                        </ul>
+                    </div>
+                    <div class="verbal_box">
+                        {notempty name="carousel3"}
+                            {volist name="$carousel3" id="v"}
+                                <div class="verbal {if $key > 0}hidden{/if}">
+                                    <a href="{:url('book_detail', ['id' => $v['filename'] ? $v['filename'] : $v['id']])}" class="bkName" target="_blank">{$v['title']|default='--'}</a>
+                                    <p class="author">{$v['author']|default='--'}/著</p>
+                                    <p class="istt">{:wordCount($v.words)}</p>
+                                    <p class="itdt">{$v['remark'] ? dsubstr($v['remark'],60) : '无'}</p>
+                                    <a href="{:url('book_detail', ['id' => $v['filename'] ? $v['filename'] : $v['id']])}" target="_blank" class="rdNow">立即阅读</a>
+                                </div>
+                            {/volist}
+                        {/notempty}
+                    </div>
+                </div>
+            </div>
+            {if $category && isset($category[0]['list']) && $category[0]['list']}
+                <div class="centerO centerFr first">
+                    <h1 class="clearfix"><strong>{$category[0]['name'] ?? '--'}</strong><a href="{:url('novelfilter', [
+                        'channel' => 2,
+                        'status'  => 'a',
+                        'cat'     => $category[0]['id'],        
+                        'word'    => 0,
+                        'order'   => 'a',
+                        'page'    => 1,
+                        'cid'     => 0,
+                        'mode'    => 1
+                    ])}" target="_blank">更多<i></i></a></h1>
+                    <div class="bkList clearfix">
+                        {if isset($category[0]['list'][2]) && $category[0]['list'][2]}
+                        <a href="{:url('book_detail', ['id' => $category[0]['list'][2]['filename'] ? $category[0]['list'][2]['filename'] : $category[0]['list'][2]['id']])}" target="_blank" class="bookList">
+                            <div class="bookImg">
+                                <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($category[0]['list'][2]['cover'])}" alt="{$category[0]['list'][2]['title']|default='--'}">
+                            </div>
+                            <div class="intro">
+                                <h2>{$category[0]['list'][2]['title']|default='--'}</h2>
+                                <p>{$category[0]['list'][2]['remark'] ? dsubstr($category[0]['list'][2]['remark'],120) : '无'}</p>
+                                <div class="">
+                                    <em>{$category[0]['list'][2]['author']|default='--'}</em>
+                                </div>
+                            </div>
+                        </a>
+                        {/if}
+                        {if isset($category[0]['list'][3]) && $category[0]['list'][3]}
+                        <a href="{:url('book_detail', ['id' => $category[0]['list'][3]['filename'] ? $category[0]['list'][3]['filename'] : $category[0]['list'][3]['id']])}" target="_blank" class="bookList">
+                            <div class="bookImg">
+                                <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($category[0]['list'][3]['cover'])}" alt="{$category[0]['list'][3]['title']|default='--'}">
+                            </div>
+                            <div class="intro">
+                                <h2>{$category[0]['list'][3]['title']|default='--'}</h2>
+                                <p>{$category[0]['list'][3]['remark'] ? dsubstr($category[0]['list'][3]['remark'],120) : '无'}</p>
+                                <div class="">
+                                    <em>{$category[0]['list'][3]['author']|default='--'}</em>
+                                </div>
+                            </div>
+                        </a>
+                        {/if}
+                    </div>
+
+                    <div class="linkT clearfix">
+                        {if isset($category[0]['list'][4]) && $category[0]['list'][4]}
+                        <a href="{:url('book_detail', ['id' => $category[0]['list'][4]['filename'] ? $category[0]['list'][4]['filename'] : $category[0]['list'][4]['id']])}" target="_blank" class="bookListSm"><em>{$category[0]['list'][4]['author']|default='--'}</em><strong>{$category[0]['list'][4]['title']|default='--'}</strong></a>
+                        {/if}
+                        {if isset($category[0]['list'][5]) && $category[0]['list'][5]}
+                        <a href="{:url('book_detail', ['id' => $category[0]['list'][5]['filename'] ? $category[0]['list'][5]['filename'] : $category[0]['list'][5]['id']])}" target="_blank" class="bookListSm"><em>{$category[0]['list'][5]['author']|default='--'}</em><strong>{$category[0]['list'][5]['title']|default='--'}</strong></a>
+                        {/if}
+                    </div>
+                </div>
+            {/if}
+            {if $category && isset($category[1]['list']) && $category[1]['list']}
+                <div class="centerO centerFr first">
+                    <h1 class="clearfix"><strong>{$category[1]['name'] ?? '--'}</strong><a href="{:url('novelfilter', [
+                        'channel' => 2,
+                        'status'  => 'a',
+                        'cat'     => $category[1]['id'],        
+                        'word'    => 0,
+                        'order'   => 'a',
+                        'page'    => 1,
+                        'cid'     => 0,
+                        'mode'    => 1
+                    ])}" target="_blank">更多<i></i></a></h1>
+                    <div class="bkList clearfix">
+                        {if isset($category[1]['list'][2]) && $category[1]['list'][2]}
+                        <a href="{:url('book_detail', ['id' => $category[1]['list'][2]['filename'] ? $category[1]['list'][2]['filename'] : $category[1]['list'][2]['id']])}" target="_blank" class="bookList">
+                            <div class="bookImg">
+                                <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($category[1]['list'][2]['cover'])}" alt="{$category[1]['list'][2]['title']|default='--'}">
+                            </div>
+                            <div class="intro">
+                                <h2>{$category[1]['list'][2]['title']|default='--'}</h2>
+                                <p>{$category[1]['list'][2]['remark'] ? dsubstr($category[1]['list'][2]['remark'],120) : '无'}</p>
+                                <div class="">
+                                    <em>{$category[1]['list'][2]['author']|default='--'}</em>
+                                </div>
+                            </div>
+                        </a>
+                        {/if}
+                        {if isset($category[1]['list'][3]) && $category[1]['list'][3]}
+                        <a href="{:url('book_detail', ['id' => $category[1]['list'][3]['filename'] ? $category[1]['list'][3]['filename'] : $category[1]['list'][3]['id']])}" target="_blank" class="bookList">
+                            <div class="bookImg">
+                                <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($category[1]['list'][3]['cover'])}" alt="{$category[1]['list'][3]['title']|default='--'}">
+                            </div>
+                            <div class="intro">
+                                <h2>{$category[1]['list'][3]['title']|default='--'}</h2>
+                                <p>{$category[1]['list'][3]['remark'] ? dsubstr($category[1]['list'][3]['remark'],120) : '无'}</p>
+                                <div class="">
+                                    <em>{$category[1]['list'][3]['author']|default='--'}</em>
+                                </div>
+                            </div>
+                        </a>
+                        {/if}
+                    </div>
+
+                    <div class="linkT clearfix">
+                        {if isset($category[1]['list'][4]) && $category[1]['list'][4]}
+                        <a href="{:url('book_detail', ['id' => $category[1]['list'][4]['filename'] ? $category[1]['list'][4]['filename'] : $category[1]['list'][4]['id']])}" target="_blank" class="bookListSm"><em>{$category[1]['list'][4]['author']|default='--'}</em><strong>{$category[1]['list'][4]['title']|default='--'}</strong></a>
+                        {/if}
+                        {if isset($category[1]['list'][5]) && $category[1]['list'][5]}
+                        <a href="{:url('book_detail', ['id' => $category[1]['list'][5]['filename'] ? $category[1]['list'][5]['filename'] : $category[1]['list'][5]['id']])}" target="_blank" class="bookListSm"><em>{$category[1]['list'][5]['author']|default='--'}</em><strong>{$category[1]['list'][5]['title']|default='--'}</strong></a>
+                        {/if}
+                    </div>
+                </div>
+            {/if}
+            {if $category && isset($category[2]['list']) && $category[2]['list']}
+                <div class="centerO centerFr">
+                    <h1 class="clearfix"><strong>{$category[2]['name'] ?? '--'}</strong><a href="{:url('novelfilter', [
+                        'channel' => 2,
+                        'status'  => 'a',
+                        'cat'     => $category[2]['id'],        
+                        'word'    => 0,
+                        'order'   => 'a',
+                        'page'    => 1,
+                        'cid'     => 0,
+                        'mode'    => 1
+                    ])}" target="_blank">更多<i></i></a></h1>
+                    <div class="bkList clearfix">
+                        {if isset($category[2]['list'][2]) && $category[2]['list'][2]}
+                        <a href="{:url('book_detail', ['id' => $category[2]['list'][2]['filename'] ? $category[2]['list'][2]['filename'] : $category[2]['list'][2]['id']])}" target="_blank" class="bookList">
+                            <div class="bookImg">
+                                <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($category[2]['list'][2]['cover'])}" alt="{$category[2]['list'][2]['title']|default='--'}">
+                            </div>
+                            <div class="intro">
+                                <h2>{$category[2]['list'][2]['title']|default='--'}</h2>
+                                <p>{$category[2]['list'][2]['remark'] ? dsubstr($category[2]['list'][2]['remark'],120) : '无'}</p>
+                                <div class="">
+                                    <em>{$category[2]['list'][2]['author']|default='--'}</em>
+                                </div>
+                            </div>
+                        </a>
+                        {/if}
+                        {if isset($category[2]['list'][3]) && $category[2]['list'][3]}
+                        <a href="{:url('book_detail', ['id' => $category[2]['list'][3]['filename'] ? $category[2]['list'][3]['filename'] : $category[2]['list'][3]['id']])}" target="_blank" class="bookList">
+                            <div class="bookImg">
+                                <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($category[2]['list'][3]['cover'])}" alt="{$category[2]['list'][3]['title']|default='--'}">
+                            </div>
+                            <div class="intro">
+                                <h2>{$category[2]['list'][3]['title']|default='--'}</h2>
+                                <p>{$category[2]['list'][3]['remark'] ? dsubstr($category[2]['list'][3]['remark'],120) : '无'}</p>
+                                <div class="">
+                                    <em>{$category[2]['list'][3]['author']|default='--'}</em>
+                                </div>
+                            </div>
+                        </a>
+                        {/if}
+                    </div>
+
+                    <div class="linkT clearfix">
+                        {if isset($category[2]['list'][4]) && $category[2]['list'][4]}
+                        <a href="{:url('book_detail', ['id' => $category[2]['list'][4]['filename'] ? $category[2]['list'][4]['filename'] : $category[2]['list'][4]['id']])}" target="_blank" class="bookListSm"><em>{$category[2]['list'][4]['author']|default='--'}</em><strong>{$category[2]['list'][4]['title']|default='--'}</strong></a>
+                        {/if}
+                        {if isset($category[2]['list'][5]) && $category[2]['list'][5]}
+                        <a href="{:url('book_detail', ['id' => $category[2]['list'][5]['filename'] ? $category[2]['list'][5]['filename'] : $category[2]['list'][5]['id']])}" target="_blank" class="bookListSm"><em>{$category[2]['list'][5]['author']|default='--'}</em><strong>{$category[2]['list'][5]['title']|default='--'}</strong></a>
+                        {/if}
+                    </div>
+                </div>
+            {/if}
+
+            {if $category && isset($category[3]['list']) && $category[3]['list']}
+                <div class="centerO centerFr">
+                    <h1 class="clearfix"><strong>{$category[3]['name'] ?? '--'}</strong><a href="{:url('novelfilter', [
+                        'channel' => 2,
+                        'status'  => 'a',
+                        'cat'     => $category[3]['id'],        
+                        'word'    => 0,
+                        'order'   => 'a',
+                        'page'    => 1,
+                        'cid'     => 0,
+                        'mode'    => 1
+                    ])}" target="_blank">更多<i></i></a></h1>
+                    <div class="bkList clearfix">
+                        {if isset($category[3]['list'][2]) && $category[3]['list'][2]}
+                        <a href="{:url('book_detail', ['id' => $category[3]['list'][2]['filename'] ? $category[3]['list'][2]['filename'] : $category[3]['list'][2]['id']])}" target="_blank" class="bookList">
+                            <div class="bookImg">
+                                <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($category[3]['list'][2]['cover'])}" alt="{$category[3]['list'][2]['title']|default='--'}">
+                            </div>
+                            <div class="intro">
+                                <h2>{$category[3]['list'][2]['title']|default='--'}</h2>
+                                <p>{$category[3]['list'][2]['remark'] ? dsubstr($category[3]['list'][2]['remark'],120) : '无'}</p>
+                                <div class="">
+                                    <em>{$category[3]['list'][2]['author']|default='--'}</em>
+                                </div>
+                            </div>
+                        </a>
+                        {/if}
+                        {if isset($category[3]['list'][3]) && $category[3]['list'][3]}
+                        <a href="{:url('book_detail', ['id' => $category[3]['list'][3]['filename'] ? $category[3]['list'][3]['filename'] : $category[3]['list'][3]['id']])}" target="_blank" class="bookList">
+                            <div class="bookImg">
+                                <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($category[3]['list'][3]['cover'])}" alt="{$category[3]['list'][3]['title']|default='--'}">
+                            </div>
+                            <div class="intro">
+                                <h2>{$category[3]['list'][3]['title']|default='--'}</h2>
+                                <p>{$category[3]['list'][3]['remark'] ? dsubstr($category[3]['list'][3]['remark'],120) : '无'}</p>
+                                <div class="">
+                                    <em>{$category[3]['list'][3]['author']|default='--'}</em>
+                                </div>
+                            </div>
+                        </a>
+                        {/if}
+                    </div>
+
+                    <div class="linkT clearfix">
+                        {if isset($category[3]['list'][4]) && $category[3]['list'][4]}
+                        <a href="{:url('book_detail', ['id' => $category[3]['list'][4]['filename'] ? $category[3]['list'][4]['filename'] : $category[3]['list'][4]['id']])}" target="_blank" class="bookListSm"><em>{$category[3]['list'][4]['author']|default='--'}</em><strong>{$category[3]['list'][4]['title']|default='--'}</strong></a>
+                        {/if}
+                        {if isset($category[3]['list'][5]) && $category[3]['list'][5]}
+                        <a href="{:url('book_detail', ['id' => $category[3]['list'][5]['filename'] ? $category[3]['list'][5]['filename'] : $category[3]['list'][5]['id']])}" target="_blank" class="bookListSm"><em>{$category[3]['list'][5]['author']|default='--'}</em><strong>{$category[3]['list'][5]['title']|default='--'}</strong></a>
+                        {/if}
+                    </div>
+                </div>
+            {/if}
+        </div>
+
+        <div class="boxCenter sxWrap clearfix">
+            <div class="lf">
+                <h1 class="clearfix"><strong>新书首秀</strong><i></i></h1>
+                {php}$carousel4 = model('book')->field('id,title,cover,filename,words,author,remark')->where(['status' => 1, 'genre' => $params['girlgenre']])->order('create_time desc')->limit(3)->select()->toArray();{/php}
+                <div class="wrapBox">
+                    <div class="imgSlide" style="width: 190px; height: 166px; overflow: hidden;">
+                        <ul class="roundabout" id="myroundabout4" style="height: 160px;">  
+                            {notempty name="carousel4"}
+                                {volist name="$carousel4" id="v"}
+                                    <li data-id='{$key}'>
+                                        <a href="{:url('book_detail', ['id' => $v['filename'] ? $v['filename'] : $v['id']])}" target="_blank">
+                                            <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($v['cover'])}" alt="{$v['title']|default='--'}" class="carousel-img"/>
+                                        </a>
+                                    </li>
+                                {/volist}
+                            {/notempty}                        
+                        </ul>
+                    </div>
+                    <div class="verbal_box">
+                        {notempty name="carousel4"}
+                            {volist name="$carousel4" id="v"}
+                                <div class="verbal {if $key > 0}hidden{/if}">
+                                    <a href="{:url('book_detail', ['id' => $v['filename'] ? $v['filename'] : $v['id']])}" class="bkName" target="_blank">{$v['title']|default='--'}</a>
+                                    <p class="author">{$v['author']|default='--'}/著</p>
+                                    <p class="istt">{:wordCount($v.words)}</p>
+                                    <p class="itdt">{$v['remark'] ? dsubstr($v['remark'],60) : '无'}</p>
+                                    <a href="{:url('book_detail', ['id' => $v['filename'] ? $v['filename'] : $v['id']])}" target="_blank" class="rdNow">立即阅读</a>
+                                </div>
+                            {/volist}
+                        {/notempty}
+                    </div>
+                </div>
+            </div>
+            {if $category && isset($category[4]['list']) && $category[4]['list']}
+                <div class="centerO centerFr top">
+                    <h1 class="clearfix"><strong>{$category[4]['name'] ?? '--'}</strong><a href="{:url('novelfilter', [
+                        'channel' => 2,
+                        'status'  => 'a',
+                        'cat'     => $category[4]['id'],        
+                        'word'    => 0,
+                        'order'   => 'a',
+                        'page'    => 1,
+                        'cid'     => 0,
+                        'mode'    => 1
+                    ])}" target="_blank">更多<i></i></a></h1>
+                    {if isset($category[4]['list'][3]) && $category[4]['list'][3]}
+                    <a href="{:url('book_detail', ['id' => $category[4]['list'][3]['filename'] ? $category[4]['list'][3]['filename'] : $category[4]['list'][3]['id']])}" class="bookList" target="_blank">
+                        <div class="bookImg">
+                            <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($category[4]['list'][3]['cover'])}" alt="{$category[4]['list'][3]['title']|default='--'}">
+                        </div>
+                        <div class="intro">
+                            <h2>{$category[4]['list'][3]['title']|default='--'}</h2>
+                            <p>{$category[4]['list'][3]['remark'] ? dsubstr($category[4]['list'][3]['remark'],120) : '无'}</p>
+                            <div class="">
+                                <em>{$category[4]['list'][3]['author']|default='--'}</em>
+                            </div>
+                        </div>
+                    </a>
+                    {/if}
+                    <div class="linkT clearfix">
+                        {if isset($category[4]['list'][4]) && $category[4]['list'][4]}
+                        <a href="{:url('book_detail', ['id' => $category[4]['list'][4]['filename'] ? $category[4]['list'][4]['filename'] : $category[4]['list'][4]['id']])}" target="_blank" class="bookListSm"><em>{$category[4]['list'][4]['author']|default='--'}</em><strong>{$category[4]['list'][4]['title']|default='--'}</strong></a>
+                        {/if}
+                        {if isset($category[4]['list'][5]) && $category[4]['list'][5]}
+                        <a href="{:url('book_detail', ['id' => $category[4]['list'][5]['filename'] ? $category[4]['list'][5]['filename'] : $category[4]['list'][5]['id']])}" target="_blank" class="bookListSm"><em>{$category[4]['list'][5]['author']|default='--'}</em><strong>{$category[4]['list'][5]['title']|default='--'}</strong></a>
+                        {/if}
+                    </div>
+                    <div class="linkT clearfix">
+                        {if isset($category[4]['list'][6]) && $category[4]['list'][6]}
+                        <a href="{:url('book_detail', ['id' => $category[4]['list'][6]['filename'] ? $category[4]['list'][6]['filename'] : $category[4]['list'][6]['id']])}" target="_blank" class="bookListSm"><em>{$category[4]['list'][6]['author']|default='--'}</em><strong>{$category[4]['list'][6]['title']|default='--'}</strong></a>
+                        {/if}
+                        {if isset($category[4]['list'][7]) && $category[4]['list'][7]}
+                        <a href="{:url('book_detail', ['id' => $category[4]['list'][7]['filename'] ? $category[4]['list'][7]['filename'] : $category[4]['list'][7]['id']])}" target="_blank" class="bookListSm"><em>{$category[4]['list'][7]['author']|default='--'}</em><strong>{$category[4]['list'][7]['title']|default='--'}</strong></a>
+                        {/if}
+                    </div>
+                </div>
+            {/if}
+            {if $category && isset($category[5]['list']) && $category[5]['list']}
+                <div class="centerO centerFr top">
+                    <h1 class="clearfix"><strong>{$category[5]['name'] ?? '--'}</strong><a href="{:url('novelfilter', [
+                        'channel' => 2,
+                        'status'  => 'a',
+                        'cat'     => $category[5]['id'],        
+                        'word'    => 0,
+                        'order'   => 'a',
+                        'page'    => 1,
+                        'cid'     => 0,
+                        'mode'    => 1
+                    ])}" target="_blank">更多<i></i></a></h1>
+                    {if isset($category[5]['list'][3]) && $category[5]['list'][3]}
+                    <a href="{:url('book_detail', ['id' => $category[5]['list'][3]['filename'] ? $category[5]['list'][3]['filename'] : $category[5]['list'][3]['id']])}" class="bookList" target="_blank">
+                        <div class="bookImg">
+                            <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($category[5]['list'][3]['cover'])}" alt="{$category[5]['list'][3]['title']|default='--'}">
+                        </div>
+                        <div class="intro">
+                            <h2>{$category[5]['list'][3]['title']|default='--'}</h2>
+                            <p>{$category[5]['list'][3]['remark'] ? dsubstr($category[5]['list'][3]['remark'],120) : '无'}</p>
+                            <div class="">
+                                <em>{$category[5]['list'][3]['author']|default='--'}</em>
+                            </div>
+                        </div>
+                    </a>
+                    {/if}
+                    <div class="linkT clearfix">
+                        {if isset($category[5]['list'][4]) && $category[5]['list'][4]}
+                        <a href="{:url('book_detail', ['id' => $category[5]['list'][4]['filename'] ? $category[5]['list'][4]['filename'] : $category[5]['list'][4]['id']])}" target="_blank" class="bookListSm"><em>{$category[5]['list'][4]['author']|default='--'}</em><strong>{$category[5]['list'][4]['title']|default='--'}</strong></a>
+                        {/if}
+                        {if isset($category[5]['list'][5]) && $category[5]['list'][5]}
+                        <a href="{:url('book_detail', ['id' => $category[5]['list'][5]['filename'] ? $category[5]['list'][5]['filename'] : $category[5]['list'][5]['id']])}" target="_blank" class="bookListSm"><em>{$category[5]['list'][5]['author']|default='--'}</em><strong>{$category[5]['list'][5]['title']|default='--'}</strong></a>
+                        {/if}
+                    </div>
+                    <div class="linkT clearfix">
+                        {if isset($category[5]['list'][6]) && $category[5]['list'][6]}
+                        <a href="{:url('book_detail', ['id' => $category[5]['list'][6]['filename'] ? $category[5]['list'][6]['filename'] : $category[5]['list'][6]['id']])}" target="_blank" class="bookListSm"><em>{$category[5]['list'][6]['author']|default='--'}</em><strong>{$category[5]['list'][6]['title']|default='--'}</strong></a>
+                        {/if}
+                        {if isset($category[5]['list'][7]) && $category[5]['list'][7]}
+                        <a href="{:url('book_detail', ['id' => $category[5]['list'][7]['filename'] ? $category[5]['list'][7]['filename'] : $category[5]['list'][7]['id']])}" target="_blank" class="bookListSm"><em>{$category[5]['list'][7]['author']|default='--'}</em><strong>{$category[5]['list'][7]['title']|default='--'}</strong></a>
+                        {/if}
+                    </div>
+                </div>
+            {/if}
+            {if $category && isset($category[6]['list']) && $category[1]['list']}
+                <div class="centerO centerFr">
+                    <h1 class="clearfix"><strong>{$category[6]['name'] ?? '--'}</strong><a href="{:url('novelfilter', [
+                        'channel' => 2,
+                        'status'  => 'a',
+                        'cat'     => $category[6]['id'],        
+                        'word'    => 0,
+                        'order'   => 'a',
+                        'page'    => 1,
+                        'cid'     => 0,
+                        'mode'    => 1
+                    ])}" target="_blank">更多<i></i></a></h1>
+                    {if isset($category[6]['list'][3]) && $category[6]['list'][3]}
+                    <a href="{:url('book_detail', ['id' => $category[6]['list'][3]['filename'] ? $category[6]['list'][3]['filename'] : $category[6]['list'][3]['id']])}" target="_blank" class="bookList">
+                        <div class="bookImg">
+                            <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($category[6]['list'][3]['cover'])}" alt="{$category[6]['list'][3]['title']|default='--'}">
+                        </div>
+                        <div class="intro">
+                            <h2>{$category[6]['list'][3]['title']|default='--'}</h2>
+                            <p>{$category[6]['list'][3]['remark'] ? dsubstr($category[6]['list'][3]['remark'],120) : '无'}</p>
+                            <div class="">
+                                <em>{$category[6]['list'][3]['author']|default='--'}</em>
+                            </div>
+                        </div>
+                    </a>
+                    {/if}
+                    <div class="linkT clearfix">
+                        {if isset($category[6]['list'][4]) && $category[6]['list'][4]}
+                        <a href="{:url('book_detail', ['id' => $category[6]['list'][4]['filename'] ? $category[6]['list'][4]['filename'] : $category[6]['list'][4]['id']])}" target="_blank" class="bookListSm"><strong>{$category[6]['list'][4]['title']|default='--'}</strong></a>
+                        {/if}
+                        {if isset($category[6]['list'][5]) && $category[6]['list'][5]}
+                        <a href="{:url('book_detail', ['id' => $category[6]['list'][5]['filename'] ? $category[6]['list'][5]['filename'] : $category[6]['list'][5]['id']])}" target="_blank" class="bookListSm"><strong>{$category[6]['list'][5]['title']|default='--'}</strong></a>
+                        {/if}
+                    </div>
+                </div>
+            {/if}
+            {if $category && isset($category[7]['list']) && $category[1]['list']}
+            <div class="centerO centerFr">
+                <h1 class="clearfix"><strong>{$category[7]['name'] ?? '--'}</strong><a href="{:url('novelfilter', [
+                    'channel' => 2,
+                    'status'  => 'a',
+                    'cat'     => $category[7]['id'],        
+                    'word'    => 0,
+                    'order'   => 'a',
+                    'page'    => 1,
+                    'cid'     => 0,
+                    'mode'    => 1
+                ])}" target="_blank">更多<i></i></a></h1>
+                {if isset($category[7]['list'][3]) && $category[7]['list'][3]}
+                <a href="{:url('book_detail', ['id' => $category[7]['list'][3]['filename'] ? $category[7]['list'][3]['filename'] : $category[7]['list'][3]['id']])}" target="_blank" class="bookList">
+                    <div class="bookImg">
+                        <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($category[7]['list'][3]['cover'])}" alt="{$category[7]['list'][3]['title']|default='--'}">
+                    </div>
+                    <div class="intro">
+                        <h2>{$category[7]['list'][3]['title']|default='--'}</h2>
+                        <p>{$category[7]['list'][3]['remark'] ? dsubstr($category[7]['list'][3]['remark'],120) : '无'}</p>
+                        <div class="">
+                            <em>{$category[7]['list'][3]['author']|default='--'}</em>
+                        </div>
+                    </div>
+                </a>
+                {/if}
+                <div class="linkT clearfix">
+                    {if isset($category[7]['list'][4]) && $category[7]['list'][4]}
+                    <a href="{:url('book_detail', ['id' => $category[7]['list'][4]['filename'] ? $category[7]['list'][4]['filename'] : $category[7]['list'][4]['id']])}" target="_blank" class="bookListSm"><strong>{$category[7]['list'][4]['title']|default='--'}</strong></a>
+                    {/if}
+                    {if isset($category[7]['list'][5]) && $category[7]['list'][5]}
+                    <a href="{:url('book_detail', ['id' => $category[7]['list'][5]['filename'] ? $category[7]['list'][5]['filename'] : $category[7]['list'][5]['id']])}" target="_blank" class="bookListSm"><strong>{$category[7]['list'][5]['title']|default='--'}</strong></a>
+                    {/if}
+                </div>
+            </div>
+        {/if}
+        </div>
+        {php}
+            $update_list = model('book')->field('id,genre,subgenre,title as booktitle,filename,create_time,words,author')->where(['status' => 1, 'genre' => $params['girlgenre']])->orderRaw('CASE WHEN update_time > 0 THEN update_time ELSE create_time END DESC')->limit(20)->select()->toArray();
+            if(!empty($update_list)) {
+                foreach ($update_list as $k => $vo) {
+                    $update_list[$k]['link'] = (string) url('book_detail', ['id' => $vo['filename'] ? $vo['filename'] : $vo['id']]);
+                    $update_list[$k]['genrename'] = model('category')->where(['status' => 1, 'id' => $vo['subgenre']])->value('name');           
+                    $chapter = model('chapter')->field('id,bookid,title,chaps,create_time')->where(['bookid' => $vo['id'], 'status' => 1, ['verify', 'in', '0,1']])->order('create_time desc')->find();
+                    $update_list[$k]['chapterlink'] = $chapter ? (string) furl('chapter_detail', ['id' => $chapter['id'], 'bookid' => $vo['filename'] ? $vo['filename'] : $vo['id']]) : 'javascript:;';
+                    $update_list[$k]['title'] = $chapter ? $chapter['title'] : '--';
+                }
+            }
+        {/php}
+        
+        <div class="boxCenter clearfix">
+            <div class="centerO ct_left">
+                <h1 class="clearfix"><strong>最新更新</strong><a href="{:url('novel')}">更多<i></i></a></h1>
+                <div class="title clearfix">
+                    <span class="classify">分类</span>
+                    <span class="name">书名</span>
+                    <span class="chapter">最新章节</span>
+                    <span class="author">作者</span>
+                    <span class="time">更新时间</span>
+                </div>
+                {notempty name="update_list"}
+                    {volist name="$update_list" id="vo"}
+                    <div class="updateList clearfix">
+                        <a title="{$vo['genrename']|default='--'}" href="{:url('novelfilter', [
+                        'channel' => 2,
+                        'status'  => 'a',
+                        'cat'     => $vo['subgenre'],        
+                        'word'    => 0,
+                        'order'   => 'a',
+                        'page'    => 1,
+                        'cid'     => 0,
+                        'mode'    => 1
+                    ])}" class="classify" target="_blank">[{$vo['genrename']|default='--'}]</a>
+                        <a title="{$vo['booktitle']}" href="{$vo['link']}" target="_blank" class="name">{$vo['booktitle']}</a>
+                        <a href="{$vo['chapterlink']}" target="_blank" title="{$vo.title}" class="chapter">{$vo.title|default="--"}</a>           
+                        <a class="author">{$vo['author']|default="--"}</a>
+                        <span class="time">{:time_format($vo.create_time, 'm-d H:i')}</span>
+                    </div>
+                    {/volist}
+                {/notempty}              
+            </div>
+            <div class="centerO ct_right">
+                <h1 class="clearfix"><strong>最新入库</strong></h1>
+                <div class="list">
+                    {php}
+						$book_count = model('book')->where(['status' => 1, 'genre' => $params['girlgenre'], ['chapters', '>', 0]])->count();
+						if($book_count > 10) {
+							$start = mt_rand(0, ($book_count - 10));
+						} else {
+							$start = 0;
+						}
+						$rand_top = model('book')->field('id,title,filename,author')->where(['status' => 1, 'genre' => $params['girlgenre'], ['chapters', '>', 0]])->order('update_time desc')->limit($start, 10)->select()->toArray();
+                    {/php}
+                    {notempty name="rand_top"}
+                        {volist name="$rand_top" id="vo"}
+                            <a class="clearfix {eq name="$key" value="0"}first{/eq}" target="_blank" href="{:url('book_detail', ['id' => $vo['filename'] ? $vo['filename'] : $vo['id']])}"><strong>{$vo['title']}</strong><em>{$vo['author']}</em></a>
+                        {/volist}
+                    {/notempty}
+                </div>
+            </div>
+            <div class="centerO ct_right ct_last">
+                <h1 class="clearfix"><strong>最多更新</strong></h1>
+                <div class="list">
+                    {php}$words_top = model('book')->field('id,title,filename,author')->where(['status' => 1, 'genre' => $params['girlgenre']])->order('words desc')->limit(10)->select()->toArray();{/php}
+                    {notempty name="words_top"}
+                        {volist name="$words_top" id="vo"}
+                            {php}$link = url('book_detail', ['id' => $vo['filename'] ? $vo['filename'] : $vo['id']]);{/php}
+                            <a class="clearfix {eq name="$key" value="0"}first{/eq}" target="_blank" href="{:url('book_detail', ['id' => $vo['filename'] ? $vo['filename'] : $vo['id']])}"><strong>{$vo['title']}</strong><em>{$vo['author']}</em></a>
+                        {/volist}
+					{/notempty}
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script src="{__STATIC__}/home/feiniao/js/jquery-1-22.min.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/jquery-roundabout.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/purify.min.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/common.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/girl.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/userinfo.js?v={$version}"></script>
+{/block}
+<!-- /脚本 -->

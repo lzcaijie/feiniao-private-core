@@ -1,0 +1,29 @@
+<div class="personal_author">
+    <img class="p_author" src="{:get_file($userinfo.headimgurl,1)}" />            
+</div>
+<div class="personal_left">
+    <h4 class="user_name">
+        {$userinfo.nickname|default='--'}
+    </h4>
+    <div class="user_balance">
+        <span>我的金币：</span>
+        <b>{$userinfo.coin|default='0'}</b>
+    </div>
+</div>
+
+<div class="personal_list">
+    <a href="{:url('my')}" {eq name="$params.action" value="index"}class="current"{/eq}>
+        <i class="bookcase"></i>
+        <p>我的书架</p>
+    </a>
+    {if get_system_config('content', 'comment_open')}
+    <a href="{:url('comments')}" {eq name="$params.action" value="comments"}class="current"{/eq}>
+        <i class="my_comment"></i>
+        <p>我的评论</p>
+    </a>
+    {/if}
+    <a href="{:url('profile')}" {eq name="$params.action" value="profile"}class="current"{/eq}>
+        <i class="personal_setting"></i>
+        <p>个人设置</p>
+    </a>
+</div>

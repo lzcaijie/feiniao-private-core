@@ -1,0 +1,1518 @@
+@import url("common.css");
+
+.login_box_bg {
+    width: 620px;
+    height: 480px;
+    background-size: 100%;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1001
+}
+
+.bookList .intro h2:hover,
+.ct_right .list strong:hover,
+.hotWrap .bookIntro h2:hover,
+.hotWrap .rt a:hover,
+.listWrap h2:hover,
+.readNow:hover,
+.updateList .chapter:hover,
+.updateList .name:hover,
+.verbal .bkName:hover {
+    color: #953A00 !important
+}
+
+.bookList .intro em:hover,
+.ct_right em:hover,
+.listWrap em:hover,
+.updateList .author:hover,
+.xsWrap .bookListSm em:hover {
+    color: #333 !important
+}
+
+.wrap .lf,
+.wrap .rt {
+    width: 281px;
+    float: left
+}
+
+.wrap .ct {
+    width: 590px;
+    float: left;
+    padding: 0 24px;
+    position: relative
+}
+
+.wrap h1 {
+    line-height: 40px;
+    border-bottom: 1px solid rgba(204, 204, 204, .5);
+    margin-bottom: 10px
+}
+
+.wrap h1 a {
+    font-size: 10px;
+    color: #999;
+    float: right;
+    position: relative;
+    top: 7px
+}
+
+.wrap h1 a i {
+    width: 15px;
+    height: 14px;
+    position: relative;
+    top: 2px
+}
+
+.wrap h1 a:hover {
+    color: #007AFF
+}
+
+.wrap h1 i {
+    background: url(../images/icon.png) no-repeat;
+    background-size: 100px 100px;
+    display: inline-block;
+    margin-right: 4px
+}
+
+.wrap h1 strong {
+    font-size: 20px;
+    font-weight: 700;
+    float: left
+}
+
+.wrap .sectionBox {
+    margin-top: 20px;
+    overflow: hidden
+}
+
+.wrap .sectionBox .sectionBox-left {
+    width: 894px;
+    float: left
+}
+
+.wrap .sectionBox .sectionBox-left .bookBox {
+    width: 100%
+}
+
+.wrap .sectionBox .sectionBox-left .bookBox .title {
+    width: 100%;
+    border-bottom: 1px solid #F2F2F2;
+    padding-bottom: 6px;
+    font-size: 20px
+}
+
+.wrap .sectionBox .sectionBox-left .bookBox .title strong {
+    margin-right: 6px
+}
+
+.wrap .sectionBox .sectionBox-left .bookBox .title i {
+    width: 12px;
+    height: 15px;
+    background: url(../images/index_icon1.png) no-repeat;
+    background-size: 100%;
+    display: inline-block;
+    margin-right: 4px
+}
+
+.wrap .sectionBox .sectionBox-left .bookBox .booklist {
+    width: 100%;
+    padding-top: 2px;
+    overflow: hidden
+}
+
+.wrap .sectionBox .sectionBox-left .bookBox .booklist a {
+    display: block;
+    width: 31.52265690965381%;
+    overflow: hidden;
+    margin-top: 26px;
+    margin-right: 2.7%;
+    float: left;
+    box-sizing: border-box
+}
+
+.wrap .sectionBox .sectionBox-left .bookBox .booklist a:nth-child(3n) {
+    margin-right: 0
+}
+
+.wrap .sectionBox .sectionBox-left .bookBox .booklist a .bookimg {
+    width: 100px;
+    height: 127px;
+    float: left;
+    margin-right: 10px
+}
+
+.wrap .sectionBox .sectionBox-left .bookBox .booklist a .bookimg img {
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    transition: transform .3s ease-out
+}
+
+.wrap .sectionBox .sectionBox-left .bookBox .booklist a .bookimg img:hover {
+    transform: scale(1.1)
+}
+
+.wrap .sectionBox .sectionBox-left .bookBox .booklist a .bookinfo h2 {
+    font-size: 16px;
+    line-height: 22px;
+    color: #000;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-top: 10px
+}
+
+.wrap .sectionBox .sectionBox-left .bookBox .booklist a .bookinfo h2:hover {
+    color: #953A00
+}
+
+.wrap .sectionBox .sectionBox-left .bookBox .booklist a .bookinfo .desc {
+    height: 40px;
+    overflow: hidden;
+    font-size: 14px;
+    color: #666;
+    line-height: 20px;
+    margin-top: 4px
+}
+
+.wrap .sectionBox .sectionBox-left .bookBox .booklist a .bookinfo .author {
+    font-size: 12px;
+    color: #999;
+    line-height: 17px;
+    margin-top: 10px
+}
+
+.wrap .sectionBox .sectionBox-left .bookBox .booklist a .bookinfo .author:hover {
+    color: #333
+}
+
+.wrap .sectionBox .sectionBox-left .boutique {
+    margin-top: 30px
+}
+
+.wrap .sectionBox .sectionBox-left .boutique .booklist a {
+    width: 22.1446664790318%;
+    margin-right: 3.377427526034337% !important
+}
+
+.wrap .sectionBox .sectionBox-left .boutique .booklist a:nth-child(4n) {
+    margin-right: 0 !important
+}
+
+.wrap .sectionBox .sectionBox-left .boutique .booklist a:nth-child(n+5) {
+    margin-top: 30px
+}
+
+.wrap .sectionBox .sectionBox-left .boutique .booklist a .bookimg {
+    width: 81.77px;
+    height: 110px
+}
+
+.wrap .sectionBox .sectionBox-left .newbookselect {
+    margin-top: 30px
+}
+
+.wrap .sectionBox .sectionBox-left .newbookselect .booklist a {
+    overflow: hidden;
+    margin-top: 14px
+}
+
+.wrap .sectionBox .sectionBox-left .newbookselect .booklist a:nth-child(-n+3) {
+    margin-top: 26px;
+    margin-bottom: 6px
+}
+
+.wrap .sectionBox .sectionBox-left .newbookselect .booklist a .bookname {
+    width: 60%;
+    font-size: 14px;
+    font-weight: 400;
+    color: #000;
+    line-height: 20px;
+    float: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap
+}
+
+.wrap .sectionBox .sectionBox-left .newbookselect .booklist a .bookname:hover {
+    color: #953A00
+}
+
+.wrap .sectionBox .sectionBox-left .newbookselect .booklist a .pseudonym {
+    width: 35%;
+    float: right;
+    font-size: 12px;
+    font-weight: 400;
+    color: #333;
+    line-height: 17px;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap
+}
+
+.wrap .sectionBox .sectionBox-right {
+    width: 281px;
+    float: right
+}
+
+.wrap .sectionBox .sectionBox-right .newbooklist {
+    width: 100%;
+    background: url(../images/index_newbookBg.png) no-repeat;
+    background-position-y: 100%;
+    background-size: 100%
+}
+
+.wrap .sectionBox .sectionBox-right .newbooklist .title {
+    width: 100%;
+    border-bottom: 1px solid #F2F2F2;
+    padding-bottom: 6px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between
+}
+
+.wrap .sectionBox .sectionBox-right .newbooklist .title strong {
+    font-size: 20px;
+    color: #333
+}
+
+.wrap .sectionBox .sectionBox-right .newbooklist .title a {
+    color: #9D9D9D;
+    font-size: 12px
+}
+
+.wrap .sectionBox .sectionBox-right .newbooklist .title a::after {
+    display: inline-block;
+    content: '';
+    width: 6px;
+    height: 10px;
+    background: url(../images/icon.png) -60px -71px no-repeat;
+    background-size: 100px 100px;
+    margin-left: 3px
+}
+
+.wrap .sectionBox .sectionBox-right .newbooklist .title a:hover {
+    color: #007AFF
+}
+
+.wrap .sectionBox .sectionBox-right .newbooklist .title a:hover::after {
+    background: url(../images/icon.png) -60px -86px no-repeat;
+    background-size: 100px 100px
+}
+
+.wrap .sectionBox .sectionBox-right .newbooklist .bookbillboard {
+    width: 100%;
+    margin-top: 20px;
+    counter-reset: wangxiaoer
+}
+
+.wrap .sectionBox .sectionBox-right .newbooklist .bookbillboard a {
+    display: block;
+    width: 100%;
+    font-size: 14px;
+    color: #333;
+    line-height: 22px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-bottom: 10px
+}
+
+.wrap .sectionBox .sectionBox-right .newbooklist .bookbillboard a:hover {
+    cursor: pointer;
+    color: #953A00
+}
+
+.wrap .sectionBox .sectionBox-right .newbooklist .bookbillboard a::before {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    color: #fff;
+    font-size: 12px;
+    border-radius: 50%;
+    text-align: center;
+    background-color: #C8C8C8;
+    content: counter(wangxiaoer);
+    counter-increment: wangxiaoer;
+    margin-right: 6px;
+    vertical-align: text-bottom
+}
+
+.wrap .sectionBox .sectionBox-right .newbooklist .bookbillboard a:nth-child(-n+3) {
+    font-size: 16px;
+    margin-bottom: 10px;
+    position: relative;
+    padding: 1px 0 5px 32px;
+    box-sizing: border-box
+}
+
+.wrap .sectionBox .sectionBox-right .newbooklist .bookbillboard a:nth-child(-n+3)::before {
+    position: absolute;
+    left: 0;
+    top: 0;
+    content: '';
+    width: 22px;
+    height: 28px;
+    border-radius: initial
+}
+
+.wrap .sectionBox .sectionBox-right .newbooklist .bookbillboard a:nth-child(1)::before {
+    background: url(../images/index_newbook1.png) no-repeat;
+    background-size: 100% 100%
+}
+
+.wrap .sectionBox .sectionBox-right .newbooklist .bookbillboard a:nth-child(2)::before {
+    background: url(../images/index_newbook2.png) no-repeat;
+    background-size: 100% 100%
+}
+
+.wrap .sectionBox .sectionBox-right .newbooklist .bookbillboard a:nth-child(3)::before {
+    background: url(../images/index_newbook3.png) no-repeat;
+    background-size: 100% 100%
+}
+
+.wrap .sectionBox .sectionBox-right .popularity {
+    background: url(../images/index_popularityBg.png) no-repeat;
+    background-position-y: 100%;
+    background-size: 100%;
+    margin-top: 40px
+}
+
+.wrap .sectionBox .sectionBox-right .silvernote {
+    background: url(../images/index_silvernoteBg.png) no-repeat;
+    background-position-y: 100%;
+    background-size: 100%;
+    margin-top: 40px
+}
+
+.hotWrap h1 {
+    line-height: 35px;
+    margin-top: 2px
+}
+
+.hotWrap h1 a i {
+    background-position: -58px -48px
+}
+
+.hotWrap h1 a:hover i {
+    background-position: -81px -48px
+}
+
+.hotWrap .bookImg {
+    width: 55px;
+    height: 74px;
+    margin-right: 14px
+}
+
+.hotWrap .bookLink {
+    margin-top: 10px;
+    display: block
+}
+
+.hotWrap .spBL {
+    margin-top: 15px
+}
+
+.hotWrap .bookIntro {
+    color: #999
+}
+
+.hotWrap .bookIntro em {
+    font-size: 12px;
+    display: inline-block;
+    line-height: 16px;
+    border-radius: 2px;
+    text-align: center
+}
+
+.hotWrap .bookIntro h2 {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    color: #333;
+    line-height: 20px;
+    margin: 8px 0;
+    font-size: 16px
+}
+
+.hotWrap .bookIntro span {
+    overflow: hidden;
+    font-size: 12px;
+    display: block;
+    height: 17px
+}
+
+.hotWrap .rt a {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    margin-top: 15px;
+    color: #333;
+    font-size: 14px
+}
+
+.hotWrap .rt a i {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 2.5px;
+    background: #ccc;
+    margin-right: 6px;
+    position: relative;
+    top: -4px
+}
+
+.hotWrap .rt a:hover i {
+    background: #953A00
+}
+
+.hotWrap .rt .top {
+    margin-top: 10px
+}
+
+.slideBox {
+    height: 220px;
+    margin-top: 11px
+}
+
+.slideBox .focusWrap {
+    height: 220px;
+    position: absolute;
+    left: 50%;
+    margin-left: -295px;
+    width: 590px
+}
+
+.slideBox .focusWrap div {
+    height: 220px;
+    overflow: hidden;
+    position: relative;
+    border-radius: 4px
+}
+
+.slideBox .focusWrap div a {
+    overflow: hidden;
+    width: 590px;
+    height: 220px
+}
+
+.slideBox .focusWrap div a img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 220px;
+    border-radius: 6px
+}
+
+.slideBox #to_Left,
+.slideBox #to_Right {
+    width: 32px;
+    height: 32px;
+    position: absolute;
+    top: 50%;
+    margin-top: -16px;
+    z-index: 100;
+    display: none;
+    background: url(../images/icon.png) no-repeat;
+    background-size: 100px 100px
+}
+
+.slideBox #to_Right {
+    right: 11px;
+    background-position: 0 0
+}
+
+.slideBox #to_Left {
+    left: 11px;
+    background-position: -44px 0
+}
+
+.slideBox .slidepage {
+    position: absolute;
+    z-index: 20;
+    width: 10%;
+    left: 50%;
+    margin-left: -5%;
+    text-align: center;
+    bottom: 12px
+}
+
+.slideBox .slidepage li {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, .5);
+    margin: 0 5px;
+    cursor: pointer
+}
+
+.slideBox .slidepage .swiper-active-switch {
+    background: #FFDE44;
+    width: 12px;
+    height: 12px;
+    position: relative;
+    top: 2px
+}
+
+.listWrap,
+.sxWrap,
+.xbWrap,
+.xsWrap,
+.zbWrap {
+    margin-top: 17px
+}
+
+.listWrap h1 i,
+.sxWrap h1 i,
+.xbWrap h1 i,
+.xsWrap h1 i,
+.zbWrap h1 i {
+    background-position: -88px 0;
+    width: 12px;
+    height: 15px;
+    position: relative;
+    top: -1px
+}
+
+.listWrap h1 strong,
+.sxWrap h1 strong,
+.xbWrap h1 strong,
+.xsWrap h1 strong,
+.zbWrap h1 strong {
+    margin-right: 10px
+}
+
+.listWrap .bookListSm,
+.sxWrap .bookListSm,
+.xbWrap .bookListSm,
+.xsWrap .bookListSm,
+.zbWrap .bookListSm {
+    font-size: 14px;
+    color: #333;
+    display: block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    margin-top: 15px
+}
+
+.listWrap .bookListSm em,
+.sxWrap .bookListSm em,
+.xbWrap .bookListSm em,
+.xsWrap .bookListSm em,
+.zbWrap .bookListSm em {
+    color: #999;
+    display: inline-block;
+    margin-right: 10px
+}
+
+.listWrap .bookListSm strong,
+.sxWrap .bookListSm strong,
+.xbWrap .bookListSm strong,
+.xsWrap .bookListSm strong,
+.zbWrap .bookListSm strong {
+    font-weight: 400
+}
+
+.listWrap .bookListSm:hover,
+.sxWrap .bookListSm:hover,
+.xbWrap .bookListSm:hover,
+.xsWrap .bookListSm:hover,
+.zbWrap .bookListSm:hover {
+    color: #953A00
+}
+
+.listWrap .bookListSm:hover em,
+.sxWrap .bookListSm:hover em,
+.xbWrap .bookListSm:hover em,
+.xsWrap .bookListSm:hover em,
+.zbWrap .bookListSm:hover em {
+    color: #999
+}
+
+.zbWrap {
+    margin-top: 24px
+}
+
+.zbWrap .centerth .bookList {
+    background: #f5f5f5;
+    border-radius: 4px;
+    padding: 15px 12px;
+    height: 152px
+}
+
+.zbWrap .centerth .bookList .bookImg {
+    margin-right: 20px
+}
+
+.zbWrap .centerth .bookList .intro em {
+    width: 100px
+}
+
+.zbWrap .centerth .readNow {
+    margin-top: 20px;
+    display: block;
+    text-align: right;
+    font-size: 14px
+}
+
+.zbWrap .centerth .first {
+    margin-bottom: 30px
+}
+
+.zbWrap .top {
+    margin-bottom: 14px
+}
+
+.zbWrap .centerT {
+    margin-top: 15px
+}
+
+.sxWrap .centerSp .bookList,
+.sxWrap .centerth .bookList,
+.xbWrap .centerSp .bookList,
+.xbWrap .centerth .bookList,
+.xsWrap .centerSp .bookList,
+.xsWrap .centerth .bookList {
+    height: 130px
+}
+
+.sxWrap .centerSp .bookList .bookImg,
+.sxWrap .centerth .bookList .bookImg,
+.xbWrap .centerSp .bookList .bookImg,
+.xbWrap .centerth .bookList .bookImg,
+.xsWrap .centerSp .bookList .bookImg,
+.xsWrap .centerth .bookList .bookImg {
+    width: 94px;
+    height: 130px;
+    margin-right: 20px
+}
+
+.sxWrap .centerSp .bookList .intro h2,
+.sxWrap .centerth .bookList .intro h2,
+.xbWrap .centerSp .bookList .intro h2,
+.xbWrap .centerth .bookList .intro h2,
+.xsWrap .centerSp .bookList .intro h2,
+.xsWrap .centerth .bookList .intro h2 {
+    padding-top: 11px
+}
+
+.sxWrap .centerSp .bookList .intro p,
+.sxWrap .centerth .bookList .intro p,
+.xbWrap .centerSp .bookList .intro p,
+.xbWrap .centerth .bookList .intro p,
+.xsWrap .centerSp .bookList .intro p,
+.xsWrap .centerth .bookList .intro p {
+    margin: 13px 0 11px
+}
+
+.sxWrap .centerth .bookListSm em,
+.sxWrap .linkT .bookListSm em,
+.xbWrap .centerth .bookListSm em,
+.xbWrap .linkT .bookListSm em,
+.xsWrap .centerth .bookListSm em,
+.xsWrap .linkT .bookListSm em {
+    float: left;
+    text-align: left
+}
+
+.sxWrap .centerth .bookListSm em:hover,
+.sxWrap .linkT .bookListSm em:hover,
+.xbWrap .centerth .bookListSm em:hover,
+.xbWrap .linkT .bookListSm em:hover,
+.xsWrap .centerth .bookListSm em:hover,
+.xsWrap .linkT .bookListSm em:hover {
+    color: #999 !important
+}
+
+.sxWrap .centerth .bookList,
+.xbWrap .centerth .bookList,
+.xsWrap .centerth .bookList {
+    margin-top: 18px
+}
+
+.sxWrap .centerth .first,
+.xbWrap .centerth .first,
+.xsWrap .centerth .first {
+    margin: 0
+}
+
+.sxWrap .centerth .bookListSm,
+.xbWrap .centerth .bookListSm,
+.xsWrap .centerth .bookListSm {
+    margin-top: 25px
+}
+
+.sxWrap .centerth .special,
+.xbWrap .centerth .special,
+.xsWrap .centerth .special {
+    margin-top: 39px
+}
+
+.sxWrap .linkT a,
+.xbWrap .linkT a,
+.xsWrap .linkT a {
+    width: 46%;
+    float: left;
+    margin-top: 28px
+}
+
+.sxWrap .linkT a:first-child,
+.xbWrap .linkT a:first-child,
+.xsWrap .linkT a:first-child {
+    margin-right: 8%
+}
+
+.xbWrap .wrapBox {
+    background: #FFFAE9
+}
+
+.xbWrap .first {
+    margin-bottom: 28px
+}
+
+.xbWrap .top {
+    margin-bottom: 20px
+}
+
+.xsWrap .wrapBox {
+    background: #EFF8F8;
+    padding: 17px 21px 20px
+}
+
+.xsWrap .bookListSm {
+    line-height: 20px;
+    height: 20px;
+    margin-top: 20px
+}
+
+.xsWrap .bookListSm em,
+.xsWrap .bookListSm strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap
+}
+
+.xsWrap .bookListSm strong {
+    display: inline-block;
+    width: 200px
+}
+
+.xsWrap .bookListSm em {
+    float: right;
+    font-size: 14px;
+    width: 83px;
+    margin: 0;
+    text-align: right
+}
+
+.xsWrap .first {
+    margin-bottom: 29px
+}
+
+.xsWrap .centerT {
+    margin-top: 32px
+}
+
+.xsWrap .centerT h1 {
+    margin-bottom: 8px
+}
+
+.xsWrap .centerT .first {
+    margin: 0
+}
+
+.xsWrap .bkList a {
+    width: 50%;
+    float: left
+}
+
+.xsWrap .linkT a em {
+    font-size: 14px;
+    width: auto;
+    margin: 0 10px 0 0
+}
+
+.xsWrap .linkT a strong {
+    display: inline
+}
+
+.sxWrap .wrapBox {
+    background: #F5EFFF
+}
+
+.sxWrap .bookListSm {
+    margin-top: 25px
+}
+
+.sxWrap .first {
+    margin: 0
+}
+
+.sxWrap .bookList {
+    margin-bottom: 10px
+}
+
+.sxWrap .linkT a {
+    margin-top: 18px
+}
+
+.sxWrap .top {
+    margin-bottom: 22px
+}
+
+.sxWrap .centerT {
+    margin-top: 36px
+}
+
+.wrapBox {
+    width: 239px;
+    border-radius: 4px;
+    background: #EEF3FF;
+    padding: 20px 21px 21px
+}
+
+.wrapBox .imgSlide {
+    width: 120px;
+    height: 160px;
+    padding-left: 60px
+}
+
+.wrapBox .roundabout {
+    width: 120px;
+    height: 160px
+}
+
+.verbal_box {
+    margin-top: 29px
+}
+
+.verbal {
+    text-align: center
+}
+
+.verbal .bkName {
+    font-size: 18px;
+    color: #333;
+    line-height: 24px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    display: block
+}
+
+.verbal .author {
+    color: #bababa;
+    font-size: 12px;
+    margin: 10px 0 12px
+}
+
+.verbal .istt {
+    color: #FF5D3E;
+    font-size: 12px
+}
+
+.verbal .itdt {
+    color: #999;
+    font-size: 12px;
+    line-height: 20px;
+    overflow: hidden;
+    height: 40px;
+    margin: 11px 0 29px;
+    text-align: left
+}
+
+.verbal .rdNow {
+    font-size: 16px;
+    color: #953A00;
+    display: block;
+    background: #FFD338;
+    line-height: 36px;
+    border-radius: 4px;
+    width: 160px;
+    margin: auto
+}
+
+.verbal .rdNow:hover {
+    background: rgba(255, 211, 56, .7)
+}
+
+.centerO {
+    width: 283px;
+    margin-left: 23px;
+    float: left
+}
+
+.centerO h1 strong {
+    font-size: 16px;
+    position: relative;
+    top: 2px
+}
+
+.centerO h1 a {
+    font-size: 10px;
+    color: #999;
+    float: right
+}
+
+.centerO h1 a i {
+    width: 6px;
+    height: 10px;
+    background-position: -60px -71px;
+    margin: 0 0 0 3px;
+    position: relative;
+    top: 1px
+}
+
+.centerO h1 a:hover {
+    color: #007AFF
+}
+
+.centerO h1 a:hover i {
+    background-position: -60px -86px
+}
+
+.bookList {
+    color: #333;
+    display: block;
+    height: 111px
+}
+
+.bookList .bookImg {
+    width: 80px;
+    height: 111px;
+    margin-right: 16px
+}
+
+.bookList .intro h2 {
+    font-weight: 700;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    margin-top: 2px;
+    font-size: 16px
+}
+
+.bookList .intro p {
+    font-size: 12px;
+    color: #999;
+    line-height: 24px;
+    height: 48px;
+    overflow: hidden;
+    margin: 11px 0 10px
+}
+
+.bookList .intro div {
+    color: #bababa
+}
+
+.bookList .intro em {
+    font-size: 12px;
+    display: inline-block;
+    width: 113px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap
+}
+
+.bookList .intro span {
+    font-size: 11px;
+    float: right;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    padding: 0 3px;
+    line-height: 18px
+}
+
+.first {
+    margin-bottom: 22px
+}
+
+.centerT {
+    margin-top: 24px
+}
+
+.banner {
+    display: block;
+    margin-top: 20px
+}
+
+.banner img {
+    border-radius: 4px
+}
+
+.listWrap .first {
+    margin: 0;
+    width: 282px
+}
+
+.listWrap h1 strong {
+    font-size: 20px !important
+}
+
+.listWrap .list,
+.listWrap .listOne {
+    font-size: 14px;
+    display: block
+}
+
+.listWrap .list i,
+.listWrap .listOne i {
+    width: 22px;
+    height: 22px;
+    float: left;
+    border-radius: 11px;
+    color: #fff;
+    line-height: 22px;
+    text-align: center;
+    background: #ddd;
+    font-style: normal;
+    position: relative
+}
+
+.listWrap .list .o,
+.listWrap .listOne .o {
+    top: 7px;
+    background: #FF5D3E
+}
+
+.listWrap .list .t,
+.listWrap .listOne .t {
+    background: #FD9847
+}
+
+.listWrap .list .tr,
+.listWrap .listOne .tr {
+    background: #FFD34E
+}
+
+.listWrap .list em,
+.listWrap .listOne em {
+    color: #999
+}
+
+.listWrap em,
+.listWrap h2 {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap
+}
+
+.listWrap h2 {
+    color: #333
+}
+
+.listWrap .list {
+    margin-top: 24px
+}
+
+.listWrap .list .intro {
+    padding-left: 33px;
+    height: 20px;
+    line-height: 20px
+}
+
+.listWrap .list h2 {
+    width: 160px;
+    font-size: 14px;
+    display: inline-block
+}
+
+.listWrap .list em {
+    float: right;
+    text-align: right;
+    width: 82px
+}
+
+.listWrap .list i {
+    top: -1px
+}
+
+.listOne h2 {
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 20px;
+    margin-top: 7px
+}
+
+.listOne span {
+    color: #FD4D47;
+    font-weight: 700
+}
+
+.listOne .bookImg {
+    float: right;
+    width: 66px;
+    height: 91.4px
+}
+
+.listOne .intro {
+    width: 160px;
+    float: left;
+    margin-left: 12px
+}
+
+.listOne em {
+    margin: 14px 0 13px;
+    display: block
+}
+
+.ct_left,
+.ct_right {
+    margin-top: 17px
+}
+
+.ct_left h1,
+.ct_right h1 {
+    border: none;
+    margin-bottom: 5px
+}
+
+.ct_left h1 strong,
+.ct_right h1 strong {
+    font-size: 22px
+}
+
+.ct_left .list,
+.ct_left .title,
+.ct_right .list,
+.ct_right .title {
+    background: #F3F3F3;
+    border-radius: 4px
+}
+
+.ct_left .author,
+.ct_left .chapter,
+.ct_left .list em,
+.ct_left .list strong,
+.ct_left .name,
+.ct_right .author,
+.ct_right .chapter,
+.ct_right .list em,
+.ct_right .list strong,
+.ct_right .name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap
+}
+
+.ct_last {
+    margin-top: 10px
+}
+
+.ct_right .list {
+    padding: 20px 0
+}
+
+.ct_right .list strong {
+    color: #333;
+    font-weight: 400;
+    margin-left: 20px;
+    float: left;
+    width: 150px
+}
+
+.ct_right .list a {
+    font-size: 14px;
+    display: block;
+    margin-top: 18.5px
+}
+
+.ct_right em {
+    color: #999;
+    float: right;
+    width: 85px;
+    text-align: right;
+    margin-right: 20px
+}
+
+.ct_right .first {
+    margin: 0 !important
+}
+
+.ct_left {
+    width: 894px;
+    margin-left: 0;
+    padding-bottom: 42px
+}
+
+.ct_left .title {
+    line-height: 33px;
+    font-size: 14px;
+    color: #999
+}
+
+.ct_left .title span {
+    display: inline-block;
+    float: left
+}
+
+.ct_left .classify {
+    width: 75px;
+    margin-left: 12px
+}
+
+.ct_left .name {
+    width: 245px;
+    padding-right: 30px
+}
+
+.ct_left .chapter {
+    width: 280px;
+}
+
+.ct_left .author {
+    width: 138px;
+}
+
+.ct_left .updateList {
+    margin-top: 21px
+}
+
+.ct_left .updateList a,
+.ct_left .updateList span {
+    font-size: 14px;
+    color: #999;
+    float: left
+}
+
+.ct_left .updateList .classify {
+    margin-left: 4px;
+}
+
+.ct_left .updateList .chapter,
+.ct_left .updateList .name,
+.ct_left .updateList .time {
+    color: #333
+}
+
+.upDate {
+    font-size: 14px;
+    color: #999;
+    margin-left: 18px;
+    line-height: 20px
+}
+
+.centerFr {
+    width: 436px
+}
+
+@media (max-width: 1200px) {
+
+    .sectionBox-right,
+    .wrap .lf,
+    .wrap .rt {
+        width: 240px !important
+    }
+
+    .centerO {
+        width: 240px;
+        margin-left: 10px
+    }
+
+    .wrapBox {
+        width: 220px;
+        padding: 20px 10px 21px
+    }
+
+    .wrapBox .imgSlide {
+        padding-left: 51px
+    }
+
+    .bookList .intro em {
+        width: 79px
+    }
+
+    .wrap .ct {
+        width: 490px;
+        overflow: hidden;
+        padding: 0;
+        border-radius: 6px
+    }
+
+    .hotWrap .lf {
+        margin-right: 10px
+    }
+
+    .hotWrap .rt {
+        margin-left: 10px
+    }
+
+    .slideBox #to_Left {
+        left: 60px
+    }
+
+    .slideBox #to_Right {
+        right: 60px
+    }
+
+    .xsWrap .wrapBox {
+        padding: 17px 10px 20px
+    }
+
+    .xsWrap .bookListSm strong {
+        width: 143px
+    }
+
+    .listWrap .first {
+        width: 240px
+    }
+
+    .listOne .intro {
+        width: 138px
+    }
+
+    .listWrap .list h2 {
+        width: 123px
+    }
+
+    .ct_left {
+        width: 730px
+    }
+
+    .ct_right .list strong {
+        width: 109px
+    }
+
+    .ct_left .updateList .classify {
+        width: 75px
+    }
+
+    .ct_left .classify {
+        width: 75px
+    }
+
+    .ct_left .chapter {
+        width: 200px;
+    }
+
+    .ct_left .author {
+        padding-right: 40px
+    }
+
+    .sxWrap .centerth .bookList .intro em,
+    .xbWrap .centerth .bookList .intro em,
+    .xsWrap .centerth .bookList .intro em,
+    .zbWrap .centerth .bookList .intro em {
+        width: 60px
+    }
+
+    .centerFr {
+        width: 365px
+    }
+
+    .sectionBox .sectionBox-left {
+        width: 737.55px !important
+    }
+}
+
+/* 基础容器 */
+.tonglan {
+    width: 1200px;
+    margin: 20px auto 0;
+    display: flex;
+    gap: 20px; /* 元素间距 */
+}
+
+/* 左侧固定 */
+.tonglan .left {
+    width: 280px;
+    flex-shrink: 0;
+}
+
+/* 中间自适应容器 */
+.tonglan .slidemain {
+    flex: 1;
+    padding: 0;
+    margin: 0;
+}
+
+/* 当存在右侧公告时 */
+.tonglan:has(.right) .slidemain {
+    width: 600px;
+}
+
+.tonglan:has(.right) .slidemain .focus-box {
+    width: 600px;
+}
+
+.tonglan:has(.right) .slidemain .focus-box .slide-item {
+    width: 600px;
+}
+
+/* 轮播图容器 */
+.focus-box {
+    white-space: nowrap;
+    height: 220px;
+    position: relative;
+    width: 900px;
+    overflow: hidden;
+    border-radius: 5px;
+}
+
+/* 轮播滑动轨道 */
+.slide-track {
+    padding: 0;
+    margin: 0;
+    white-space: nowrap;
+    display: flex;
+    height: 100%;
+    transition: transform 0.5s ease;
+}
+
+/* 单个轮播项 */
+.slide-item {
+    width: 900px;
+    height: 100%;
+    flex-shrink: 0;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+/* 右侧公告 */
+.tonglan .right {
+    width: 280px;
+    flex-shrink: 0;
+}
+
+.tonglan .right h1 {
+    display: block;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 35px;
+    margin-top: 2px;
+    border-bottom: 1px solid rgba(204, 204, 204, .5);
+    margin-bottom: 10px;
+}
+
+.tonglan .right a {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    margin-top: 12px;
+    color: #333;
+    font-size: 14px
+}
+
+.tonglan .right a i {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 2.5px;
+    background: #ccc;
+    margin-right: 6px;
+    position: relative;
+    top: -4px
+}
+
+.tonglan .right a:hover i {
+    background: #953A00
+}

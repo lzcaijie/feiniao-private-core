@@ -1,0 +1,52 @@
+{extend name="common/base"/}
+{block name="style"}
+<link rel="stylesheet" href="{__STATIC__}/home/feiniao/css/info.css?v={$version}">
+{/block}
+{block name="title"}
+<title>公告-{$conf.title|default=''}</title>
+{/block}
+{block name="keywords"}
+<meta name="keywords" content="公告,{$conf.title|default=''}" />
+<meta name="description" content="公告,{$conf.title|default=''}" />
+{/block}
+<!-- 主体 -->
+{block name="body"}
+{include file="common/header" /}
+<div class="boxCenter box clearfix">    
+    <div class="announcement-list">
+        {notempty name="list"}    
+            {volist name="$list" id="v"}
+                <div class="announcement-item">
+                    <img src="{:get_file($v.images)}" alt="{$v.title}" class="announcement-image" onerror="this.src='{:get_file('')}'">
+                    <div class="announcement-content">
+                        <h2 class="announcement-title">
+                            <a href="{:url('notice_detail',['id' => $v['id']])}" target="_blank">{$v.title}</a>
+                        </h2>
+                        <p class="announcement-intro">
+                            {$v.introduction|default='--'}
+                        </p>
+                        <p class="announcement-time">
+                            <time datetime="{:time_format($v.create_time,'m-d')}">发布时间：{:time_format($v.create_time,'m-d')}</time>
+                        </p>
+                    </div>
+                </div>
+            {/volist}
+            {$list|raw}
+        {/notempty}
+    </div>    
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script src="{__STATIC__}/home/feiniao/js/jquery-1-22.min.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/purify.min.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/common.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/userinfo.js?v={$version}"></script>
+<script>
+$(function() {
+});
+</script>
+{/block}
+<!-- /脚本 -->

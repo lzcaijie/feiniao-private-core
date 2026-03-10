@@ -1,0 +1,98 @@
+<div class="progress-wrap">
+	<svg class="progress-circle svg-content" width="100%" height="100%" viewbox="-1 -1 102 102">
+		<path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"></path>
+	</svg>
+</div>
+<div class="header-area">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-3 col-md-3">
+				<div class="logo">
+					<a href="{:url('/')}"><img src="{$conf.logo|default=''}" alt="{$conf.title|default=''}"></a>
+				</div>
+			</div>
+			<div class="col-lg-9 col-md-9 header-right">
+				<form id="commSearch" name="searchForm" class="comm_header_search_form" method="get" action="{:url('search')}">
+					<div class="comm_header_search_outer">
+						<div class="comm_header_search">							
+							{php}$header_keywords = isset($pageconf['header_keywords']) ? model('advsr')->where(['status' => 1, 'adver_id' => $pageconf['header_keywords']])->order('level desc')->find() : '';{/php}
+							{empty name="$header_keywords"}
+								<input class="comm_header_search_ipt" name="keyword" value="{$keyword|default=''}" type="text" placeholder="" autocomplete="off" disableautocomplete="">
+							{else/}
+								<input class="comm_header_search_ipt" name="keyword" value="{$keyword|default=''}" type="text" placeholder="{$header_keywords.title}" autocomplete="off" disableautocomplete="">
+							{/empty}
+							<button class="comm_header_search_subbtn">搜索</button>
+						</div>
+					</div>
+				</form>
+				<div class="top-manu">
+					<ul>
+						{if get_addons_is_enable('sitegroup') && isset($feiniaoNavs) && $feiniaoNavs && isset($feiniaoNavs[$pageconf['home_nav']]) && $feiniaoNavs[$pageconf['home_nav']] && isset($feiniaoNavs[$pageconf['home_nav']]['items']) && $feiniaoNavs[$pageconf['home_nav']]['items']}
+							{foreach name="$feiniaoNavs[$pageconf['home_nav']]['items']" item="a"}
+								<li {if condition="$a.src == $params.current_url"}class="active"{/if}><a href="{$a.src==''?'/':$a.src}" {eq name="a.target" value="1" } target="_blank"{/eq}>{$a.title}</a></li>
+							{/foreach}
+						{else/}
+							{foreach name=":get_navs($pageconf['home_nav'])" item="a"}
+								{empty name="$a.list"}
+									<li {if condition="$a.src == $params.current_url"}class="active"{/if}><a href="{$a.src==''?'/':$a.src}" {eq name="a.target" value="1" } target="_blank"{/eq}>{$a.title}</a></li>
+								{else/}
+									<li>
+										<a href="{$a.src==''?'/':$a.src}" {eq name="a.target" value="1" } target="_blank"{/eq}>{$a.title}</a>
+										<ul class="sub-manu">
+											{foreach name="$a.list" item="b"}
+											<li><a href="{$b.src==''?'/':$b.src}" {eq name="b.target" value="1" } target="_blank"{/eq}>{$b.title}</a></li>
+											{/foreach}
+										</ul>
+									</li>
+								{/empty}
+							{/foreach}
+						{/if}
+						{if get_system_config('power','login_open')}
+							<li class="loginstatus">
+								<a href="{:furl('login', [], true, 'home')}" class="login-btn">登录</a>							
+							</li>
+						{/if}
+						{if get_system_config('power','author_open')}
+							<li><a href="{:furl('/', [], true, 'author')}" class="creat-accout-btn" target="_blank">作家中心</a></li>
+						{/if}
+					</ul>
+					<ul>
+						<div class="comm_header_user_logined_avatar">
+							<img src="{:get_file('')}" alt="">
+							<div class="comm_header_nav_slidebox">
+								<div class="comm_header_userInfoBox">
+									<div class="comm_header_uf_name">--</div>
+									<div class="comm_header_ul_box">--</div>
+									<div class="comm_header_unum_wp">
+										<span class="comm_header_unum_num">
+											<div>0</div>
+											<span>书架</span>
+										</span>
+										<span class="comm_header_unum_num">
+											<div>0</div>
+											<span>点赞</span>
+										</span>
+										<span class="comm_header_unum_num">
+											<div>0</div>
+											<span>关注</span>
+										</span>
+									</div>
+									<div class="comm_header_uinfo_sline"></div>
+									<div class="comm_header_ui_link">
+										<a href="{:url('my')}" class="comm_header_ui_center"><i class="bi bi-person-circle"></i>&nbsp;个人中心</a>
+										<a href="javascript:;" class="comm_header_ui_lnk">退出登录</a>
+									</div>									
+								</div>
+							</div>
+						</div>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+jQuery(window).on("scroll", function() {
+	jQuery(this).scrollTop() > 1 ? jQuery(".header-area").addClass("header-fixd") : jQuery(".header-area").removeClass("header-fixd")
+})
+</script>

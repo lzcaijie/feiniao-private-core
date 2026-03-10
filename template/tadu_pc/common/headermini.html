@@ -1,0 +1,60 @@
+<div class="boxCenter clearfix">
+    <a href="{:url('/')}" target="_blank" class="logo"><img src="{$conf.logo|default=''}" alt="{$conf.title|default=''}"></a>
+    <div class="navLi clearfix">
+        {if get_addons_is_enable('sitegroup') && isset($feiniaoNavs) && $feiniaoNavs && isset($feiniaoNavs[$pageconf['home_nav']]) && $feiniaoNavs[$pageconf['home_nav']] && isset($feiniaoNavs[$pageconf['home_nav']]['items']) && $feiniaoNavs[$pageconf['home_nav']]['items']}
+            {foreach name="$feiniaoNavs[$pageconf['home_nav']]['items']" item="a"}
+                <a href="{$a.src==''?'/':$a.src}" {eq name="a.target" value="1" } target="_blank"{/eq} {if condition="$a.src == $params.current_url"}class="current"{/if}>{$a.title}<span></span></a>
+            {/foreach}
+        {else/}
+            {foreach name=":get_navs($pageconf['home_nav'])" item="a"}
+                {empty name="$a.list"}
+                    <a href="{$a.src==''?'/':$a.src}" {eq name="a.target" value="1" } target="_blank"{/eq} {if condition="$a.src == $params.current_url"}class="current"{/if}>{$a.title}<span></span></a>
+                {/empty}
+            {/foreach}
+        {/if}
+    </div>
+    <div class="logoWrapRt">
+        <form action="{:url('search')}" method="get" target="_blank">
+            {empty name="$header_keywords"}
+                <input type="text" name="keyword" placeholder="请输入书名、作者、关键词" value="{$keyword|default=''}" class="text">
+            {else/}
+                <input type="text" name="keyword" placeholder="{$header_keywords.title}" value="{$keyword|default=''}" class="text">
+            {/empty}
+            <input type="submit" class="submit" id="searchSubmit">
+            <label for="searchSubmit" class="searchBtn"><em></em></label>
+        </form>
+        <hr />
+        {if get_system_config('power','author_open')}
+        <a href="{:furl('/', [], true, 'author')}" class="authorZone"><i></i>作者专区</a>
+        <hr />
+        {/if}
+        {if isset($conf['appqr']) && $conf.appqr}
+        <div class="dlBox">
+            <div class="downLoad">APP下载</div>
+            <div class="dlCon hidden">
+                <span>扫描下载”{$conf.title|default=''}”客户端</span>
+                <img src="{$conf.appqr|default=''}" alt="扫描下载”{$conf.title|default=''}”客户端" />
+                <em></em>
+            </div>
+        </div>
+        <hr />
+        {/if}
+        <div class="isLogged hidden">
+            <a href="{:url('my')}"></a>&nbsp;
+            <img src="{:get_file('',1)}" data-src="{:get_file('',1)}" alt="">
+        </div>
+        <div class="suspend hidden">
+            <a href="{:url('my')}">个人中心</a>
+            <a href="javascript:;" class="exit">退出</a>
+            <i></i>
+        </div>
+        <div class="login">
+            {if get_system_config('power','login_open')}
+            <a class="loginBtn" href="{:furl('login', [], true, 'home')}">登录</a>
+            {/if}
+            {if get_system_config('power','register_open')}
+            <a href="{:furl('register', [], true, 'home')}" class="registerBtn">注册</a>
+            {/if}
+        </div>
+    </div>
+</div>

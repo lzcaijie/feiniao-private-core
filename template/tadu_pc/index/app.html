@@ -1,0 +1,85 @@
+{extend name="common/base"/}
+{block name="style"}
+<link rel="stylesheet" href="{__STATIC__}/home/feiniao/css/app.css?v={$version}">
+{/block}
+{block name="title"}
+<title>APP-{$conf.title|default=''}</title>
+{/block}
+{block name="keywords"}
+<meta name="keywords" content="APP" />
+<meta name="description" content="APP" />
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<div class="app-header">
+    <div class="app-icon"><img src="{$conf.logo|default='/home/images/logo-ico.png'}" alt="{$conf.title|default=''}客户端"></div>
+    <h1>{$conf.title|default=''}</h1>
+    <p>{$conf.title|default=''}，更阅读更简单！</p>
+    <div class="badges" style="margin-top: 1.5rem;">
+        <div class="btn btn-android">Android 下载</div>
+        <div class="btn btn-ios">iOS 下载</div>
+    </div>
+</div>
+
+<section class="features">
+    <h2 style="text-align: center; margin-bottom: 2rem;">核心功能</h2>
+    <div class="feature-grid">
+        <div class="feature-card">
+            <div class="feature-icon"><img src="{__STATIC__}/home/feiniao/images/icon01.png" alt="多平台支持"></div>
+            <h3>多平台支持</h3>
+            <p>同时支持安卓、IOS、H5、鸿蒙等平台。</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon"><img src="{__STATIC__}/home/feiniao/images/icon02.png" alt="多渠道变现"></div>
+            <h3>多渠道变现</h3>
+            <p>集成主流广告SDK，有流量就收益无忧。</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon"><img src="{__STATIC__}/home/feiniao/images/icon03.png" alt="应用可上架"></div>
+            <h3>应用可上架</h3>
+            <p>支持上架国内应用商店及谷歌应用商店。</p>
+        </div>
+    </div>
+</section>
+
+<section class="screenshots">
+    <h2 style="text-align: center; margin-bottom: 2rem;">界面预览</h2>
+    <div class="screenshot-grid">
+        <div class="screenshot-item"><img src="{__STATIC__}/home/feiniao/images/app/001.jpg" alt="{$conf.title|default=''}APP预览"></div>
+        <div class="screenshot-item"><img src="{__STATIC__}/home/feiniao/images/app/002.jpg" alt="{$conf.title|default=''}APP预览"></div>
+        <div class="screenshot-item"><img src="{__STATIC__}/home/feiniao/images/app/003.jpg" alt="{$conf.title|default=''}APP预览"></div>
+        <div class="screenshot-item"><img src="{__STATIC__}/home/feiniao/images/app/004.jpg" alt="{$conf.title|default=''}APP预览"></div>
+    </div>
+</section>
+
+<section class="download-section">
+    <div class="download-grid">
+        <div class="qrcode-box">
+            <div class="qrcode">
+                <img src="{$conf.appqr|default=''}" alt="扫描下载”{$conf.title|default=''}”客户端" />
+            </div>
+            <p class="version">当前版本：v1.8.9</p>
+        </div>
+        <div class="download-buttons">
+            <a href="javascript:;" class="btn btn-android">
+                Android 下载
+            </a>
+            <a href="javascript:;" class="btn btn-ios">
+                iOS 下载
+            </a>
+            <div class="badges">
+                <div class="store-badge">应用宝</div>
+                <div class="store-badge">华为应用商店</div>
+                <div class="store-badge">小米应用商店</div>
+            </div>
+        </div>
+    </div>
+</section>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}	
+
+{/block}
+<!-- /脚本 -->

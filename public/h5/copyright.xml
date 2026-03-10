@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<config> 
+	<name>官方-移动端独立部署版</name> 
+	<author>飞鸟阅读</author> 
+	<ver>1.1</ver> 
+	<price>50.00</price>
+	<url>https://demo.feiniao.paheng.net/h5/</url>
+	<platform>separate</platform>
+</config> 

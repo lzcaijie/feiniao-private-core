@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">	
+	{block name="meta"}
+		<link rel="mobile-prefetch" href=""/>
+	{/block}
+	{php}
+	if (get_addons_is_enable('sitegroup')) {
+        $conf = app('feiniaowebconfig');
+		if(empty($conf)) {
+			$conf = get_system_config('web');
+		}
+		$feiniaoNavs = hook('siteGroupNavHook');
+        if ($feiniaoNavs && isJson($feiniaoNavs)) {
+            $feiniaoNavs = json_decode($feiniaoNavs, true);
+        }
+    } else {
+	    $conf = get_system_config('web');
+    }
+	$version = get_config('upgrade.version');
+	$pageconf = get_system_config('page');
+	{/php}
+	<link rel="icon" href="{$conf.favicon|default='/favicon.ico'}" type="image/x-icon" />
+	{block name="title"}
+		<title>{$conf.title|default=''}</title>		
+	{/block}
+	{block name="keywords"}
+		<meta name="keywords" content="{$conf.title|default=''}"/>
+		<meta name="description" content="{$conf.title|default=''}"/>
+	{/block}
+	{block name="css"}
+		<link rel="stylesheet" href="{__STATIC__}/home/style/swap.css?v={$version}" rel="stylesheet">
+		<!-- Bootstrap CSS -->
+		<link rel="stylesheet" href="{__STATIC__}/home/style/bootstrap.min.css?v={$version}">
+		 <!-- back to top button css -->
+		 <link rel="stylesheet" href="{__STATIC__}/home/style/backtotop.css?v={$version}">
+		<!-- Bootstrap Icon CSS -->
+		<link rel="stylesheet" href="{__STATIC__}/home/style/bootstrap-icons.css?v={$version}">
+		<!-- Animate CSS -->
+		<link rel="stylesheet" href="{__STATIC__}/home/style/animate.css?v={$version}">
+		<!-- Video Modal CSS -->
+		<link rel="stylesheet" href="{__STATIC__}/home/style/jquery.yu2fvl.css?v={$version}">
+		<!-- Owl Carousel CSS -->
+		<link rel="stylesheet" href="{__STATIC__}/home/style/owl.carousel.min.css?v={$version}">
+		<!-- mobila manu css -->
+		<link rel="stylesheet" href="{__STATIC__}/home/style/meanmenu.min.css?v={$version}">
+		<!-- Main Style CSS -->
+		<link rel="stylesheet" href="{__STATIC__}/home/style/style.css?v={$version}">
+		<!-- Responsive Style CSS -->
+		<link rel="stylesheet" href="{__STATIC__}/home/style/responsive.css?v={$version}">
+		<!-- layui css -->
+		<link rel="stylesheet" href="{__ASSETS__}/layui/css/layui.css?v={$version}">
+	{/block}
+	{block name="style"}{/block}
+	{block name="js"}
+		<script>
+			var tokenurl = "{:furl('v1/gettoken', [], true, 'api')}";
+			var loginurl = "{:furl('login', [], true, 'home')}";
+			var sessionname = "{:get_config('app.session_user')}";
+			var sessioninvitename = "{:get_config('app.session_invite')}";
+			var token = '';
+		</script>
+		<!-- jQuery -->
+		<script src="{__STATIC__}/home/script/jquery-3.6.2.min.js?v={$version}"></script>
+		<!-- Bootstrap Popper JS -->
+		<script src="{__STATIC__}/home/script/popper.min.js?v={$version}"></script>
+		<!-- Bootstrap JS -->
+		<script src="{__STATIC__}/home/script/bootstrap.min.js?v={$version}"></script>
+		<!-- Video Modal JS -->
+		<script src="{__STATIC__}/home/script/jquery.yu2fvl.js?v={$version}"></script>
+		<!-- Wow JS -->
+		<script src="{__STATIC__}/home/script/wow.js?v={$version}"></script>
+		<!-- Counter JS -->
+		<script src="{__STATIC__}/home/script/jquery.counterup.min.js?v={$version}"></script>
+		<script src="{__STATIC__}/home/script/waypoints.2.0.3.min.js?v={$version}"></script>
+		<!-- Owl Carousel JS -->
+		<script src="{__STATIC__}/home/script/owl.carousel.min.js?v={$version}"></script>
+		<!-- mobile manu js -->
+		<script src="{__STATIC__}/home/script/jquery.meanmenu.js?v={$version}"></script>
+		<!-- back to top js -->
+		<script src="{__STATIC__}/home/script/backtotop.js?v={$version}"></script>
+		<!-- layui js -->
+		<script src="{__ASSETS__}/layui/layui.js?v={$version}"></script>
+		<!-- main js -->
+		<script src="{__STATIC__}/home/script/main.js?v={$version}"></script>
+	{/block}
+</head>
+<body>
+	<div class="wrapper">
+		<!-- 主体 -->
+		{block name="body"}{/block}
+		<!-- /主体 -->
+
+		<!-- 底部 -->
+		{block name="footer"}
+		{include file="common/footer" /}
+		{:load_addons_run()}		
+		{/block}
+		<!-- /底部 -->
+		
+		<!-- 脚本 -->
+		{block name="script"}{/block}
+		<!-- /脚本 -->
+		
+		<!-- 统计代码 -->
+		{block name="code"}
+		<div style="display: none;">{$conf.code|raw|default=''}</div>
+		{/block}
+		<!-- /统计代码 -->
+	</div>
+</body>
+</html>

@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html>
+{php}
+    if (get_addons_is_enable('sitegroup')) {
+      $conf = app('feiniaowebconfig');
+      if(empty($conf)) {
+        $conf = get_system_config('web');
+      }
+      $feiniaoNavs = hook('siteGroupNavHook');
+      if ($feiniaoNavs && isJson($feiniaoNavs)) {
+          $feiniaoNavs = json_decode($feiniaoNavs, true);
+      }
+    } else {
+	    $conf = get_system_config('web');
+    }
+    $version = get_config('upgrade.version');
+    $pageconf = get_system_config('page');
+    $seoconf = get_system_config('seo');
+{/php}
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    {block name="title"}
+		<title>{$conf.title|default=''}</title>		
+	{/block}
+  {block name="keywords"}
+		<meta name="keywords" content="{$conf.title|default=''}"/>
+		<meta name="description" content="{$conf.title|default=''}"/>
+	{/block}
+    {block name="meta"}{/block}
+    <meta name="robots" content="all" />
+    <meta name="googlebot" content="all" />
+    <meta name="baiduspider" content="all" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="copyright" content="{$conf.copyright|default=''}" />
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="mobile-agent" content="format=wml; url={$seoconf.domain}">
+    <meta http-equiv="mobile-agent" content="format=xhtml; url={$seoconf.domain}">
+    <meta http-equiv="mobile-agent" content="format=html5; url={$seoconf.domain}">
+    <meta name="mobile-agent" content="format=wml; url={$seoconf.domain}" />
+    <meta name="mobile-agent" content="format=xhtml; url={$seoconf.domain}" />
+    <meta name="mobile-agent" content="format=html5; url={$seoconf.domain}" />
+    <link rel="icon" href="{$conf.favicon|default='/favicon.ico'}" type="image/x-icon" />
+    {block name="css"}
+    {/block}
+    {block name="style"}{/block}
+    {block name="js"}
+		<script>
+			var tokenurl = "{:furl('v1/gettoken', [], true, 'api')}";
+			var loginurl = "{:furl('login', [], true, 'home')}";
+			var sessionname = "{:get_config('app.session_user')}";
+			var sessioninvitename = "{:get_config('app.session_invite')}";
+			var mineurl = "{:furl('v1/mine', [], true, 'api')}";            
+			var token = '';
+		</script>
+    {/block}
+</head>
+<body id="content">
+    <!-- 主体 -->
+    {block name="body"}{/block}
+    <!-- /主体 -->
+
+    <!-- 底部 -->
+    {block name="footer"}
+    {include file="common/footer" /}
+    {:load_addons_run()}		
+    {/block}
+    <!-- /底部 -->
+    
+    <!-- 脚本 -->
+    {block name="script"}{/block}
+    <!-- /脚本 -->
+    
+    <!-- 统计代码 -->
+    {block name="code"}
+    <div style="display: none;">{$conf.code|raw|default=''}</div>
+    {/block}
+    <!-- /统计代码 -->
+</body>
+</html>

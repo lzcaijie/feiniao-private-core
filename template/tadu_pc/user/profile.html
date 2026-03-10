@@ -1,0 +1,69 @@
+{extend name="common/base"/}
+{block name="style"}
+<link rel="stylesheet" href="{__STATIC__}/home/feiniao/css/user.css?v={$version}">
+{/block}
+{block name="title"}
+<title>个人中心-{$conf.title|default=''}</title>
+{/block}
+{block name="keywords"}
+<meta name="keywords" content="个人中心" />
+<meta name="description" content="个人中心" />
+{/block}
+<!-- 主体 -->
+{block name="body"}
+{include file="common/headerucenter" /}
+{if defined('JWT_UID') && JWT_UID}
+    {php} $userinfo = model('user')->field('id,nickname,username,author_id,name,mobile,headimgurl,qrcode_invite,coin')->where('id', JWT_UID)->find();{/php}
+    <div class="personal_box clearfix">
+        <div class="left_box">            
+            {include file="common/menuucenter" /}
+        </div>
+        <div class="right_box">
+            <div class="record_top">
+                <div class="clearfix">
+                    <a href="javascript:void(0);" class="current_btn">基本资料</a>
+                </div>
+            </div>
+            <div class="basicIfmt">
+                <div class="block">
+                    <em>账号：</em>
+                    <span class="account">{$userinfo.username|default='--'}</span>
+                </div>
+                <div class="block">
+                    <em>手机号：</em>
+                    <span class="phone">{$userinfo.mobile|default='--'}</span>
+                </div>
+                <div class="block">
+                    <em>邀请码：</em>
+                    <span class="phone">{$userinfo.qrcode_invite|default='--'}</span>
+                </div>
+                <div class="block">
+                    <em>昵称：</em>
+                    <span class="phone">{$userinfo.nickname|default='--'}</span>
+                </div>               
+            </div>
+        </div>
+    </div>
+{else/}
+    <div style="width: 100%; height: 50vh; display: flex; align-items: center; justify-content: center; flex-direction: column; font-size: 15px;">
+        <img src="{__STATIC__}/home/feiniao/images/search_kong.png" alt="" style="width: 200px;">
+        <p style="margin-top: 20px;">请 <a href="{:furl('login', [], true, 'home')}" style=" color: #bb3b00;">登录</a> ！</p>
+    </div>
+{/if}
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script src="{__STATIC__}/home/feiniao/js/jquery-1-22.min.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/purify.min.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/common.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/dialog.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/userinfo.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/user.js?v={$version}"></script>
+<script>
+$(function() {
+});
+</script>
+{/block}
+<!-- /脚本 -->

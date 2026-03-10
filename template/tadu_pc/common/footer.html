@@ -1,0 +1,62 @@
+<div class="footer">
+    <div class="boxCenter foot">
+        {php}
+        $links = [];
+        if (get_addons_is_enable('sitegroup')) {
+            $feiniaoLinks = hook('siteGroupLinksHook');
+            if ($feiniaoLinks && isJson($feiniaoLinks)) {
+                $links = json_decode($feiniaoLinks, true);
+            }
+        }
+        if(empty($links)) {
+            $links = model('links')->where(['status' => 1])->order('sort desc')->select()->toArray();
+        }
+        {/php}
+        {notempty name="links"}
+        <div class="friendLink clearfix">
+            <span>友情链接：</span>
+            {volist name="$links" id="v"}
+            <a href="{$v.src}"{eq name="$v.target" value="1"} target="_blank"{/eq}>{$v.name}</a>
+            {/volist}
+        </div>
+        {/notempty}
+        <div class="aboutBox">
+            <div class="clearfix">
+                {if get_addons_is_enable('sitegroup') && isset($feiniaoNavs) && $feiniaoNavs && isset($feiniaoNavs['footer_nav']) && $feiniaoNavs['footer_nav'] && isset($feiniaoNavs['footer_nav']['items']) && $feiniaoNavs['footer_nav']['items']}
+                    {foreach name="$feiniaoNavs['footer_nav']['items']" item="a"}
+                        <a href="{$a.src==''?'javascript:;':$a.src}" {eq name="a.target" value="1" } target="_blank"{/eq}>{$a.title}</a><hr />
+                    {/foreach}
+                {else/}
+                    {foreach name=":get_navs('footer_nav')" item="a"}
+                        <a href="{$a.src==''?'javascript:;':$a.src}" {eq name="a.target" value="1" } target="_blank"{/eq}>{$a.title}</a><hr />
+                    {/foreach}
+                {/if}
+            </div>
+            <div class="service">
+                <span>{:nl2br(get_system_config('other','servicedescription'))}</span>
+                {if get_system_config('power','report_open')}
+                <span>举报反馈：<a href="{:url('report')}">点此进入</a></span>
+                {/if}
+            </div>
+        </div>
+        <div class="aboutTd">
+            <span>
+                {notempty name="$conf.beian"}
+                    <a target="_blank" rel="nofollow" href="http://www.beian.gov.cn/portal/registerSystemInfo" style="border: none; line-height:100%;vertical-align: baseline;">{$conf.beian}</a>
+                {/notempty}
+                {notempty name="$conf.icp"}
+                    <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">{$conf.icp}</a>
+                {/notempty}
+            </span>
+            <span>{$conf.copyright|default=''}</span>
+        </div>
+        <div class="codeBox clearfix">
+            {if isset($conf['appqr']) && $conf.appqr}   
+            <div>
+                <img src="{$conf.appqr}" alt="扫描下载”{$conf.title}”客户端" />
+                <span>客户端下载</span>
+            </div>
+            {/if}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,100 @@
+<?php
+
+use think\facade\Route;
+use think\facade\Db;
+
+Route::group('v1', function () {
+    Route::rule('login', 'api/v1.common/login', 'GET|POST');
+    Route::rule('third', 'api/v1.common/third', 'GET|POST');
+    Route::rule('register', 'api/v1.common/register', 'GET|POST');
+    Route::rule('captcha', 'api/v1.common/captcha', 'GET|POST');
+    Route::rule('logout', 'api/v1.common/logout', 'GET|POST');
+    Route::rule('service', 'api/v1.common/service', 'GET|POST');
+    Route::rule('mine', 'api/v1.common/mine', 'GET|POST');
+    Route::rule('advert', 'api/v1.common/recommend', 'GET|POST');
+    Route::rule('bigcate', 'api/v1.category/bigcate', 'GET|POST');
+    Route::rule('smallcate', 'api/v1.category/smallcate', 'GET|POST');
+    Route::rule('bookdetail', 'api/v1.book/detail', 'GET|POST');
+    Route::rule('getdown', 'api/v1.book/getdown', 'GET|POST');
+    Route::rule('download', 'api/v1.book/download', 'GET|POST');
+    Route::rule('authordetail', 'api/v1.author/detail', 'GET|POST');
+    Route::rule('booklist', 'api/v1.book/booklist', 'GET|POST');
+    Route::rule('search', 'api/v1.search/index', 'GET|POST');
+    Route::rule('searchlog', 'api/v1.search/searchlog', 'GET|POST');
+    Route::rule('delsearchlog', 'api/v1.search/delsearchlog', 'GET|POST');
+    Route::rule('keywords', 'api/v1.search/keywords', 'GET|POST');
+    Route::rule('smssend', 'api/v1.common/smssend', 'GET|POST');
+    Route::rule('gettoken', 'api/v1.common/token', 'GET|POST');
+    Route::rule('favorites', 'api/v1.user/favorites', 'GET|POST');
+    Route::rule('follow', 'api/v1.user/follow', 'GET|POST');
+    Route::rule('bookshelf', 'api/v1.user/bookshelf', 'GET|POST');
+    Route::rule('followlist', 'api/v1.user/followlist', 'GET|POST');
+    Route::rule('likelist', 'api/v1.user/likelist', 'GET|POST');
+    Route::rule('delbookshelf', 'api/v1.user/delbookshelf', 'GET|POST');
+    Route::rule('readlog', 'api/v1.user/readlog', 'GET|POST');
+    Route::rule('chapter', 'api/v1.chapter/detail', 'GET|POST');
+    Route::rule('signin', 'api/v1.user/signin', 'GET|POST');
+    Route::rule('gettask', 'api/v1.task/gettask', 'GET|POST');
+    Route::rule('tasklist', 'api/v1.task/index', 'GET|POST');
+    Route::rule('like', 'api/v1.user/like', 'GET|POST');
+    Route::rule('invitetheme', 'api/v1.user/invite', 'GET|POST');
+    Route::rule('bindinvitecode', 'api/v1.user/bindinvitecode', 'GET|POST');
+    Route::rule('upload', 'api/v1.common/upload', 'GET|POST');
+    Route::rule('avatar', 'api/v1.user/avatar', 'GET|POST');
+    Route::rule('nickname', 'api/v1.user/nickname', 'GET|POST');
+    Route::rule('sex', 'api/v1.user/sex', 'GET|POST');
+    Route::rule('mobile', 'api/v1.user/mobile', 'GET|POST');
+    Route::rule('security', 'api/v1.user/security', 'GET|POST');
+    Route::rule('createorder', 'api/v1.order/create', 'GET|POST');
+    Route::rule('getorder', 'api/v1.order/info', 'GET|POST');
+    Route::rule('orderlist', 'api/v1.order/index', 'GET|POST');
+    Route::rule('coinlist', 'api/v1.coin/index', 'GET|POST');
+    Route::rule('viplog', 'api/v1.vip/log', 'GET|POST');
+    Route::rule('userlevel', 'api/v1.vip/userlevel', 'GET|POST');
+    Route::rule('rechargeplans', 'api/v1.vip/rechargeplans', 'GET|POST');
+    Route::rule('paymentmethods', 'api/v1.vip/paymentmethods', 'GET|POST');
+    Route::rule('bankcard', 'api/v1.user/bankcard', 'GET|POST');
+    Route::rule('cardadd', 'api/v1.user/cardadd', 'GET|POST');
+    Route::rule('delbankcard', 'api/v1.user/delbankcard', 'GET|POST');
+    Route::rule('withdrawapply', 'api/v1.withdraw/apply', 'GET|POST');
+    Route::rule('withdrawlog', 'api/v1.withdraw/log', 'GET|POST');
+    Route::rule('realnameauth', 'api/v1.user/realnameauth', 'GET|POST');
+    Route::rule('myinvite', 'api/v1.user/myinvite', 'GET|POST');
+    Route::rule('regauthor', 'api/v1.user/regauthor', 'GET|POST');
+    Route::rule('system', 'api/v1.common/system', 'GET|POST');
+    Route::rule('appupgrade', 'api/v1.app/upgrade', 'GET|POST');
+    Route::rule('pages', 'api/v1.common/pages', 'GET|POST');
+    Route::rule('caijicategory', 'api/v1.caiji/category', 'GET|POST');
+    Route::rule('caijibook', 'api/v1.caiji/book', 'GET|POST');
+    Route::rule('caijichapter', 'api/v1.caiji/chapter', 'GET|POST');
+    // 评论列表
+    Route::rule('commentlist', 'api/v1.comment/list', 'POST');
+    // 发表评论
+    Route::rule('commentcreate', 'api/v1.comment/create', 'POST');
+    // 点赞
+    Route::rule('commentlike', 'api/v1.comment/like', 'POST');
+    // 回复评论
+    Route::rule('commentreply', 'api/v1.comment/reply', 'POST');
+})->prefix('v1.');
+try {
+    if (get_addons_is_enable('sitegroup')) {
+        $result = hook('siteGroupRouteHook');
+        if ($result && isJson($result)) {
+            $result = json_decode($result, true);
+            if ($result && is_array($result)) {
+                $rule = $result;
+            }
+        }
+        if (empty($rule)) {
+            $rule = Db::name('route')->field('id,rule,name,group')->where(['status' => 1])->order('id asc')->select()->toArray();
+        }
+    } else {
+        $rule = Db::name('route')->field('id,rule,name,group')->where(['status' => 1])->order('id asc')->select()->toArray();
+    }
+    $data = array_column($rule, null, 'name');
+    if (isset($data['book_detail']) && $data['book_detail']['rule']) Route::rule($data['book_detail']['rule'], 'book/detail', 'GET')->name('book_detail');
+    if (isset($data['author_detail']) && $data['author_detail']['rule']) Route::rule($data['author_detail']['rule'], 'author/detail', 'GET')->pattern(['id' => '\d+'])->name('author_detail');
+    if (isset($data['chapter_detail']) && $data['chapter_detail']['rule']) Route::rule($data['chapter_detail']['rule'], 'chapter/detail', 'GET|POST')->pattern(['bookid' => '[^/]+', 'id' => '[a-zA-Z0-9]+'])->name('chapter_detail');
+    if (isset($data['inviteurl']) && $data['inviteurl']['rule']) Route::rule($data['inviteurl']['rule'], 'invite/index', 'GET')->pattern(['name' => '\w+'])->name('inviteurl');
+} catch (Exception $e) {
+}

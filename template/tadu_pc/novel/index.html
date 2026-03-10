@@ -1,0 +1,249 @@
+{extend name="common/base"/}
+{block name="style"}
+<link rel="stylesheet" href="{__STATIC__}/home/feiniao/css/novel.css?v={$version}">
+{/block}
+{block name="title"}
+<title>{:get_seo_str('shuku','shuku_title')}</title>
+{/block}
+{block name="keywords"}
+<meta name="keywords" content="{:get_seo_str('shuku','shuku_keywords')}" />
+<meta name="description" content="{:get_seo_str('shuku','shuku_description')}" />
+{/block}
+<!-- 主体 -->
+{block name="body"}
+{include file="common/header" /}
+<div class="boxCenter boutique library">
+    <div class="filter-box">
+        <!-- 频道切换 -->
+        <div class="channel-switch">
+            <span>频道</span>
+            <span class="filter-group">
+                {volist name="channel.siblings" id="vo"}
+                <a href="{:url('novelfilter',[
+                'channel' => $vo.id,
+                'status'  => $param.current_status,
+                'cat'     => 0,        
+                'word'    => $param.current_word,
+                'order'   => $param.current_order,
+                'page'    => 1,
+                'cid'     => $param.current_cid,
+                'mode'    => $param.current_mode
+                ])}" class="{$channel.id == $vo.id ? 'active' : ''}">
+                    {$vo.name}
+                </a>
+                {/volist}
+            </span>
+        </div>
+
+        <!-- 分类筛选 -->
+        <div class="category-filter">
+            <span>分类</span>
+            <span class="filter-group">
+                <a href="{:url('novelfilter', [
+                    'channel' => $channel.id,
+                    'status'  => $param.current_status,
+                    'cat'     => 0,        
+                    'word'    => $param.current_word,
+                    'order'   => $param.current_order,
+                    'page'    => 1,
+                    'cid'     => 0,
+                    'mode'    => $param.current_mode
+                ])}" class="{$param.current_cat == 0 ? 'active' : ''}">全部</a>
+                {volist name="categories" id="cat"}
+                <a href="{:url('novelfilter', [
+                    'channel' => $channel.id,
+                    'status'  => $param.current_status,
+                    'cat'     => $cat.id,        
+                    'word'    => $param.current_word,
+                    'order'   => $param.current_order,
+                    'page'    => 1,
+                    'cid'     => 0,
+                    'mode'    => $param.current_mode
+                ])}" class="{$param.current_cat == $cat.id ? 'active' : ''}">
+                    {$cat.name}
+                </a>
+                {/volist}
+            </span>
+        </div>
+
+        {if $param.current_cat > 0 && $subclass}
+            <!-- 子分类筛选 -->
+            <div class="category-filter">
+                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <span class="filter-group">                    
+                    {volist name="subclass" id="cid"}
+                    <a href="{:url('novelfilter', [
+                        'channel' => $channel.id,
+                        'status'  => $param.current_status,
+                        'cat'     => $param.current_cat,        
+                        'word'    => $param.current_word,
+                        'order'   => $param.current_order,
+                        'page'    => 1,
+                        'cid'     => $cid.id,
+                        'mode'    => $param.current_mode
+                    ])}" class="{$param.current_cid == $cid.id ? 'active' : ''}">
+                        {$cid.name}
+                    </a>
+                    {/volist}
+                </span>
+            </div>
+        {/if}
+
+        <!-- 状态筛选 -->
+        <div class="status-filter">
+            <span>状态</span>
+            <span class="filter-group">
+                {volist name="channel.status_map" id="status" key="k"}
+                <a href="{:url('novelfilter', [
+                    'channel' => $channel.id,
+                    'status'  => $key,
+                    'cat'     => $param.current_cat,
+                    'word'    => $param.current_word,
+                    'order'   => $param.current_order,
+                    'page'    => 1,
+                    'cid'     => $param.current_cid,
+                    'mode'    => $param.current_mode
+                ])}" class="{$param.current_status == $key ? 'active' : ''}">
+                    {$status.name}
+                </a>
+                {/volist}
+            </span>
+        </div>
+
+        <!-- 字数筛选 -->
+        <div class="status-filter">
+            <span>字数</span>
+            <span class="filter-group">
+                {volist name="channel.word_ranges" id="word" key="k"}
+                <a href="{:url('novelfilter', [
+                    'channel' => $channel.id,
+                    'status'  => $param.current_status,
+                    'cat'     => $param.current_cat,
+                    'word'    => $key,
+                    'order'   => $param.current_order,
+                    'page'    => 1,
+                    'cid'     => $param.current_cid,
+                    'mode'    => $param.current_mode
+                ])}" class="{$param.current_word == $key ? 'active' : ''}">
+                    {$word.name}
+                </a>
+                {/volist}
+            </span>
+        </div>
+    </div>
+    <div class="tabList">
+        <!-- 排序筛选 -->
+        {volist name="channel.order_map" id="order" key="k"}
+        <a href="{:url('novelfilter', [
+            'channel' => $channel.id,
+            'status'  => $param.current_status,
+            'cat'     => $param.current_cat,
+            'word'    => $param.current_word,
+            'order'   => $key,
+            'page'    => 1,
+            'cid'     => $param.current_cid,
+            'mode'    => $param.current_mode
+        ])}" class="{$param.current_order == $key ? 'active' : ''}">
+            {$order.name}
+        </a>
+        {/volist}
+  
+         <!-- 展示模式切换 -->
+        <div class="view-mode">
+            <a href="{:url('novelfilter', [
+            'channel' => $channel.id,
+            'status'  => $param.current_status,
+            'cat'     => $param.current_cat,
+            'word'    => $param.current_word,
+            'order'   => $param.current_order,
+            'page'   => $param.current_page,
+            'cid'   => $param.current_cid,
+            'mode'   => 1
+        ])}" class="{$param.current_mode == 1 ? 'active' : ''}" data-mode="grid">大图</a>
+            <a href="{:url('novelfilter', [
+            'channel' => $channel.id,
+            'status'  => $param.current_status,
+            'cat'     => $param.current_cat,
+            'word'    => $param.current_word,
+            'order'   => $param.current_order,
+            'page'   => $param.current_page,
+            'cid'   => $param.current_cid,
+            'mode'   => 2
+        ])}" class="{$param.current_mode == 2 ? 'active' : ''}" data-mode="list">列表</a>
+        </div>
+    </div>
+    <!-- 内容展示 -->
+    <div class="container">
+        {if $param.current_mode == '1'}
+            <!-- 大图模式 -->
+            <div class="grid-view">
+                {volist name="novels" id="vo"}
+                <div class="grid-item">
+                    <a href="{:url('book_detail', ['id' => $vo['filename'] ? $vo['filename'] : $vo['id']])}" target="_blank">
+                        <div class="grid-cover">
+                            <img alt="{$vo.title}" src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($vo.cover)}">
+                        </div>
+                        <div class="grid-info">
+                            <h3 class="grid-title">{$vo.title}</h3>
+                            <div class="grid-meta">
+                                <span><i class="fa-tag"></i> {:model('category')->where(['status' => 1, 'id' => $vo['genre']])->value('name')}</span>
+                                <span><i class="fa-user"></i> {$vo.author}</span>
+                            </div>
+                            <p class="grid-desc">{if $vo.remark}{:dsubstr($vo.remark,100,'……')}{else/}暂无简介{/if}</p>
+                        </div>
+                    </a>
+                </div>
+                {/volist}
+            </div>
+        {/if}
+        {if $param.current_mode == '2'}
+            <!-- 列表模式 -->
+            <div class="list-view">
+                {volist name="novels" id="vo"}
+                    <div class="list-item">                
+                        <div class="list-cover">
+                            <img alt="{$vo.title}" src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($vo.cover)}">
+                        </div>
+                        <div class="list-info">
+                            <div class="list-header">
+                                <h3 class="list-title">{$vo.title}</h3>
+                                <span class="list-status"><i class="fa-file-word"></i> {$vo.isfinish == 2 ? '完结' : '连载'}</span>
+                            </div>
+                            <div class="list-meta">
+                                <span><i class="fa-tag"></i> {:model('category')->where(['status' => 1, 'id' => $vo['genre']])->value('name')}</span>
+                                <span><i class="fa-user"></i> {$vo.author}</span>
+                                <span><i class="fa-file-word"></i> {:wordCount($vo.words)}</span>
+                            </div>
+                            <p class="list-desc">{if $vo.remark}{:dsubstr($vo.remark,400,'……')}{else/}暂无简介{/if}</p>
+                            <div class="list-footer">
+                                <div class="list-actions">
+                                    <a href="{:url('book_detail', ['id' => $vo['filename'] ? $vo['filename'] : $vo['id']])}" class="btn-read">开始阅读</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {/volist}
+            </div>
+        {/if}
+        {if $pagination}
+            <!-- 分页 -->
+            {$pagination|raw}
+        {/if}
+    </div>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script src="{__STATIC__}/home/feiniao/js/jquery-1-22.min.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/purify.min.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/common.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/userinfo.js?v={$version}"></script>
+<script>
+$(function() {
+    CommonModule.lazy.init('img[data-src]');
+});
+</script>
+{/block}
+<!-- /脚本 -->

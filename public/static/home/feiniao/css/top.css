@@ -1,0 +1,357 @@
+@import url("common.css");
+
+.book_rank_list {
+    width: 1200px;
+    margin: 0 auto;
+    overflow: hidden
+}
+
+.book_rank_list .aside {
+    width: 136px;
+    float: left
+}
+
+.book_rank_list .aside nav {
+    width: 100%
+}
+
+.book_rank_list .aside nav .title {
+    width: 100%;
+    height: 42px;
+    line-height: 42px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-top: 30px;
+    padding-left: 15px;
+    box-sizing: border-box
+}
+
+.book_rank_list .aside nav a {
+    display: block;
+    height: 42px;
+    line-height: 42px;
+    text-decoration: none;
+    color: #666;
+    border-right: 4px solid #fff;
+    padding-left: 15px;
+    box-sizing: border-box
+}
+
+.book_rank_list .aside nav a:hover {
+    color: #953A00
+}
+
+.book_rank_list .aside nav .active {
+    background: rgba(255,211,56,.2);
+    color: #953A00;
+    border-color: #FFD338
+}
+
+.book_rank_list .splitLine {
+    float: left;
+    width: 1px;
+    height: 654px;
+    background-color: rgba(0,0,0,.05);
+    margin-left: 36px;
+    margin-top: 40px
+}
+
+.book_rank_list .article {
+    width: 992px;
+    float: left;
+    margin-left: 35px;
+    box-sizing: border-box
+}
+
+.book_rank_list .article .breadcrumb {
+    width: 100%;
+    margin-top: 36px
+}
+
+.book_rank_list .article .breadcrumb label:nth-child(1) {
+    font-size: 26px;
+    font-weight: 500;
+    color: #282828
+}
+
+.book_rank_list .article .breadcrumb label:nth-child(2) {
+    font-size: 20px;
+    color: #282828
+}
+
+.book_rank_list .article .classify_nav {
+    width: 100%;
+    min-height: 60px;
+    background: rgba(0,0,0,.03);
+    border-radius: 6px;
+    padding: 20px;
+    box-sizing: border-box;
+    margin-top: 20px
+}
+
+.book_rank_list .article .classify_nav a {
+    display: inline-block;
+    text-decoration: none;
+    color: #666;
+    margin-left: 20px;
+    font-size: 14px
+}
+
+.book_rank_list .article .classify_nav a:hover {
+    color: #953A00
+}
+
+.book_rank_list .article .classify_nav a:nth-child(1) {
+    margin-left: 0;
+}
+.book_rank_list .article .classify_nav .active {
+    font-weight: 500;
+    color: #953A00
+}
+
+.book_rank_list .article .classify_book {
+    margin-top: 30px
+}
+
+.book_rank_list .article .classify_book .classify_list {
+    float: left;
+    width: 286px;
+    box-sizing: border-box;
+    margin-right: 67px;
+    margin-bottom: 70px
+}
+
+.book_rank_list .article .classify_book .classify_list:nth-child(3n) {
+    margin-right: 0
+}
+
+.book_rank_list .article .classify_book .classify_list .title {
+    width: 100%;
+    border-bottom: 1px solid rgba(0,0,0,.05);
+    padding-bottom: 9px;
+    display: flex;
+    justify-content: space-between
+}
+
+.book_rank_list .article .classify_book .classify_list .title span {
+    font-size: 20px;
+    color: #333;
+    font-weight: 500;
+    display: inline-block
+}
+
+.book_rank_list .article .classify_book .classify_list .title a {
+    color: #999;
+    font-size: 12px;
+    line-height: 26px;
+    display: inline-block;
+    text-decoration: none
+}
+
+.book_rank_list .article .classify_book .classify_list .title a i {
+    background: url(../images/v500/iconNew.png) -38px -6px no-repeat;
+    background-size: 44px;
+    width: 12px;
+    height: 13px;
+    display: inline-block;
+    margin-left: 4px
+}
+
+.book_rank_list .article .classify_book .classify_list .title a:hover {
+    color: #953A00
+}
+
+.book_rank_list .article .classify_book .classify_list .booklist {
+    padding: 0;
+    margin: 0;
+    counter-reset: wangxiaoer
+}
+
+.book_rank_list .article .classify_book .classify_list .booklist a {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0 10px 26px;
+    box-sizing: border-box;
+    position: relative;
+    text-decoration: none
+}
+
+.book_rank_list .article .classify_book .classify_list .booklist a:before {
+    width: 17px;
+    height: 17px;
+    text-align: center;
+    border-radius: 50%;
+    display: inline-block;
+    background: linear-gradient(144deg,#D5D5D5 0,#BEBEBE 100%);
+    content: counters(wangxiaoer,'') '';
+    counter-increment: wangxiaoer;
+    font-size: 14px;
+    color: #fff;
+    font-weight: 700;
+    position: absolute;
+    left: 0;
+    top: 13px
+}
+
+.book_rank_list .article .classify_book .classify_list .booklist a:nth-child(1) {
+    margin-top: 10px
+}
+
+.book_rank_list .article .classify_book .classify_list .booklist a:nth-child(1):before {
+    background: linear-gradient(144deg,#FF754E 0,#F44513 100%)
+}
+
+.book_rank_list .article .classify_book .classify_list .booklist a:nth-child(2):before {
+    background: linear-gradient(144deg,#FF9E3C 0,#F67615 100%)
+}
+
+.book_rank_list .article .classify_book .classify_list .booklist a:nth-child(3):before {
+    background: linear-gradient(144deg,#FFE23C 0,#F6AF15 100%)
+}
+
+.book_rank_list .article .classify_book .classify_list .booklist a:nth-child(n+10):before {
+    font-size: 12px
+}
+
+.book_rank_list .article .classify_book .classify_list .booklist a .left {
+    width: 160px
+}
+
+.book_rank_list .article .classify_book .classify_list .booklist a .left span {
+    width: 100%;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis
+}
+
+.book_rank_list .article .classify_book .classify_list .booklist a .left .bookname {
+    font-weight: 500;
+    color: #333;
+    font-size: 16px
+}
+
+.book_rank_list .article .classify_book .classify_list .booklist a .left .author {
+    font-size: 14px;
+    font-weight: 400;
+    color: #999;
+    margin-top: 15px
+}
+
+.book_rank_list .article .classify_book .classify_list .booklist a .left .popularity {
+    font-size: 14px;
+    font-weight: 400;
+    color: #FD4D47;
+    margin-top: 5px
+}
+
+.book_rank_list .article .classify_book .classify_list .booklist a .right {
+    width: 90px;
+    text-align: right
+}
+
+.book_rank_list .article .classify_book .classify_list .booklist a .right img {
+    display: inline-block;
+    width: 59.57px;
+    height: 80px;
+    border-radius: 2px
+}
+
+.book_rank_list .article .classify_book .classify_list .booklist a .right .nickname {
+    display: inline-block;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 400;
+    color: #999;
+    font-size: 14px;
+    line-height: 24px
+}
+
+.book_rank_list .article .classify_book .classify_list .booklist a:hover .bookname {
+    color: #953A00
+}
+
+.book_rank_list .article .classify_book .nullData {
+    width: 100%;
+    text-align: center;
+    font-size: 16px;
+    color: #999;
+    margin-top: 100px
+}
+.book_ran_list .booklist {
+    overflow: hidden;
+    padding: 20px;
+    background: #fcfcfc;
+    margin-bottom: 30px
+}
+
+.book_ran_list .booklist:nth-last-child(1) {
+    border: none
+}
+.book_ran_list .booklist .bookimg {
+    width: 119.14px;
+    height: 160px;
+    float: left;
+}
+.book_ran_list .booklist .bookimg img {
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+}
+.book_ran_list .booklist .bookinfo {
+    width: 564px;
+    float: left;
+    margin-left: 20px;
+}
+.book_ran_list .booklist .bookinfo .bookname {
+    width: 100%;
+    margin-top: 10px;
+}
+.book_ran_list .booklist .bookinfo .bookname .bookname_number {
+    font-size: 16px;
+    color: #c2c2c2;
+    font-weight: 700;
+}
+.book_ran_list .booklist .bookinfo .bookname .bookname_name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+}
+.book_ran_list .booklist .bookinfo .booknick {
+    width: 100%;
+    color: #999;
+    font-size: 14px;
+    margin-top: 14px;
+}
+.book_ran_list .booklist .bookinfo .bookdes {
+    width: 100%;
+    color: #999;
+    font-size: 14px;
+    margin-top: 20px;
+    line-height: 21px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+}
+.book_ran_list .booklist .bookbt {
+    float: right;
+    padding-top: 50px;
+    box-sizing: border-box;
+}
+.book_ran_list .booklist .bookbt a {
+    display: inline-block;
+    width: 130px;
+    height: 40px;
+    line-height: 40px;
+    border-radius: 4px;
+    color: #953A00;
+    text-align: center;
+    text-decoration: none;
+}
+.book_ran_list .booklist .bookbt a:nth-child(1) {
+    background-color: #FFD338;
+}

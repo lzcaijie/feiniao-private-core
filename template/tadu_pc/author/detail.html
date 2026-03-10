@@ -1,0 +1,155 @@
+{extend name="common/base"/}
+{block name="style"}
+<link rel="stylesheet" href="{__STATIC__}/home/feiniao/css/author.css?v={$version}">
+{/block}
+{block name="title"}
+<title>{:get_seo_str('author','author_title','',['authorid'=>$id])}</title>	
+{/block}
+{block name="keywords"}
+<meta name="keywords" content="{:get_seo_str('author','author_keywords','',['authorid'=>$id])}"/>
+<meta name="description" content="{:get_seo_str('author','author_description','',['authorid'=>$id])}"/>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<div class="navSecond">
+    {include file="common/headermini" /}
+</div>
+<div class="boxCenter box clearfix">
+    {php}
+    $user_id = $isfollow = 0;
+    if (defined("JWT_UID") && JWT_UID) $user_id = JWT_UID;
+    $author = model('author')->where(['id' => $id, 'status' => 1])->find();
+    $book_list = model('book')->field('id,title,genre,subgenre,cover,filename,create_time,words,remark,author,chapters')->where(['status' => 1, 'authorid' => $id])->select()->toArray();
+    if(!empty($book_list)) {
+        $book_count = count($book_list);            
+        $bids = array_column($book_list, 'id');
+        $bid_in = implode(',', $bids);
+        $fav_count = model('favorites')->where('pid','in',$bid_in)->count();
+    } else {
+        $book_count = 0;
+        $fav_count = 0;
+    }
+    $follow_count = model('follow')->where(['from_id' => $id])->count();
+    if($user_id) {
+        $isfollow = model('follow')->where(['user_id' => $user_id, 'from_id' => $id])->count();
+    }
+    {/php}
+    {notempty name="author"}
+     <!-- 作者信息区域 -->
+     <div class="author-header">
+        <img class="author-avatar" src="{:get_file($author.headimg,1)}" alt="{$author.nickname|default='暂无'}" id="authorAvatar">
+        <div class="author-info">
+            <h1 class="author-name" id="authorName">{$author.nickname|default='暂无'}</h1>
+            <div class="author-stats">
+                <div class="stat-item">
+                    <strong id="worksCount">{$book_count|default='0'}</strong>作品
+                </div>
+                <div class="stat-item">
+                    <strong id="fansCount">{$follow_count|default='0'}</strong>粉丝
+                </div>
+                <div class="stat-item">
+                    <strong id="totalCollect">{$fav_count|default='0'}</strong>收藏
+                </div>
+            </div>
+            <button class="follow-btn {if $isfollow}unfollow{/if}" id="followBtn" data-authorid="{$id}" data-api="{:furl('v1/follow', [], true, 'api')}">{if $isfollow}已关注{else/}关注{/if}</button>
+        </div>
+    </div>
+
+    <!-- 作品列表 -->
+    <div class="works-container">
+        <div class="works-grid" id="worksGrid" data-api="{:furl('v1/favorites', [], true, 'api')}">
+            {notempty name="$book_list"}
+                {volist name="$book_list" id="book"}
+                <div class="work-item">
+                    <img class="work-cover" src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($book.cover)}" alt="{$book.title}">
+                    <div class="work-info">
+                        <div class="work-meta">
+                            <span class="work-category">{:model('category')->where(['status' => 1, 'id' => $book['genre']])->value('name')}</span>
+                            <span>{$book['chapters']|default='0'}章</span>
+                            <span>{:wordCount($book.words)}</span>
+                        </div>
+                        <h3 class="work-title">{$book.title}</h3>
+                        <p class="work-desc">
+                            {php}
+                            $remark = htmlspecialchars_decode($book['remark']);
+                            $replace = array("&nbsp;", "<br>", "<br>");
+                            $search = array(" ", "\n", '\n');
+                            $remark = str_replace($search, $replace, $remark);
+                            $isfav = 0;
+                            if($user_id) $isfav = model('favorites')->where(['user_id' => $user_id, 'pid' => $book['id']])->count();
+                            {/php}
+                            {$remark}
+                        </p>                  
+                        <div class="work-actions">
+                            <a class="action-btn detail-btn" target="_blank" href="{:url('book_detail', ['id' => $book['filename'] ? $book['filename'] : $book['id']])}">书籍详情</a>
+                            <button class="action-btn shelf-btn {if $isfav}added{/if}" data-id="{$book.id}">{if $isfav}已加入{else/}加入书架{/if}</button>
+                        </div>
+                    </div>
+                </div>
+                {/volist}
+            {/notempty}
+        </div>
+    </div>
+    {else/}
+        <div style="display: flex;justify-content: center;align-items: center;margin: 20rem auto;">
+            <img src="{__STATIC__}/home/feiniao/images/search_kong.png" alt="" style="width: 50px;">
+            作者不存在！
+        </div>        
+    {/notempty}
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script src="{__STATIC__}/home/feiniao/js/jquery-1-22.min.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/purify.min.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/common.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/dialog.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/userinfo.js?v={$version}"></script>
+<script>
+$(function() {
+    $(document).on('click', '.shelf-btn', async function() {
+            const btn = $(this);       
+            try {
+                const bookid = btn.data('id');
+                const API = $('#worksGrid').data('api');
+                const res = await CommonModule.doRest.post(API, {bookid: bookid});
+                if(res?.code !== 0) throw { code: res?.code, msg: res?.msg || '操作失败' };
+                const $collectCount = $('#totalCollect');
+                const currentCollect = parseInt($collectCount.text()) || 0;
+                if (btn.hasClass('added')){
+                    btn.removeClass('added').text('加入书架');
+                    $collectCount.text(Math.max(currentCollect - 1, 0));
+                    dialog.toastSuccess('取消成功');
+                } else {
+                    btn.addClass('added').text('已加入');
+                    $collectCount.text(currentCollect + 1);
+                    dialog.toastSuccess('加入成功');
+                }
+            } catch (err) {
+                dialog.toastFail(err.msg || '操作失败');
+            }
+        });
+    });
+     // 关注/取消关注操作
+    $('#followBtn').click(async () => {
+        try {
+            const isFollowing = $('#followBtn').hasClass('unfollow');       
+            const authorid = $('#followBtn').data('authorid');
+            const API = $('#followBtn').data('api');    
+            const res = await CommonModule.doRest.post(API, {"from_id": authorid, "type": 1});
+            if(res?.code !== 0) throw { code: res?.code, msg: res?.msg || '操作失败' };
+            // 更新按钮状态
+            $('#followBtn').text(isFollowing ? '关注' : '已关注').toggleClass('unfollow', !isFollowing);            
+            // 更新粉丝数
+            const fansCount = parseInt($('#fansCount').text());
+            $('#fansCount').text(isFollowing ? fansCount - 1 : fansCount + 1);
+            dialog.toastSuccess(isFollowing ? '取关成功' : '关注成功');
+        } catch (err) {
+            dialog.toastFail(err.msg || '操作失败');
+        }
+    });
+</script>
+{/block}
+<!-- /脚本 -->

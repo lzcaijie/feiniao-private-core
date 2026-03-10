@@ -1,0 +1,412 @@
+{extend name="common/base"/}
+<!-- 主体 -->
+{block name="body"}
+<style>
+.layui-table-pagebar {
+    float: left;
+}
+</style>
+<div class="p-3">
+	<form class="layui-form gg-form-bar border-t border-x">
+		<h3 class="pb-3">小说导入</h3>
+		<div class="layui-input-inline">导入分类：</div>
+		<div class="layui-input-inline" style="width:300px;">
+			<select name="catid">
+				<option value="">请选择所属分类</option>
+				{volist name=":set_recursion(model('category')->field('id,name as title,pid')->where(['status' => 1])->order('ordernum asc')->select()->toArray())" id="v"}
+				<option value="{$v.id}">{$v.title}</option>
+				{/volist}
+			</select>
+		</div>
+	</form>
+	<table class="layui-hide" id="import" lay-filter="import"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+	<div class="layui-btn-group">
+		<button class="layui-btn layui-btn-sm layui-bg-red" lay-event="config" data-title="基本设置"><i class="layui-icon layui-icon-set-fill"></i> 基本设置</button>
+		<button class="layui-btn layui-btn-sm layui-bg-purple" lay-event="clear" data-title="更新缓存"><i class="layui-icon layui-icon-delete"></i> 更新缓存</button>
+		<button class="layui-btn layui-btn-sm layui-btn-primary" lay-event="help" data-title="导入帮助"><i class="layui-icon layui-icon-question"></i> 导入帮助</button>
+  	</div>
+</script>
+
+<script type="text/html" id="barDemo">	
+<div class="layui-btn-group">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">改名</a>
+	<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</div>
+</script>
+
+<script type="text/html" id="statusTpl">
+	<input type="checkbox" name="status" value="{{d.status}}" lay-skin="switch" lay-text="开启|关闭" lay-filter="status" {{ d.status == 1 ? 'checked' : '' }}>
+</script>
+
+<!-- 底部按钮 -->
+<div class="p-3">
+	<button class="layui-btn layui-btn-sm layui-bg-blue" lay-filter="startImport" lay-event="startImport">开始导入</button>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function feiniaoInit() {
+		var table = layui.table, tool = layui.tool, form = layui.form, element = layui.element, upload = layui.upload;
+		var tableIns = table.render({
+			elem: '#import',
+			title: '规则表列表',
+			toolbar: '#toolbarDemo',
+			url: "{:addons_url('import://kernel/list')}",
+			id: 'import',
+			className: 'import_book_box',
+			page: true,
+			limit: 20,
+            cols: [
+				[
+				{
+					field: 'filename',
+					title: '文件名',
+					align: 'left',
+				},{
+					field: 'title',
+					title: '作品名称',
+					align: 'left',
+					width: 300,
+					templet:function(d) {
+						return d.title ? d.title : '--';
+					}
+				},{
+					field: 'author',
+					title: '作者',
+					align: 'left',
+					width: 200,
+					templet:function(d) {
+						return d.author ? d.author : '--';
+					}
+				},{
+					field: 'filesize',
+					title: '大小',
+					align: 'left',
+					width: 100,
+				},{
+					field: 'status',
+					title: '状态',
+					align: 'center',
+					width: 80,
+					templet:function(d) {
+						return d.status ? d.status : '--';
+					}
+				},{
+					fixed: 'right',
+					field: 'right',
+					title: '操作',
+					toolbar: '#barDemo',
+					width: 80,
+					align: 'left'
+				}				
+				]
+			]
+		});
+		
+		//监听表头工具栏事件
+		table.on('toolbar(import)', function(obj){
+			if(obj.event === 'config') {
+				tool.side("{:addons_url('import://kernel/config')}");
+				return false;
+			} else if (obj.event === 'clear') {
+				let callback = function (e) {
+					layer.msg(e.msg);
+				}
+				tool.post("{:addons_url('import://kernel/clear')}", {}, callback);
+				return false;
+			} else if(obj.event === 'help') {
+				return layer.open({
+					type: 1, // page 层类型
+					area: ['680px', '550px'],
+					title: '导入帮助',
+					shade: 0.6, // 遮罩透明度
+					shadeClose: true, // 点击遮罩区域，关闭弹层
+					maxmin: true, // 允许全屏最小化
+					anim: 0, // 0-6 的动画形式，-1 不开启
+					content: `<div style="padding: 32px;">
+						1、请将文件上传到根目录下runtime/import目录中，如没有此目录请手动创建。<hr>
+						2、上传的文件如果是压缩包，一定要先解压，不然无法显示到列表。<hr>
+						3、支持无限层级目录，目录名或文件名不要有特殊字符。<hr>
+						4、《书名》作者：作者名.txt，以这样的格式命名文件。<hr>
+						5、作者名可以不在文件名中，需在文件内容中体现。<hr>
+						6、内容中有*** 著，作者与著中间有一个空格，本行作者名前面不能有无关的其他信息。<hr>
+						7、内容中有作者:***，半角冒号后面为作者名称，并且作者名称后面不能有其他信息。<hr>
+						8、作者：***，全角冒号后面为作者名称，并且作者名称后面不能有其他信息。<hr>
+						9、作品大类获取方式与作者一致，需要在内容中有相应体现。<hr>
+						10、如无法识别书名与作者名，可点【改名】按钮来修改文件名。<hr>
+						11、如当前列表都是失败状态，请人工确认文件内容是否正常或删除无效的文件，避免死循环。			
+						</div>`
+				});
+			}
+		});        
+
+		//监听表格行工具事件
+		table.on('tool(import)', function(obj) {
+			var data = obj.data;
+			if (obj.event === 'edit') {
+				return layer.open({
+					type: 1,
+					title: '请设置文件名',
+					content: '<div class="layui-layer-prompt"><input type="text" value="' + data.filename + '" class="layui-layer-input" style="width: 90%; margin: 20px auto; display: block;"></div>',
+					area: ['600px', '180px'],
+					btn: ['确定', '取消'],
+					yes: function(index, layero) {
+						var value = layero.find('.layui-layer-input').val();
+						if(!value || value.length <= 0) return layer.msg('名称不能为空');
+						if(data.filename == value) return layer.msg('名称没有变化');
+						let callback = function (e) {
+							layer.msg(e.msg);
+							if (e.code == 0) {
+								obj.update({
+									filename: value
+								});
+								layer.close(index);
+							}
+						}
+						tool.post("{:addons_url('import://kernel/edit')}", {"path": data.path, "name": value}, callback);					
+					},
+					btn2: function(index) {
+						layer.close(index);
+					}
+				});	
+			} else if (obj.event === 'del') {
+				layer.confirm('确定要删除该记录吗?', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					setstop();
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+							importlist.splice(importindex, 1);
+						}
+					}
+					tool.delete("{:addons_url('import://kernel/delete')}", { path: data.path }, callback);
+					layer.close(index);
+				});
+			}
+			return false;
+		});
+
+		window.importlist = [];
+		window.importindex = 0;
+		window.tipsindex = 0;
+		window.isstop = false;
+
+        $('[lay-filter="startImport"]').on('click', function() {
+			var text = $(this).text().replace(/\s+/g, ' ').trim();
+			if(text == '开始导入') {
+				isstop = false;
+				start();
+				$(this).html('<i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop"></i> 停止导入');
+			} else {
+				setstop();
+			}
+        });
+
+		function setstop() {
+			$('.import_book_box tbody tr').eq(tipsindex).find('[data-field="status"]').find('div').html('--');
+			isstop = true;
+			$('[lay-filter="startImport"]').html('开始导入');
+		}
+
+		function start() {
+			importlist = layui.table.cache['import'];
+			if(importlist.length <= 0) return layer.msg('没有数据');
+			if (importlist[importindex]) setStatus(1);
+			go(importlist[importindex].path);
+		}
+
+		function setStatus(type) {
+			if(type == 1) $('.import_book_box tbody tr').eq(tipsindex).find('[data-field="status"]').find('div').html('<i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop"></i>');
+			if(type == 2) $('.import_book_box tbody tr').eq(tipsindex).find('[data-field="status"]').find('div').html('<i class="layui-icon layui-icon-close"></i>');
+		}
+
+		function go(path) {
+			if(isstop) return false;
+			var catid = $('select[name="catid"]').val();
+			$.ajax({
+				url: "{:addons_url('import://kernel/run')}",
+				data: {"path": path, "catid": catid},
+				type: 'post',
+				async: false,
+				timeout: 0,
+				success: function (res) {
+					if (res.code == 0) {
+						$('.import_book_box tbody tr').eq(tipsindex).remove();
+						importindex++;
+						if(importlist.length === (importindex + 1)) {
+							importindex = 0;
+							tipsindex = 0;
+							tableIns.reload({
+								page: {
+									curr: 1
+								}
+							});
+							setTimeout(function() {
+								start();
+                        	},3000);
+						} else {
+							if(importlist[importindex]) {
+								setStatus(1)
+								setTimeout(function() {									
+									go(importlist[importindex].path);
+								},1000);
+							}
+						}						
+					} else {
+						$('.import_book_box tbody tr').eq(tipsindex).find('[data-field="title"]').find('div').html('<span class="layui-bg-red">' + res.msg + '</span>');
+						setStatus(2)
+						importindex++;
+						tipsindex++;
+						if(importlist.length === (importindex + 1)) {
+							importindex = 0;
+							tipsindex = 0;
+							tableIns.reload({
+								page: {
+									curr: 1
+								}
+							});
+							setTimeout(function() {
+								start();
+                        	},3000);
+						} else {				
+							if(importlist[importindex]) {
+								setStatus(1)
+								setTimeout(function() {									
+									go(importlist[importindex].path);									
+								},1000);
+							}
+						}
+					}
+				},
+				error: function(xhr, status, error) {
+					if (status === 'timeout') {
+						setTimeout(function() {
+							go(path);
+						},3000);
+					} else {						
+						$('.import_book_box tbody tr').eq(tipsindex).find('[data-field="title"]').find('div').html('<span class="layui-bg-red">' + error + '</span>');
+						setStatus(2)
+						importindex++;
+						tipsindex++;
+						if(importlist.length === (importindex + 1)) {
+							importindex = 0;
+							tipsindex = 0;
+							tableIns.reload({
+								page: {
+									curr: 1
+								}
+							});
+							setTimeout(function() {
+								start();
+                        	},3000);
+						} else {
+							if(importlist[importindex]) {
+								setStatus(1)
+								setTimeout(function() {									
+									go(importlist[importindex].path);									
+								},1000);
+							}
+						}
+					}					
+				},
+			})
+		}
+
+		function admin_show(title,url,w,h,full,reload){
+			if (title == null || title == '') {
+				title=false;
+			};
+			if (url == null || url == '') {
+				url="404.html";
+			};
+			if (w == null || w == '') {
+				w=($(window).width()*0.9);
+			};
+			if (h == null || h == '') {
+				h=($(window).height());
+			};
+			var lay = layer.open({
+				type: 2,
+				area: [w+'px', h +'px'],
+				fix: false, //不固定
+				maxmin: true,
+				shadeClose: true,
+				shade:0.4,
+				title: title,
+				content: url,
+				end: function(){
+					if(reload == 1){
+						location.reload();
+					}
+				}    
+			});
+			if (full == 1) {
+				layer.full(lay);
+			};
+		}
+
+		//监听搜索提交
+		form.on('submit(searchform)', function(data) {
+			tableIns.reload({
+				page: {
+					curr: 1
+				}
+			});
+			return false;
+		});
+
+		function admin_close(){
+			var index = parent.layer.getFrameIndex(window.name);
+			parent.layer.close(index);
+		}
+	
+		if(!layui.data('feiniao_import').terms) {
+			layer.open({
+                type: 1,
+                area: ['50%', '30%'],
+                title: '免责声明',
+                shade: 0.6,
+                shadeClose: false,
+                maxmin: false,
+                btnAlign: 'c',
+                closeBtn: 0,
+                anim: 0,
+                content: `<div class="layui-field-box">
+							<p>任何用户在使用本插件之前，均应仔细阅读本声明，用户可选择拒绝使用，一旦同意使用，即被视为对本声明全部内容的认可和接受。</p>
+							<br>
+							<p>1、本插件仅作为交流学习之用，切莫用于非法用途，如使用本插件所造成的所有后果，本插件作者概不负责，亦不会也不能承担任何法律责任，而应由使用者承担。</p>
+							<br>
+							<p>2、因通过本插件导入的内容而导致的版权或知识产权等权利的侵犯等事件，及因该等事件所造成的损害后果，本插件作者概不负责，亦不会也不能承担任何法律责任，而应由使用者承担。</p>
+						</div>`,
+                btn: ['同意', '拒绝'],
+                btn1: function(index, layero, that) {
+					layui.data('feiniao_import', {
+						key: 'terms',
+						value: 1
+					});
+                    layer.close(index);
+                },
+                btn2: function(index, layero, that) {
+					layui.data('feiniao_import', {
+						key: 'terms',
+						remove: true
+					});					
+                    layer.close(index);
+					tool.sideClose(100);
+                },
+            });
+		}
+	}
+</script>
+{/block}
+<!-- /脚本 -->

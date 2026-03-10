@@ -1,0 +1,109 @@
+<div class="footer-area">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-4 col-md-4">
+				<div class="logo-part">
+					<div class="footer-logo">
+						<a href="{:url('/')}"><img src="{$conf.logo|default=''}" alt="{$conf.title|default=''}"></a>
+					</div>
+					<p>{:nl2br(get_system_config('other','servicedescription'))}</p>					
+				</div>
+			</div>
+			<div class="col-lg-2 col-md-2">
+				<div class="company-part">
+					<h6>{$conf.title|default=''}</h6>
+					<ul>
+						{if get_addons_is_enable('sitegroup') && isset($feiniaoNavs) && $feiniaoNavs && isset($feiniaoNavs['footer_nav']) && $feiniaoNavs['footer_nav'] && isset($feiniaoNavs['footer_nav']['items']) && $feiniaoNavs['footer_nav']['items']}
+							{foreach name="$feiniaoNavs['footer_nav']['items']" item="a"}
+								<li {if condition="$a.src == $params.current_url"}class="active"{/if}><a href="{$a.src==''?'javascript:;':$a.src}" {eq name="a.target" value="1" } target="_blank"{/eq}>{$a.title}</a></li>
+							{/foreach}
+						{else/}
+							{foreach name=":get_navs('footer_nav')" item="a"}
+								<li {if condition="$a.src == $params.current_url"}class="active"{/if}><a href="{$a.src==''?'javascript:;':$a.src}" {eq name="a.target" value="1" } target="_blank"{/eq}>{$a.title}</a></li>
+							{/foreach}
+						{/if}
+					</ul>
+				</div>
+			</div>
+			<div class="col-lg-3 col-md-3">
+				<div class="help-part">
+					<h6>帮助中心</h6>
+					<ul>
+						{if get_addons_is_enable('sitegroup') && isset($feiniaoNavs) && $feiniaoNavs && isset($feiniaoNavs['footer_help']) && $feiniaoNavs['footer_help'] && isset($feiniaoNavs['footer_help']['items']) && $feiniaoNavs['footer_help']['items']}
+							{foreach name="$feiniaoNavs['footer_help']['items']" item="a"}
+								<li {if condition="$a.src == $params.current_url"}class="active"{/if}><a href="{$a.src==''?'javascript:;':$a.src}" {eq name="a.target" value="1" } target="_blank"{/eq}>{$a.title}</a></li>
+							{/foreach}
+						{else/}
+							{foreach name=":get_navs('footer_help')" item="a"}
+								<li {if condition="$a.src == $params.current_url"}class="active"{/if}><a href="{$a.src==''?'javascript:;':$a.src}" {eq name="a.target" value="1" } target="_blank"{/eq}>{$a.title}</a></li>
+							{/foreach}
+						{/if}
+					</ul>
+				</div>
+			</div>
+			<div class="col-lg-3 col-md-3">
+				<div class="resources-part">
+					<h6>违法和不良信息举报</h6>
+					<ul>
+						{php}$other = get_system_config('other');{/php}
+						<li>{$other.srevicetel|default='无'}</li>
+						<li>{$other.sreviceemail|default='无'}</li>
+						{if get_system_config('power','report_open')}
+						<li><a href="{:url('report')}" class="main-btn">在线举报</a></li>
+						{/if}
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="copy-right">
+				<p>
+					{$conf.copyright}
+					{notempty name="$conf.beian"}
+						<a target="_blank" rel="nofollow" href="http://www.beian.gov.cn/portal/registerSystemInfo">{$conf.beian}</a>
+					{/notempty}
+					{notempty name="$conf.icp"}
+						<a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">{$conf.icp}</a>
+					{/notempty}
+				</p>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	$(window).on('load', function () {
+		var localfeiniao = layui.data('feiniao');
+		token = localfeiniao.token;  
+		if (!token) $.getToken();
+		$.getMe("{:furl('v1/mine', [], true, 'api')}", function(result) {
+			if (typeof ucenter_call === 'function') {
+				ucenter_call(result);
+			}
+			if (typeof ucenter_common === 'function') {
+				ucenter_common(result);
+			}
+			if(parseInt(result.code) == 0) {				
+				$(".loginstatus").remove();
+				$('.comm_header_user_logined_avatar').show();
+				$('.comm_header_uf_name').text(result.data.userinfo.nickname ? result.data.userinfo.nickname : '--');
+				$('.comm_header_user_logined_avatar').find('img').attr('src', result.data.userinfo.headimgurl);
+				$('.comm_header_ul_box').text('VIP：' + result.data.userinfo.viptime + ' | 金币：' + result.data.userinfo.coin);
+				$('.comm_header_unum_wp').find('.comm_header_unum_num div').eq(0).text(result.data.userinfo.favorites);
+				$('.comm_header_unum_wp').find('.comm_header_unum_num div').eq(1).text(result.data.userinfo.like);
+				$('.comm_header_unum_wp').find('.comm_header_unum_num div').eq(2).text(result.data.userinfo.follow);
+            } else {
+				$('.comm_header_user_logined_avatar').remove();
+			}
+		});
+		$('.comm_header_ui_lnk').on('click', function () {
+			layer.confirm('确定要退出登录吗？', {title: '退出提示',icon: 3}, function() {
+				layui.data('feiniao', {
+					key: 'token',
+					remove: true
+				});
+				$.delCookie(sessionname);
+				location.reload();
+			});
+		})
+	});
+</script>

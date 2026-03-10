@@ -1,0 +1,67 @@
+.nav {
+    background: #FF7E75
+}
+
+.navList .current,
+.navList a:hover {
+    background: rgba(255, 54, 40, .35)
+}
+
+.navList .current span {
+    background: #FFECEA
+}
+
+.navLi .current span {
+    background: #FF7E75
+}
+
+.aboutBox a:hover,
+.bookList .intro h2:hover,
+.ct_right .list strong:hover,
+.friendLink a:hover,
+.headFix .authorZone:hover,
+.hotWrap .bookIntro h2:hover,
+.hotWrap .rt a:hover,
+.isLogged a:hover,
+.listWrap h2:hover,
+.logoWrap .login a:hover,
+.readNow:hover,
+.suspend a:hover,
+.updateList .chapter:hover,
+.updateList .name:hover,
+.verbal .bkName:hover {
+    color: #FF7E75 !important
+}
+
+.hotWrap .rt a:hover i {
+    background: #FF7E75 !important
+}
+
+.wrapBox {
+    background: #FEF0ED
+}
+
+.verbal .rdNow {
+    background: #FF7E75;
+    color: #fff
+}
+
+.verbal .rdNow:hover {
+    background: rgba(255, 126, 117, .7)
+}
+
+.xbWrap .wrapBox {
+    background: #F9ECFC
+}
+
+.xsWrap .wrapBox {
+    background: #FFF2E7
+}
+
+.sxWrap .wrapBox {
+    background: #FDF7DF
+}
+
+.bookListSm:hover {
+    color: #FF7E75 !important
+}

@@ -1,0 +1,143 @@
+{extend name="common/base"/}
+{block name="style"}
+<link rel="stylesheet" href="{__STATIC__}/home/feiniao/css/top.css?v={$version}">
+{/block}
+{block name="title"}
+<title>{:get_seo_str('top','top_title')}</title>	
+{/block}
+{block name="keywords"}
+<meta name="keywords" content="{:get_seo_str('top','top_keywords')}"/>
+<meta name="description" content="{:get_seo_str('top','top_description')}"/>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+{include file="common/header" /}
+<div class="book_rank_list">
+    <aside class="aside">
+        <nav>
+            <div class="title">排行总榜</div>
+            {empty name="$typeInfo"}
+                <a href="{:url('top_main', ['channel' => 'male', 'cid'=> 'all'])}" class="{$channel == 'male' ? 'active' : ''}">男频总榜单</a>
+                <a href="{:url('top_main', ['channel' => 'female', 'cid'=> 'all'])}" class="{$channel == 'female' ? 'active' : ''}">女频总榜单</a>
+            {else/}
+                <a href="{:url('top_main', ['channel' => 'male', 'cid'=> 'all'])}">男频总榜单</a>
+                <a href="{:url('top_main', ['channel' => 'female', 'cid'=> 'all'])}">女频总榜单</a>
+            {/empty}
+            <div class="title">男频排行榜</div>
+            {volist name="rankTypes" id="config"}
+                <a href="{:url('top_detail', ['channel'=>'male', 'type'=> $key, 'cid' => 'all', 'page' => 1])}" class="{if isset($type) && $channel == 'male' && $key == $type}active{/if}">{$config.name}</a>
+            {/volist}           
+
+            <div class="title">女频排行榜</div>
+            {volist name="rankTypes" id="config"}
+            <a href="{:url('top_detail', ['channel'=>'female', 'type'=> $key, 'cid' => 'all', 'page' => 1])}" class="{if isset($type) && $channel == 'female' && $key == $type}active{/if}">{$config.name}</a>
+            {/volist}
+        </nav>
+    </aside>
+    <div class="splitLine"></div>
+    <article class="article">
+        {empty name="$typeInfo"}
+            <div class="breadcrumb"><label>排行总榜</label><label> / {$channel == 'male' ? '男频' : '女频'}总榜单</label></div>
+            <nav class="classify_nav">
+                <a href="{:url('top_main', ['channel' => $channel,'cid'=> 'all'])}" class="{$cid == 0 ? 'active' : ''}">全部</a>
+                {volist name="categories" id="cat"}
+                    <a href="{:url('top_main', ['channel' => $channel, 'cid' => $cat.key])}" class="{$cid == $cat.id ? 'active' : ''}">{$cat.name}</a>
+                {/volist}
+            </nav>
+        {else/}
+            <nav class="classify_nav">
+                <a href="{:url('top_detail', ['channel' => $channel, 'type'=> $type, 'cid' => 'all', 'page' => 1])}" class="{$cid == 0 ? 'active' : ''}">全部</a>
+                {volist name="categories" id="cat"}
+                    <a href="{:url('top_detail', ['channel' => $channel, 'type'=> $type, 'cid' => $cat.key, 'page' => 1])}" class="{$cid == $cat.id ? 'active' : ''}">{$cat.name}</a>
+                {/volist}
+            </nav>
+            <div class="breadcrumb"><label>{$channel == 'male' ? '男频' : '女频'}</label><label>/{$typeInfo.name|default='--'}</label></div>
+        {/empty}        
+        <div class="classify_book">
+            {empty name="$typeInfo"}
+                {volist name="rankTypes" id="config"}
+                    <div class="classify_list">
+                        <div class="title">
+                            <span>{$config.name}</span>
+                            <a href="{:url('top_detail', ['channel'=> $channel, 'type'=> $key, 'cid' => 'all', 'page' => 1])}">更多<i></i></a>
+                        </div>                
+                        <div class="booklist">
+                            {php}$type = $key;{/php}
+                            {volist name="ranks[$key]" id="book"}
+                                {if $i == 1}
+                                <a href="{:url('book_detail', ['id' => $book['filename'] ? $book['filename'] : $book['id']])}" target="_blank">
+                                    <div class="left">
+                                        <span class="bookname">{$book.title|default='--'}</span>
+                                        <span class="author">作者：{$book.author|default='--'}</span>
+                                        <span class="popularity">
+                                        {if $type == 'hits'}人气：{$book.hits}{/if}
+                                        {if $type == 'new'}时间：{:time_format($book.create_time, 'm-d')}{/if}
+                                        {if $type == 'comments'}评论：{$book.comments|default='--'}{/if}
+                                        {if $type == 'chapters'}章节：{$book.chapters}{/if}
+                                        {if $type == 'finish'}时间：{:time_format($book.finishtime, 'm-d')}{/if}
+                                        {if $type == 'words'}字数：{:wordCount($book.words)}{/if}
+                                        </span>
+                                    </div>
+                                    <div class="right"><img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($book.cover)}" alt="{$book.title|default='--'}"></div>
+                                </a>
+                                {/if}
+                                {if $i > 1}
+                                    <a href="{:url('book_detail', ['id' => $book['filename'] ? $book['filename'] : $book['id']])}" target="_blank">
+                                        <div class="left"><span class="bookname">{$book.title|default='--'}</span></div>
+                                        <div class="right"><span class="nickname">{$book.author|default='--'}</span></div>
+                                    </a>
+                                {/if}
+                            {/volist}
+                        </div>
+                    </div>
+                {/volist}
+            {else/}
+                <div class="book_ran_list">
+                    {volist name="list" id="book" key="key"}
+                        <div class="booklist">
+                            <div class="bookimg">
+                                <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($book.cover)}" alt="{$book.title|default='--'}">
+                            </div>
+                            <div class="bookinfo">
+                                <div class="bookname">
+                                    <a href="{:url('book_detail', ['id' => $book['filename'] ? $book['filename'] : $book['id']])}" target="_blank">
+                                        {if $page == 1}
+                                            {if $key == 1}<span class="bookname_number" style="color: #FF3636;">NO.1</span>{/if}
+                                            {if $key == 2}<span class="bookname_number" style="color: #FF6F36;">NO.2</span>{/if}
+                                            {if $key == 3}<span class="bookname_number" style="color: #FFA536;">NO.3</span>{/if}
+                                            {if $key > 3}<span class="bookname_number">NO.{$key}</span>{/if}
+                                        {/if}
+                                        <span class="bookname_name">{$book.title|default='--'}</span>
+                                    </a>
+                                </div>
+                                <div class="booknick">{$book.author|default='--'} · {:model('category')->where(['status' => 1, 'id' => $book['genre']])->value('name')} · {:wordCount($book.words)} · 人气 {$book.hits}</div>
+                                <a href="{:url('book_detail', ['id' => $book['filename'] ? $book['filename'] : $book['id']])}" target="_blank"><div class="bookdes">{if $book.remark}{:dsubstr($book.remark, 400, '……')}{else/}暂无简介{/if}</div></a>
+                            </div>
+                            <div class="bookbt">
+                                <a href="{:url('book_detail', ['id' => $book['filename'] ? $book['filename'] : $book['id']])}" target="_blank">书籍详情</a>
+                            </div>
+                        </div>
+                    {/volist}                
+                    <!-- 分页 -->
+                    {if $pagination}{$pagination|raw}{/if}
+                </div>
+            {/empty}
+        </div>
+    </article>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script src="{__STATIC__}/home/feiniao/js/jquery-1-22.min.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/purify.min.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/common.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/userinfo.js?v={$version}"></script>
+<script>
+$(function() {
+    CommonModule.lazy.init('img[data-src]');
+});
+</script>
+{/block}
+<!-- /脚本 -->

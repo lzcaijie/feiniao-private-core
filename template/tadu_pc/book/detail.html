@@ -1,0 +1,336 @@
+{extend name="common/base"/}
+{block name="style"}
+{php}
+$conConfig = get_system_config('content');
+{/php}
+<link rel="stylesheet" href="{__STATIC__}/home/feiniao/css/bookDetails.css?v={$version}">
+{if isset($conConfig['comment_open']) && $conConfig['comment_open']}
+<link rel="stylesheet" href="{__STATIC__}/home/feiniao/css/comment.css?v={$version}">
+{/if}
+{/block}
+{block name="title"}
+<title>{:get_seo_str('book','book_title','',['bookid'=>$bid])}</title>	
+{/block}
+{block name="keywords"}
+<meta name="keywords" content="{:get_seo_str('book','book_keywords','',['bookid'=>$bid])}"/>
+<meta name="description" content="{:get_seo_str('book','book_description','',['bookid'=>$bid])}"/>
+<meta property="og:type" content="novel"/>
+<meta property="og:title" content="{$book.title|default=''}"/>
+<meta property="og:description" content="{$book.remark|default=''}"/>
+<meta property="og:image" content="{$book.cover|default=''}"/>
+<meta property="og:novel:category" content="{$book.bigclassname|default=''}"/>
+<meta property="og:novel:author" content="{$book.author|default=''}"/>
+<meta property="og:novel:book_name" content="{$book.title|default=''}"/>
+<meta property="og:novel:read_url" content="{$book.first_chapter_url|default=''}"/>
+<meta property="og:novel:read_chapter_title" content="{$book.first_chapter_title|default=''}"/>
+<meta property="og:novel:author_link" content="{$book.authorurl|default=''}"/>
+<meta property="og:novel:status" content="{$book.isfinish == 2 ? lang('finish') : lang('serialize')}"/>
+<meta property="og:novel:update_time" content="{$book.update_time|default=''}"/>
+<meta property="og:novel:latest_chapter_name" content="{$book.chapter_title|default=''}"/>
+<meta property="og:novel:latest_chapter_url" content="{$book.chapter_url|default=''}"/>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<div class="navSecond">
+    {include file="common/headermini" /}
+</div>
+{notempty name="book"}
+    {php}
+    if($book['genre']) {
+        $genrename = model('category')->where(['status' => 1, 'id' => $book['genre']])->value('name');
+        if($book['genre'] == $params['girlgenre']) {
+            $genrelink = url('girls');
+        } else {
+            $genrelink = url('novelfilter', [
+                            'channel' => 1,
+                            'status'  => 'a',
+                            'cat'     => $book['genre'],
+                            'word'    => 0,
+                            'order'   => 'a',
+                            'page'    => 1,
+                            'cid'     => 0,
+                            'mode'    => 1
+                        ]);
+        }
+    }
+    if($book['subgenre']) {
+        $subgenrename = model('category')->where(['status' => 1, 'id' => $book['subgenre']])->value('name');
+        $subgenrelink = url('novelfilter', [
+                            'channel' => $params['girlgenre'] == $book['genre'] ? 2 : 1,
+                            'status'  => 'a',
+                            'cat'     => $params['girlgenre'] == $book['genre'] ? $book['subgenre'] : $book['genre'],
+                            'word'    => 0,
+                            'order'   => 'a',
+                            'page'    => 1,
+                            'cid'     => $params['girlgenre'] == $book['genre'] ? 0 : $book['subgenre'],
+                            'mode'    => 1
+                        ]);
+    }
+    if($book['label']) {
+        $book['label'] = explode(',', $book['label']);
+    }
+    if($book['label_custom']) {
+        $book['label_custom'] = explode(',', $book['label_custom']);
+    }
+    $author = model('author')->where(['id'=>$book['authorid'], 'status' => 1])->find();        
+    $chapterlist = model('chapter')->field('id,bookid,title,chaps,create_time')->where(['bookid' => $book['id'], 'status' => 1, ['verify', 'in', '0,1']])->cache('chapter_bookid_chapterlist_' . $book['id'], 86400)->order('chaps asc')->select()->toArray();
+    if(!empty($chapterlist)) {
+        foreach ($chapterlist as $k => $v) {
+            $chapterlist[$k]['title'] = get_full_chapter($v['title'], $v['chaps']);
+        }
+        $new_chapter = array_reverse(array_slice($chapterlist, -6));
+    } else {
+        $new_chapter = [];
+    }
+    if (!empty($book['remark'])) {
+        $book['remark'] = htmlspecialchars_decode($book['remark']);
+        $replace = array("&nbsp;", "<br>", "<br>");
+        $search = array(" ", "\n", '\n');
+        $book['remark'] = str_replace($search, $replace, $book['remark']);
+    }
+    $book_list = model('book')->field('id')->where(['status' => 1, 'authorid' => $book['authorid']])->select()->toArray();
+    if(!empty($book_list)) {
+        $book_count = count($book_list);            
+        $bids = array_column($book_list, 'id');
+        $bid_in = implode(',', $bids);
+        $fav_count = model('favorites')->where('pid','in',$bid_in)->count();
+    } else {
+        $book_count = 0;
+        $fav_count = 0;
+    }        
+    $follow_count = model('follow')->where(['from_id' => $book['authorid']])->count();
+    if(isset($conConfig['book_detail_first_chapter_isshow']) && $conConfig['book_detail_first_chapter_isshow']) {        
+        $content = $title = '';
+        if($chapterlist && $chapterlist[0]) {
+            $title = $chapterlist[0]['title'];
+            $content = \content\Content::get($bid, $chapterlist[0]['id']);            
+            list($cnt, $content) = countWordsAndContent($content);
+        }
+    }
+    {/php}
+    <div class="tabTopBox" data-book-id="{$bid}" data-author-id="{$book.authorid}" data-bookinfo-api="{:furl('v1/bookdetail', [], true, 'api')}">
+        <div class="boxCenter clearfix">
+            <a href="{:url('/')}" class="list">首页<i></i></a>
+            {notempty name="$genrename"}<a href="{$genrelink}" class="list">{$genrename}<i></i></a>{/notempty}
+            {notempty name="$subgenrename"}<a href="{$subgenrelink}" class="list">{$subgenrename}<i></i></a>{/notempty}
+            <a class="last">{$book.title}</a>
+        </div>
+    </div>
+
+    <div class="boxCenter box clearfix">
+        <div class="lf">
+            <div class="bookIntro">
+                <div class="bookCover clearfix">
+                    <div class="bookImg">
+                        <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{$book.cover|default=''}" alt="{$book.title}">
+                    </div>
+                    <span class="lz">{$book.isfinish == 2 ? lang('finish') : lang('serialize')}</span>
+                </div>
+                <div>
+                    <div class="bookNm">
+                        <h1 class="bkNm" data-name="{$book.title}">{$book.title}</h1>
+                        <span class="author"><a href="{:url('author_detail',['id'=>$book['authorid']])}">{$book.author|default='暂无'} 著</a></span>
+                    </div>
+                    <div class="sortList">
+                        {notempty name="$book['label']"}
+                            {volist name="$book['label']" id="v"}
+                                <a href="javascript:;">{$v}</a>
+                            {/volist}
+                        {/notempty}
+                        {notempty name="$book['label_custom']"}                        
+                            {volist name="$book['label_custom']" id="v"}
+                                <a href="javascript:;">{$v}</a>
+                            {/volist}
+                        {/notempty}
+                    </div>
+                    <div class="datum">
+                        <span><em>{:ceil($book.words/10000)}万</em>&nbsp;&nbsp;字</span>
+                        <hr>
+                        <span><em>{$book.hits > 0 ? $book.hits : '--' }</em>&nbsp;&nbsp;人气</span>
+                        <hr>
+                        <span><em>{$book['chapters']}</em>&nbsp;&nbsp;章</span>
+                        <hr>
+                        <span><em>{$book['comments']}</em>&nbsp;&nbsp;评论</span>
+                    </div>
+                    <div class="readBtn clearfix">
+                        <a href="{$book.first_chapter_url|default='javascript:;'}" class="read" target="_blank">免费阅读</a>
+                        <a href="javascript:void(0);" class="bookshelf" data-bookid='{$bid}' data-api="{:furl('v1/favorites', [], true, 'api')}">加入书架</a>
+                        {eq name=":get_system_config('power','txt_download_open')" value="1"}
+                        <a href="javascript:void(0);" class="txtdownload" data-bookid='{$bid}' data-type="txt" data-txt_download_open="{:get_system_config('power','txt_download_open')}" data-api="{:furl('v1/getdown', [], true, 'api')}">下载</a>
+                        {/eq}
+                        {if isset($conf['appqr']) && $conf.appqr}
+                        <div class="code">
+                            <a href="javascript:void(0);">APP阅读</a>
+                            <div class="codeBox hidden">
+                                <span>扫描二维码，使用手机阅读</span>
+                                <div id="qrcode" data-code="{$conf.appqr|default=''}"></div>
+                                <i></i>
+                            </div>
+                        </div>
+                        {/if}
+                    </div>
+                </div>
+                <div class="tabList">
+                    <span class="itct current">作品简介<em></em></span>
+                    <span class="directory">目录<i>({:count($chapterlist)}章)</i><em></em></span>
+                    <span class="commentsSection">作品评论区<em></em></span>
+                </div>
+            </div>
+        </div>
+        <div class="rt">
+            <div class="authorInfo">
+                <h2>本书作者<button class="follow-btn" data-authorid="{$book.authorid}" data-api="{:furl('v1/follow', [], true, 'api')}">关注</button></h2>
+                <a href="{:url('author_detail',['id' => $book['authorid']])}" class="author">
+                    <img src="{__STATIC__}/home/feiniao/images/search_kong.png" data-src="{$author ? get_file($author.headimg,1) : ''}">
+                    <span>{$book.author|default='暂无'}</span>
+                </a>
+                <div class="authorList">
+                    <div>
+                        <img src="{__STATIC__}/home/feiniao/images/icon01.png" />
+                        <span>作品数</span>
+                        <em>{$book_count}</em>
+                    </div>
+                    <div class="m">
+                        <img src="{__STATIC__}/home/feiniao/images/icon02.png" />
+                        <span>粉丝数</span>
+                        <em>{$follow_count}</em>
+                    </div>
+                    <div>
+                        <img src="{__STATIC__}/home/feiniao/images/icon03.png" />
+                        <span>收藏数</span>
+                        <em>{$fav_count}</em>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="boxCenter boxT clearfix">
+        <div class="lf lfO">
+            <p class="intro" style="white-space: pre-wrap;text-indent:0;">{$book.remark|raw|default='无简介'}</p>
+            <div class="newChapterBox clearfix">
+                <div class="zxzj">最新章节</div>
+                <div class="newChapter clearfix">
+                    {notempty name="$new_chapter"}
+                        {volist name="$new_chapter" id="v"}
+                        <div>
+                            <a href="{:furl('chapter_detail',['id'=>$v['id'], 'bookid'=>$book['filename'] ? $book['filename'] : $book['id']])}" target="_blank">{$v.title}</a>
+                            <em>{:time_format($v.create_time,'Y-m-d')}</em>
+                        </div>
+                        {/volist}
+                    {/notempty}                    
+                    <div>
+                        <a href="javascript:void(0);" class="chapterMore" onclick="$('.tabList span').eq(1).click(); return false;">查看全部章节<i></i></a>
+                    </div>
+                </div>               
+            </div>
+            {if isset($conConfig['book_detail_first_chapter_isshow']) && $conConfig['book_detail_first_chapter_isshow']}
+                <div class="newChaptercontent clearfix">
+                    <h3>{$title}</h3>
+                    {$content|raw|default='暂无章节内容'}
+                </div> 
+            {/if}
+            <h2>同类作品推荐</h2>
+            <div class="likeRead clearfix">
+                {php}$list = model('book')->field('id,title,author,filename,cover')->where('status', 1)->where('genre', $book['genre'])->where('id', '<>', $book['id'])->cache('book_list_genre_' . $book['genre'], 86400)->order('words desc')->limit(5)->select()->toArray();{/php}
+                {notempty name="$list"}
+                    {volist name="$list" id="v"}
+                        <a href="{:url('book_detail', ['id' => $v['filename'] ? $v['filename'] : $v['id']])}" target="_blank">
+                            <div class="bookImg">
+                                <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($v.cover)}" alt="{$v.title}">               
+                            </div>
+                            <h3>{$v.title}</h3>
+                            <span>{$v.author}</span>
+                        </a>
+                    {/volist}
+                {/notempty}                
+            </div>
+
+            <div id="comments">
+                <h2>作品评论区<i></i></h2>
+                {if isset($conConfig['comment_open']) && $conConfig['comment_open']}
+                    {php} $targetType = 1; $target_id = $book['id']; $commentreplyApi = furl('v1/commentreply', [], true, 'api'); $commentlistApi = furl('v1/commentlist', [], true, 'api'); $commentlikeApi = furl('v1/commentlike', [], true, 'api'); $commentcreateApi = furl('v1/commentcreate', [], true, 'api');{/php}
+                    {include file="common/comment" /}
+                {/if}
+            </div>
+
+        </div>
+        <!-- 目录 -->        
+        <div class="lf lfT hidden">            
+            <li>
+                <div>
+                    {notempty name="$chapterlist"}
+                        {volist name="$chapterlist" id="v"}
+                            <a title="发存时间:{:time_format($v.create_time,'Y-m-d')}" href="{:furl('chapter_detail',['id'=>$v['id'], 'bookid'=>$book['filename'] ? $book['filename'] : $book['id']])}" target="_blank">{$v.title}</a>
+                        {/volist}
+                    {else/}
+                        <p style="padding: 20px; text-align: center;">暂无章节</p>
+                    {/notempty}
+                </div>
+            </li>           
+        </div>        
+        <div class="rt">
+            <div class="bookWrap">
+                <h2>人气榜</h2>
+                {php}$list = model('book')->field('id,title,author,filename')->where('status', 1)->where('id', '<>', $book['id'])->cache('book_hits_top_' . $book['id'], 86400)->order('hits desc')->limit(10)->select()->toArray();{/php}
+                {notempty name="$list"}
+                    {volist name="$list" id="v" key="key"}
+                    <a href="{:url('book_detail', ['id' => $v['filename'] ? $v['filename'] : $v['id']])}" target="_blank">
+                        {if $key == 1}<i class="o">{$key}</i>{/if}
+                        {if $key == 2}<i class="t">{$key}</i>{/if}
+                        {if $key == 3}<i class="th">{$key}</i>{/if}
+                        {if $key > 3}<i>{$key}</i>{/if}
+                        <span>{$v.title}</span>
+                        <em>{$v.author}</em>
+                    </a>
+                    {/volist}
+                {/notempty}                
+            </div>
+   
+            <div class="bookWrap">
+                <h2>更新榜</h2>
+                {php}$list = model('book')->field('id,title,author,filename')->where('status', 1)->where('id', '<>', $book['id'])->cache('book_update_top_' . $book['id'], 86400)->order('chapters desc')->limit(10)->select()->toArray();{/php}
+                {notempty name="$list"}
+                    {volist name="$list" id="v" key="key"}
+                    <a href="{:url('book_detail', ['id' => $v['filename'] ? $v['filename'] : $v['id']])}" target="_blank">
+                        {if $key == 1}<i class="o">{$key}</i>{/if}
+                        {if $key == 2}<i class="t">{$key}</i>{/if}
+                        {if $key == 3}<i class="th">{$key}</i>{/if}
+                        {if $key > 3}<i>{$key}</i>{/if}
+                        <span>{$v.title}</span>
+                        <em>{$v.author}</em>
+                    </a>
+                    {/volist}
+                {/notempty}
+            </div>
+        </div>
+    </div>
+    {eq name=":get_addons_is_enable('cover')" value="1"}
+        {:hook('synchCoverHook', ['bookid' => $book['id']])}
+    {/eq}
+{else/}
+    <div style="display: flex;justify-content: center;align-items: center;margin: 20rem auto;">
+        <img src="{__STATIC__}/home/feiniao/images/search_kong.png" alt="" style="width: 50px;">
+        作品不存在！
+    </div>        
+{/notempty}
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script src="{__STATIC__}/home/feiniao/js/jquery-1-22.min.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/purify.min.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/common.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/dialog.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/userinfo.js?v={$version}"></script>
+<script src="{__STATIC__}/home/script/jquery.qrcode.min.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/book.js?v={$version}"></script>
+{if isset($conConfig['comment_open']) && $conConfig['comment_open']}
+<script src="{__STATIC__}/home/feiniao/js/comments.js?v={$version}"></script>
+{/if}
+<script>
+$(function() {
+});
+</script>
+{/block}
+<!-- /脚本 -->

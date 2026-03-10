@@ -1,0 +1,365 @@
+{extend name="common/base"/}
+{block name="style"}
+<link rel="stylesheet" href="{__STATIC__}/home/feiniao/css/index.css?v={$version}">
+{/block}
+{block name="title"}
+<title>{:get_seo_str('home','home_title')}</title>	
+{/block}
+{block name="keywords"}
+<meta name="keywords" content="{:get_seo_str('home','home_keywords')}"/>
+<meta name="description" content="{:get_seo_str('home','home_description')}"/>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+	{include file="common/header" /}
+    <div class="wrap">        
+        {php}$home_banner_buttom = isset($pageconf['home_banner_buttom']) ? model('advsr')->where(['status' => 1, 'adver_id' => $pageconf['home_banner_buttom']])->order('level desc')->find() : '';{/php}
+        {notempty name="home_banner_buttom"}
+            <a href="{$home_banner_buttom.link}" target="_blank" class="boxCenter banner"><img src="{$home_banner_buttom.images}"></a>
+        {/notempty}
+        <div class="tonglan">
+            <!-- 左侧 -->
+            <div class="left hotWrap">
+                {php}$home_editor_main = model('book')->field('id,filename,cover,title,author,remark')->where('status',1)->orderRaw('RAND()')->cache('home_editor_main',86400)->limit(2)->select();{/php} 
+                <h1 class="clearfix"><strong>编辑推荐</strong><a href="javascript:;" class="change" data-page="1" data-type="{$pageconf.home_editor_main|default='0'}" data-url="{:furl('/v1/advert', [], true, 'api')}"><i></i>换一换</a></h1>
+                {notempty name="home_editor_main"}
+                    {volist name="$home_editor_main" id="v"}
+                        <a href="{:url('book_detail', ['id' => $v['filename'] ? $v['filename'] : $v['id']])}" class="bookLink spBL">
+                            <div class="bookImg">
+                                <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($v.cover)}" alt="{$v.title}">
+                            </div>
+                            <div class="bookIntro">
+                                <em>{$v.author}</em>
+                                <h2>{$v.title}</h2>
+                                <span>{$v.remark}</span>
+                            </div>
+                        </a>
+                    {/volist}
+                {/notempty}
+            </div>            
+            <!-- 中间轮播 -->
+            <div class="slidemain slideBox">
+                <div class="focus-box" id="boxCenter">
+                    <div class="slide-track">
+                        {php}$slide = isset($pageconf['home_slide']) ? model('slide_info')->where(['slide_id'=> $pageconf['home_slide'], 'status' => 1, 'type' => 1])->cache('home_slide',86400)->order('sort desc')->select()->toArray() : '';{/php}
+                        {volist name="$slide" id="v"}
+                        <a href="{$v.src}" class="slide-item" style="background-image: url('{:get_file($v.img)}')" title="{$v.title}"></a>
+                        {/volist}
+                    </div>
+                    <a class="slide-prev" id="to_Left"></a>
+                    <a class="slide-next" id="to_Right"></a>
+                    <ul class="slidepage"></ul>
+                </div>
+            </div>        
+            <!-- 右侧公告 (动态渲染) -->
+            {php}$notice = isset($pageconf['home_notice']) ? model('advsr')->where(['status' => 1, 'adver_id' => $pageconf['home_notice'], 'type' => 6])->order('level desc')->limit(6)->select()->toArray() : '';{/php}
+            {notempty name="notice"}
+            <div class="right">
+                <h1>网站公告</h1>
+                {volist name="$notice" id="v"}
+                <a href="{:url('notice_detail',['id' => $v['id']])}" target="_blank" title="{$v.title}"><i></i>{:dsubstr($v.title,46)}</a>
+                {/volist}
+            </div>
+            {/notempty}
+        </div>
+        
+        <div class="sectionBox">
+            <div class="sectionBox-left">
+                <div class="bookBox">
+                    <div class="title"><strong>主编力荐</strong><i></i><i></i><i></i></div>
+                    <div class="booklist">
+                        {php}$home_editor_images = model('book')->field('id,filename,cover,title,chapters,author,remark')->where('status',1)->orderRaw('RAND()')->cache('homeeditorrecommend',86400)->limit(6)->select();{/php}                        
+                        {notempty name="home_editor_images"}					
+                        {volist name="$home_editor_images" id="v"}                          
+                            <a href="{:url('book_detail', ['id' => $v['filename'] ? $v['filename'] : $v['id']])}" target="_blank">
+                                <div class="bookimg">
+                                    <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($v.cover)}" alt="{$v.title}">
+                                </div>
+                                <div class="bookinfo">
+                                    <h2>{$v.title}</h2>
+                                    <div class="desc">{$v.remark}</div>
+                                    <div class="author">{$v.author}</div>
+                                </div>
+                            </a>
+                        {/volist}
+                        {/notempty}
+                    </div>
+                </div>
+    
+                <!--精品推荐-->
+                <div class="bookBox boutique">
+                    <div class="title"><strong>精品推荐</strong><i></i><i></i></div>
+                    <div class="booklist">
+                        {php}$home_premium = model('book')->field('id,filename,cover,title,chapters,author,remark')->where('status',1)->order('hits desc')->cache('home_premium',86400)->limit(8)->select();{/php}
+                        {notempty name="home_premium"}					
+                            {volist name="$home_premium" id="v"}
+                                <a href="{:url('book_detail', ['id' => $v['filename'] ? $v['filename'] : $v['id']])}" target="_blank">
+                                    <div class="bookimg">
+                                        <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($v.cover)}" alt="{$v.title}">
+                                    </div>
+                                    <div class="bookinfo">
+                                        <h2>{$v.title}</h2>
+                                        <div class="desc">{$v.remark}</div>
+                                        <div class="author">{$v.author}</div>
+                                    </div>
+                                </a>
+                            {/volist}
+                        {/notempty}
+                    </div>
+                </div>
+                <!--end 精品推荐-->
+    
+                <!--新书优选-->
+                <div class="bookBox newbookselect">
+                    <div class="title"><strong>新书优选</strong><i></i></div>
+                    <div class="booklist">
+                        {php}$home_newbook_selection = model('book')->field('id,filename,cover,title,chapters,author,remark')->where('status',1)->orderRaw('RAND()')->cache('home_newbook_selection',86400)->limit(15)->select();{/php} 
+                        {notempty name="home_newbook_selection"}
+                            {volist name="$home_newbook_selection" id="v"}
+                                {if $key < 3}
+                                <a href="{:url('book_detail', ['id' => $v['filename'] ? $v['filename'] : $v['id']])}" target="_blank">
+                                    <div class="bookimg"><img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($v.cover)}" alt="{$v.title}"></div>
+                                    <div class="bookinfo">
+                                        <h2>{$v.title}</h2>
+                                        <div class="desc">{$v.remark}</div>
+                                        <div class="author">{$v.author}</div>
+                                    </div>
+                                </a>        
+                                {/if}
+                                {if $key >= 3}
+                                <a href="{:url('book_detail', ['id' => $v['filename'] ? $v['filename'] : $v['id']])}" target="_blank">
+                                    <div class="bookname">{$v.title}</div>
+                                    <div class="pseudonym">{$v.author}</div>
+                                </a>
+                                {/if}
+                            {/volist}
+                        {/notempty}
+                    </div>
+                </div>
+                <!--end 新书优选-->
+    
+                <!--完本精选-->
+                <div class="bookBox boutique">
+                    <div class="title"><strong>完本精选</strong></div>
+                    <div class="booklist">
+                        {php}$home_complete = model('book')->field('id,filename,cover,title,chapters,author,remark')->where('status',1)->where('isfinish',2)->orderRaw('RAND()')->cache('home_complete',86400)->limit(8)->select();{/php} 
+                        {notempty name="home_complete"}					
+                            {volist name="$home_complete" id="v"}
+                                <a href="{:url('book_detail', ['id' => $v['filename'] ? $v['filename'] : $v['id']])}" target="_blank">
+                                    <div class="bookimg">
+                                        <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($v.cover)}" alt="{$v.title}">
+                                    </div>
+                                    <div class="bookinfo">
+                                        <h2>{$v.title}</h2>
+                                        <div class="desc">{$v.remark}</div>
+                                        <div class="author">{$v.author}</div>
+                                    </div>
+                                </a>
+                            {/volist}
+                        {/notempty}                        
+                    </div>
+                </div>
+                <!--end 完本精选-->
+            </div>
+            <div class="sectionBox-right">
+                <!--新书榜-->
+                <div class="newbooklist">
+                    <div class="title"><strong>新书榜</strong><a href="{:url('top_detail', ['channel'=> 'male', 'type'=> 'new', 'cid' => 'all', 'page' => 1])}" target="_blank">更多</a></div>
+                    <div class="bookbillboard">
+                        {php}$home_editor_top = model('book')->field('id,filename,title')->where('status',1)->order('create_time desc')->orderRaw('RAND()')->cache('home_editor_top',86400)->limit(10)->select();{/php} 
+                        {notempty name="home_editor_top"}
+                            {volist name="$home_editor_top" id="v"}
+                                <a href="{:url('book_detail', ['id' => $v['filename'] ? $v['filename'] : $v['id']])}" target="_blank">{$v.title}</a>
+                            {/volist}
+                        {/notempty}
+                    </div>
+                </div>
+                <!--end 新书榜-->
+
+                <div style="margin-top: 20px;">
+                    {php}$home_small_railing = isset($pageconf['home_small_railing']) ? model('advsr')->where(['status' => 1, 'adver_id' => $pageconf['home_small_railing']])->order('level desc')->find() : '';{/php}
+                    {notempty name="home_small_railing"}
+                        <a href="{$home_small_railing.link}" target="_blank" class="boxCenter"><img src="{$home_small_railing.images}"></a>
+                    {/notempty}
+                </div>                
+    
+                <!--人气榜-->
+                <div class="newbooklist popularity">
+                    <div class="title"><strong>人气榜</strong><a href="{:url('top_detail', ['channel'=> 'male', 'type'=> 'hits', 'cid' => 'all', 'page' => 1])}" target="_blank">更多</a>
+                    </div>
+                    <div class="bookbillboard">
+                        {php}$hits_top = model('book')->where(['status' => 1])->orderRaw('RAND()')->cache('hits_top',86400)->order('hits desc')->limit(10)->select()->toArray();{/php}
+						{notempty name="hits_top"}
+                            {volist name="$hits_top" id="vo"}
+                                {php}$link = url('book_detail', ['id' => $vo['filename'] ? $vo['filename'] : $vo['id']]);{/php}
+                                <a href="{$link}" target="_blank">{$vo['title']}</a>
+                            {/volist}
+						{/notempty}
+                    </div>
+                </div>
+                <!--end 人气榜-->
+    
+                <!--章节榜-->
+                <div class="newbooklist silvernote">
+                    <div class="title"><strong>章节榜</strong><a href="{:url('top_detail', ['channel'=> 'male', 'type'=> 'chapters', 'cid' => 'all', 'page' => 1])}" target="_blank">更多</a>
+                    </div>
+                    <div class="bookbillboard">
+                        {php}$chapter_top = model('book')->where(['status' => 1])->orderRaw('RAND()')->cache('chapter_top',86400)->order('chapters desc')->limit(10)->select()->toArray();{/php}
+						{notempty name="chapter_top"}
+                            {volist name="$chapter_top" id="vo"}
+                                {php}$link = url('book_detail', ['id' => $vo['filename'] ? $vo['filename'] : $vo['id']]);{/php}
+                                <a href="{$link}" target="_blank">{$vo['title']}</a>
+                            {/volist}
+						{/notempty}
+                    </div>
+                </div>
+                <!--end 章节榜-->
+            </div>
+        </div>
+        <!--end-->
+    
+        <!--通栏3-->        
+        {php}$home_banner_1 = isset($pageconf['home_banner_1']) ? model('advsr')->where(['status' => 1, 'adver_id' => $pageconf['home_banner_1']])->cache('home_banner_1',86400)->order('level desc')->find() : '';{/php}
+        {notempty name="home_banner_1"}
+            {if $home_banner_1.type == 1}
+                {php}
+                    $book = model('book')->where(['id'=> $home_banner_1['books'], 'status' => 1])->cache('book_' . $home_banner_1['books'], 86400)->find();
+                    if($book) {
+                        $home_banner_1['link'] = url('book_detail', ['id' => $book['filename'] ? $book['filename'] : $book['id']]);
+                    }
+                {/php}
+                <a href="{$home_banner_1.link}" target="_blank" class="boxCenter banner">
+                    <img src="{$home_banner_1.images}">
+                </a>
+            {/if}
+            {if $home_banner_1.type == 3}
+                <a href="{$home_banner_1.link}" target="_blank" class="boxCenter banner">
+                    <img src="{$home_banner_1.images}">
+                </a>
+            {/if}
+            {if $home_banner_1.type == 6}
+                {php}
+                    $content = htmlspecialchars_decode($home_banner_1['advshtml']);
+                    $content = str_replace(['<br />', '&rdquo;', '&nbsp;'], ['', '"', ' '], $content);
+                    $home_banner_1['advshtml'] = preg_replace('/\s+/', ' ', $content);
+                {/php}
+                <div class="boxCenter banner">{$home_banner_1.advshtml|raw}</div>                
+            {/if}
+        {/notempty}
+        <div class="boxCenter clearfix">
+            <div class="centerO ct_left">
+                <h1 class="clearfix"><strong>最新更新</strong><a href="{:url('novel')}">更多<i></i></a></h1>
+                <div class="title clearfix">
+                    <span class="classify">分类</span>
+                    <span class="name">书名</span>
+                    <span class="chapter">最新章节</span>
+                    <span class="author">作者</span>
+                    <span class="time">更新时间</span>
+                </div>
+                {php}
+                    $update_list = model('book')->field('id,genre,subgenre,title as booktitle,filename,update_time,create_time,words,author')->where(['status' => 1])->cache('home_update_list', 86400)->orderRaw('CASE WHEN update_time > 0 THEN update_time ELSE create_time END DESC')->limit(20)->select()->toArray();
+                    if(!empty($update_list)) {
+                        foreach ($update_list as $k => $vo) {
+                            $update_list[$k]['link'] = (string) url('book_detail', ['id' => $vo['filename'] ? $vo['filename'] : $vo['id']]);     
+                            $update_list[$k]['genrename'] = $vo['genre'] == $params['girlgenre'] ? model('category')->where(['status' => 1, 'id' => $vo['subgenre']])->value('name') : model('category')->where(['status' => 1, 'id' => $vo['genre']])->value('name');                    
+                            $chapter = model('chapter')->field('id,bookid,title,chaps,create_time')->where(['bookid' => $vo['id'], 'status' => 1, ['verify', 'in', '0,1']])->cache('chapter_bookid_createtimedesc_' . $vo['id'], 86400)->order('create_time desc')->find();
+                            $update_list[$k]['chapterlink'] = $chapter ? (string) furl('chapter_detail', ['id' => $chapter['id'], 'bookid' => $vo['filename'] ? $vo['filename'] : $vo['id']]) : 'javascript:;';
+                            $update_list[$k]['title'] = $chapter ? $chapter['title'] : '--';
+                        }
+                    }
+                {/php}
+                {notempty name="update_list"}
+                    {volist name="$update_list" id="vo"}
+                        <div class="updateList clearfix">
+                            <a title="{$vo['genrename']??'--'}" href="{:url('novelfilter', [
+                            'channel' => $vo['genre'] == $params['girlgenre'] ? 2 : 1,
+                            'status'  => 'a',
+                            'cat'     => $vo['genre'] == $params['girlgenre'] ? $vo['subgenre'] : $vo['genre'],        
+                            'word'    => 0,
+                            'order'   => 'a',
+                            'page'    => 1,
+                            'cid'     => 0,
+                            'mode'    => 1
+                        ])}" target="_blank" class="classify">[{$vo['genrename']??'--'}]</a>
+                            <a title="{$vo['booktitle']}" href="{$vo['link']}" target="_blank" class="name">{$vo['booktitle']}</a>
+                            <a href="{$vo['chapterlink']}" target="_blank" title="{$vo.title}" class="chapter">{$vo.title|default="--"}</a>           
+                            <a class="author">{$vo['author']|default="--"}</a>
+                            <span class="time">{:time_format(max($vo['create_time'], $vo['update_time']), 'm-d H:i')}</span>
+                        </div>
+                    {/volist}
+                {/notempty}                
+            </div>
+            <div class="centerO ct_right">
+                <h1 class="clearfix"><strong>最新入库</strong></h1>
+                <div class="list">
+                    {php}
+						$book_count = model('book')->where(['status' => 1, ['chapters', '>', 0]])->count();
+						if($book_count > 10) {
+							$start = mt_rand(0, ($book_count - 10));
+						} else {
+							$start = 0;
+						}
+						$rand_top = model('book')->where(['status' => 1, ['chapters', '>', 0]])->order('update_time desc')->limit($start, 10)->select()->toArray();
+                    {/php}
+                    {notempty name="rand_top"}
+                        {volist name="$rand_top" id="vo"}
+                            <a class="clearfix {eq name="$key" value="0"}first{/eq}" target="_blank" href="{:url('book_detail', ['id' => $vo['filename'] ? $vo['filename'] : $vo['id']])}"><strong>{$vo['title']}</strong><em>{$vo['author']}</em></a>
+                        {/volist}
+                    {/notempty}
+                </div>
+            </div>
+            <div class="centerO ct_right ct_last">
+                <h1 class="clearfix"><strong>最多更新</strong></h1>
+                <div class="list">
+                    {php}$words_top = model('book')->where(['status' => 1])->cache('words_top', 86400)->order('words desc')->limit(10)->select()->toArray();{/php}
+                    {notempty name="words_top"}
+                        {volist name="$words_top" id="vo"}
+                            {php}$link = url('book_detail', ['id' => $vo['filename'] ? $vo['filename'] : $vo['id']]);{/php}
+                            <a class="clearfix {eq name="$key" value="0"}first{/eq}" target="_blank" href="{:url('book_detail', ['id' => $vo['filename'] ? $vo['filename'] : $vo['id']])}"><strong>{$vo['title']}</strong><em>{$vo['author']}</em></a>
+                        {/volist}
+					{/notempty}
+                </div>
+            </div>
+        </div>
+        {php}$home_banner_buttom = isset($pageconf['home_banner_buttom']) ? model('advsr')->where(['status' => 1, 'adver_id' => $pageconf['home_banner_buttom']])->order('level desc')->find() : '';{/php}
+        {notempty name="home_banner_buttom"}
+        {if $home_banner_buttom.type == 1}
+            {php}
+                $book = model('book')->where(['id'=> $home_banner_buttom['books'], 'status' => 1])->find();
+                if($book) {
+                    $home_banner_buttom['link'] = url('book_detail', ['id' => $book['filename'] ? $book['filename'] : $book['id']]);
+                }
+            {/php}
+            <a href="{$home_banner_buttom.link}" target="_blank" class="boxCenter banner">
+                <img src="{$home_banner_buttom.images}">
+            </a>
+        {/if}
+        {if $home_banner_buttom.type == 3}
+            <a href="{$home_banner_buttom.link}" target="_blank" class="boxCenter banner">
+                <img src="{$home_banner_buttom.images}">
+            </a>
+        {/if}
+        {if $home_banner_buttom.type == 6}
+            {php}
+                $content = htmlspecialchars_decode($home_banner_buttom['advshtml']);
+                $content = str_replace(['<br />', '&rdquo;', '&nbsp;'], ['', '"', ' '], $content);
+                $home_banner_buttom['advshtml'] = preg_replace('/\s+/', ' ', $content);
+            {/php}
+            <div class="boxCenter banner">{$home_banner_buttom.advshtml|raw}</div>
+        {/if}
+        {/notempty}
+    </div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}	
+<script src="{__STATIC__}/home/feiniao/js/jquery-1-22.min.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/jquery-roundabout.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/purify.min.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/dialog.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/common.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/index.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/userinfo.js?v={$version}"></script>
+{/block}
+<!-- /脚本 -->

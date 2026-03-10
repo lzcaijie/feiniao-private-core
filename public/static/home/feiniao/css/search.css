@@ -1,0 +1,453 @@
+@import url("common.css");
+.seach_box {
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 4px;
+    margin-top: 10px;
+    padding-top: 20px;
+    margin-bottom: 10px
+}
+
+.seach_box .search_left {
+    width: 68%;
+    margin-left: 1%;
+    float: left
+}
+
+.seach_box .search_left .search_top {
+    border-bottom: 1px solid #e8e8e8;
+    padding-bottom: 15px
+}
+
+.seach_box .search_left .search_top .search_tp {
+    float: left;
+    height: 34px;
+    line-height: 34px;
+    font-size: 16px;
+    margin-bottom: 12px;
+    color: #666
+}
+
+.seach_box .search_left .search_top .search_tp span {
+    color: #fa934b
+}
+
+.seach_box .search_left .search_top .search_form {
+    border: 1px solid #f5f5f5;
+    float: right;
+    border-radius: 15px
+}
+
+.seach_box .search_left .search_top .search_form .text {
+    width: 205px;
+    border: 1px solid #e3e3e3;
+    font-size: 14px;
+    padding: 0 11px 0 19px;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    height: 34px;
+    float: left
+}
+
+.seach_box .search_left .search_top .search_form .submit {
+    position: absolute;
+    width: 64px;
+    height: 36px;
+    opacity: 0;
+    z-index: 100;
+    filter: alpha(opacity=0)
+}
+
+.seach_box .search_left .search_top .search_form .searchBtn {
+    background: #20b296;
+    width: 60px;
+    border: 1px solid #20b296;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    cursor: pointer;
+    height: 34px;
+    float: left
+}
+
+.seach_box .search_left .search_top .search_form .searchBtn em {
+    display: block;
+    background: url('../images/indexIcon.png') 0 -410px no-repeat;
+    width: 22px;
+    height: 24px;
+    margin: 6px auto auto
+}
+
+.seach_box .search_left .bookList li {
+    width: 100%;
+    padding: 20px 0;
+    border-bottom: 1px solid #f4f4f4;
+    overflow: hidden
+}
+
+.seach_box .search_left .bookList li .bookImg {
+    width: 88px;
+    height: 118px;
+    overflow: hidden;
+    margin-right: 15px;
+    float: left
+}
+
+.seach_box .search_left .bookList li .bookImg img {
+    width: 100%;
+    height: 100%;
+    transition: transform .3s ease-out
+}
+
+.seach_box .search_left .bookList li .bookImg:hover img {
+    transform: scale(1.1)
+}
+
+.seach_box .search_left .bookList li .rtList {
+    font-size: 12px;
+    color: #999
+}
+
+.seach_box .search_left .bookList li .rtList .bookNm {
+    font-size: 16px;
+    display: block;
+    margin: 5px 0 10px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    color: #000
+}
+
+.seach_box .search_left .bookList li .rtList .bookNm:hover {
+    color: #25c4a6
+}
+
+.seach_box .search_left .bookList li .rtList .bookIntro {
+    line-height: 20px;
+    height: 40px;
+    overflow: hidden;
+    margin-bottom: 10px;
+    display: block;
+    letter-spacing: 1px;
+    font-size: 14px;
+    color: #666
+}
+
+.seach_box .search_left .bookList li .rtList .bot_list {
+    position: relative
+}
+
+.seach_box .search_left .bookList li .rtList .bot_list .condition {
+    float: left;
+    margin-top: 6px
+}
+
+.seach_box .search_left .bookList li .rtList .bot_list .condition .authorNm {
+    font-size: 12px;
+    display: inline-block;
+    margin-right: 14px;
+    color: #999;
+    cursor: default
+}
+
+.seach_box .search_left .bookList li .rtList .bot_list .condition .authorNm i {
+    background: url('../images/indexIcon.png') -133px -49px no-repeat;
+    position: relative;
+    top: 2px;
+    width: 12px;
+    height: 14px;
+    display: inline-block;
+    margin-right: 8px
+}
+
+.seach_box .search_left .bookList li .rtList .bot_list .condition span {
+    padding: 0 14px;
+    font-size: 12px;
+    color: #999;
+    display: inline-block
+}
+
+.seach_box .search_left .bookList li .rtList .bot_list .condition hr {
+    border: none;
+    border-left: 1px solid #e8e8e8;
+    width: 1px;
+    height: 10px;
+    position: relative;
+    top: 1px;
+    margin: 0;
+    display: inline-block
+}
+
+.seach_box .search_left .bookList li .rtList .bot_list .look_readBtn {
+    float: right;
+    width: 98px;
+    height: 28px;
+    border: 1px solid #25c4a6;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    overflow: hidden;
+    text-align: center;
+    line-height: 28px;
+    font-size: 14px
+}
+
+.seach_box .search_left .bookList li .rtList .bot_list .look_readBtn {
+    color: #fff;
+    margin-left: 10px;
+    background: #25c4a6
+}
+
+.seach_box .search_left .bookList li .rtList .bot_list .book_onRack {
+    color: #999;
+    border: 1px solid #d7d7d7
+}
+
+.seach_box .search_left .bookList .lastLine {
+    border-bottom: none
+}
+
+.seach_box .search_left .search_kong .kong_bg {
+    width: 174px;
+    height: 151px;
+    background: url('../images/search_kong.png') no-repeat;
+    background-size: 100%;
+    display: block;
+    margin: 250px auto 15px
+}
+
+.seach_box .search_left .search_kong p {
+    font-size: 16px;
+    color: #666;
+    text-align: center
+}
+
+.seach_box .search_left .search_kong p span {
+    color: #fa934b
+}
+
+.seach_box .search_right {
+    width: 240px;
+    margin-right: 1%;
+    float: right;
+    padding: 20px 20px 10px;
+    margin-bottom: 40px;
+    border: 1px solid #f3f3f3;
+    background-color: #f8f8f8
+}
+
+.seach_box .search_right .search_rCon {
+    width: 240px;
+    margin: 0 auto
+}
+
+.seach_box .search_right .search_rCon h4 {
+    margin-bottom: 20px
+}
+
+.seach_box .search_right .search_rCon h4 i {
+    width: 20px;
+    height: 20px;
+    background: url('../images/search_xin.png') no-repeat;
+    background-size: 100%;
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: -4px
+}
+
+.seach_box .search_right .search_rCon h4 span {
+    display: inline-block;
+    font-size: 18px;
+    color: #333;
+    line-height: 20px
+}
+
+.seach_box .search_right .search_rCon .hot_searchList {
+    display: block;
+    margin-bottom: 30px
+}
+
+.seach_box .search_right .search_rCon .hot_searchList .bookImg {
+    width: 88px;
+    height: 118px;
+    margin-right: 15px;
+    float: left;
+    overflow: hidden
+}
+
+.seach_box .search_right .search_rCon .hot_searchList .bookImg img {
+    width: 100%;
+    height: 100%;
+    transition: transform .3s ease-out
+}
+
+.seach_box .search_right .search_rCon .hot_searchList .bookImg:hover img {
+    transform: scale(1.1)
+}
+
+.seach_box .search_right .search_rCon .hot_searchList .book {
+    position: relative;
+    height: 118px;
+    float: left;
+    width: 137px
+}
+
+.seach_box .search_right .search_rCon .hot_searchList .book div,.seach_box .search_right .search_rCon .hot_searchList .book h3 {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    display: block
+}
+
+.seach_box .search_right .search_rCon .hot_searchList .book h3 {
+    color: #000;
+    padding: 5px 0;
+    font-size: 14px
+}
+
+.seach_box .search_right .search_rCon .hot_searchList .book p {
+    font-size: 12px;
+    color: #999;
+    line-height: 18px;
+    height: 57px;
+    overflow: hidden;
+    margin-top: 5px
+}
+
+.seach_box .search_right .search_rCon .hot_searchList .book div {
+    font-size: 12px;
+    color: #999;
+    margin-top: 5px
+}
+
+.seach_box .search_right .search_rCon .hot_searchList .book div i {
+    position: relative;
+    top: 2px;
+    width: 12px;
+    height: 14px;
+    display: inline-block;
+    margin-right: 5px
+}
+
+.seach_box .search_right .search_rCon .hot_searchList .book .authorNm i {
+    background: url('../images/indexIcon.png') -133px -49px no-repeat
+}
+
+.seach_box .search_right .search_rCon .hot_searchList .book .classifyLt i {
+    background: url('../images/indexIcon.png') -159px -49px no-repeat
+}
+
+.seach_box .search_right .search_rCon .hot_searchList:hover .book h3 {
+    color: #25c4a6
+}
+
+.box_shadow_bg {
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    background-color: rgba(0,0,0,.6);
+    filter: alpha(opacity=60);
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1001
+}
+
+.seach_box {
+    border: none;
+    background: inherit;
+    padding-top: 31px
+}
+
+.seach_box .search_left {
+    margin-left: 0;
+    width: 70%
+}
+
+.seach_box .search_left .search_top {
+    padding-bottom: 0
+}
+
+.seach_box .search_left .search_top .search_form {
+    margin-bottom: 15px;
+    position: relative
+}
+
+.seach_box .search_left .search_top .search_form .text {
+    width: 251px;
+    line-height: 30px;
+    height: 30px;
+    border: 1px solid rgba(153,153,153,.5);
+    border-right: 1px solid #ccc;
+    font-size: 14px;
+    padding: 0 11px 0 14px;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    float: left;
+    outline: 0
+}
+
+.seach_box .search_left .search_top .search_form .submit {
+    position: absolute;
+    width: 64px;
+    height: 36px;
+    opacity: 0;
+    z-index: 100;
+    right: 0;
+    filter: alpha(opacity=0)
+}
+
+.seach_box .search_left .search_top .search_form .searchBtn {
+    width: 51px;
+    border: 1px solid rgba(153,153,153,.5);
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    cursor: pointer;
+    float: left;
+    height: 30px;
+    border-left: none;
+    background: #FFD338
+}
+
+.seach_box .search_left .search_top .search_form .searchBtn em {
+    display: block;
+    background: url('../images/icon.png') 0 -71px no-repeat;
+    background-size: 100px 100px;
+    width: 20px;
+    height: 22px;
+    margin: 3px auto auto
+}
+
+.seach_box .search_left .search_top .search_tp {
+    margin: 0
+}
+
+.seach_box .search_left .search_top .search_tp span {
+    color: #963A00
+}
+
+.seach_box .search_left .bookList li .rtList .bot_list .look_readBtn {
+    color: #963A00;
+    background: #FFD438;
+    border-color: #FFD438
+}
+
+.seach_box .search_left .bookList li .rtList .bot_list .look_readBtn:hover {
+    opacity: .7
+}
+
+.seach_box .search_left .bookList li .rtList .bot_list .book_onRack {
+    color: #999;
+    border: 1px solid #d7d7d7
+}
+
+.seach_box .search_right {
+    margin-right: 0
+}
+
+.seach_box .search_right .search_rCon .hot_searchList:hover .book h3 {
+    color: #000
+}
+.highlight {
+    color: #ff4d4f!important;
+    padding: 0!important;
+    font-weight: bold;
+}

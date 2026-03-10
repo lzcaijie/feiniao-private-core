@@ -1,0 +1,435 @@
+{extend name="common/base"/}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-4">
+	<h3 class="pb-3">编辑作者</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray-2">笔名<font>*</font></td>
+			<td><input type="text" name="nickname" lay-verify="required" lay-reqText="请完善昵称" value="{notempty name="$detail.nickname"}{$detail.nickname}{/notempty}" autocomplete="off" placeholder="请输入昵称" class="layui-input"></td>
+			<td class="layui-td-gray-2">手机<font>*</font></td>
+			<td><input type="text" name="mobile" lay-verify="required"  lay-reqText="请完善手机" {notempty name="$detail.mobile"}value="{$detail.mobile}" readonly{/notempty} autocomplete="off" placeholder="请输入手机" class="layui-input"></td>
+			<td class="layui-td-gray-2">姓名</td>
+			<td><input type="text" name="true_name" value="{notempty name="$detail.true_name"}{$detail.true_name}{/notempty}" autocomplete="off" placeholder="请输入姓名" class="layui-input"></td>
+			
+		</tr>
+		<tr>			
+			<td class="layui-td-gray-2">性别</td>
+			<td>
+				<input type="radio" name="sex" value="1" title="男" {eq name="$detail.sex" value="1"} checked{/eq}>
+				<input type="radio" name="sex" value="2" title="女" {eq name="$detail.sex" value="2"} checked{/eq}>
+				<input type="radio" name="sex" value="" title="保密" {eq name="$detail.sex" value=""} checked{/eq}>
+			</td>
+			<td class="layui-td-gray-2">邮箱</td>
+			<td><input type="text" name="email"  value="{notempty name="$detail.email"}{$detail.email}{/notempty}" autocomplete="off" placeholder="请输入邮箱" class="layui-input"></td>		
+			<td class="layui-td-gray-2">身份证号</td>
+			<td><input type="text" name="idcard" value="{notempty name="$detail.idcard"}{$detail.idcard}{/notempty}" autocomplete="off" placeholder="请输入身份证号" class="layui-input"></td>				
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">生日</td>
+			<td><input type="text" name="birth" value="{notempty name="$detail.birth"}{$detail.birth|time_format=###,'Y-m-d'}{/notempty}" readonly id="laydate_birth" autocomplete="off" placeholder="请选择" class="layui-input"></td>
+			<td class="layui-td-gray-2">QQ</td>
+			<td><input type="text" name="qq" value="{notempty name="$detail.qq"}{$detail.qq}{/notempty}" autocomplete="off" placeholder="请输入qq" class="layui-input"></td>
+			<td class="layui-td-gray-2">邮编</td>
+			<td><input type="text" name="postcode" value="{notempty name="$detail.postcode"}{$detail.postcode}{/notempty}" autocomplete="off" placeholder="请输入邮编" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">省份</td>
+			<td>
+				<select name="province" id="province" lay-filter="province">
+					<option value="">--请选择--</option>
+				</select>
+			</td>
+			<td class="layui-td-gray-2">市</td>
+			<td>
+				<select name="city" id="city" lay-filter="city">
+					<option value="">--请选择--</option>
+				</select>
+			</td>
+			<td class="layui-td-gray-2">地区</td>
+			<td>
+				<select name="county" id="county" lay-filter="county">
+					<option value="">--请选择--</option>
+				</select>
+			</td>
+		</tr>
+		<tr>			
+			<td class="layui-td-gray-2">地址</td>
+			<td colspan="5"><input type="text" name="address"  value="{notempty name="$detail.address"}{$detail.address}{/notempty}" autocomplete="off" placeholder="请输入地址" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">开户银行</td>
+			<td><input type="text" name="bankdeposit"  value="{notempty name="$detail.bankdeposit"}{$detail.bankdeposit}{/notempty}" autocomplete="off" placeholder="请输入开户银行" class="layui-input"></td>
+			<td class="layui-td-gray-2">银行卡号</td>
+			<td colspan="3"><input type="text" name="bankcard"  value="{notempty name="$detail.bankcard"}{$detail.bankcard}{/notempty}" autocomplete="off" placeholder="请输入银行卡号" class="layui-input"></td>			
+		</tr>
+		<tr>			
+			<td class="layui-td-gray-2">开户行所在省</td>
+			<td>
+				<select name="bankprovince" id="bankprovince" lay-filter="bankprovince">
+					<option value="">--请选择--</option>
+				</select>
+			</td>
+			<td class="layui-td-gray-2">开户行所在市</td>
+			<td>
+				<select name="bankcity" id="bankcity" lay-filter="bankcity">
+					<option value="">--请选择--</option>
+				</select>
+			</td>
+			<td class="layui-td-gray-2">开户地区</td>
+			<td>
+				<select name="bankcounty" id="bankcounty" lay-filter="bankcounty">
+					<option value="">--请选择--</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">完整银行地址</td>
+			<td colspan="5"><input type="text" name="bankaddress" value="{notempty name="$detail.bankaddress"}{$detail.bankaddress}{/notempty}" autocomplete="off" placeholder="请输入完整银行地址" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">固定电话</td>
+			<td><input type="text" name="telephone"  value="{notempty name="$detail.telephone"}{$detail.telephone}{/notempty}" autocomplete="off" placeholder="请输入固定电话" class="layui-input"></td>
+			<td class="layui-td-gray-2">工作单位</td>
+			<td colspan="3"><input type="text" name="workunit"  value="{notempty name="$detail.workunit"}{$detail.workunit}{/notempty}" autocomplete="off" placeholder="请输入工作单位" class="layui-input"></td>
+		</tr>
+		<tr>			
+			<td class="layui-td-gray-2">状态</td>
+			<td>
+				<input type="radio" name="status" value="0" title="禁用" {eq name="$detail.status" value="0"} checked{/eq}><div lay-radio><span style="color: #ccc;">禁用</span></div>
+				<input type="radio" name="status" value="1" title="正常" {eq name="$detail.status" value="1"} checked{/eq}>
+			</td>
+			<td class="layui-td-gray-2">实名状态</td>
+			<td>
+				<input type="radio" name="authstate" value="0" title="未认证" {eq name="$detail.authstate" value="0"} checked{/eq}><div lay-radio><span style="color: #ccc;">未认证</span></div>
+				<input type="radio" name="authstate" value="1" title="已认证" {eq name="$detail.authstate" value="1"} checked{/eq}>
+			</td>
+			<td class="layui-td-gray-2">银行认证状态</td>
+			<td>
+				<input type="radio" name="bankstate" value="0" title="未认证" {eq name="$detail.bankstate" value="0"} checked{/eq}><div lay-radio><span style="color: #ccc;">未认证</span></div>
+				<input type="radio" name="bankstate" value="1" title="已认证" {eq name="$detail.bankstate" value="1"} checked{/eq}>
+			</td>
+		</tr>	
+		<tr>
+			<td class="layui-td-gray-2">头像</td>
+			<td colspan="5" style="vertical-align:top">
+				<div class="layui-upload">
+					<button type="button" class="layui-btn layui-btn-sm" id="upload_btn_headimg">选择上传图片</button>
+					<div class="layui-upload-list" id="upload_box_headimg">
+						<img src="{notempty name="$detail.headimg"}{$detail.headimg}{/notempty}" onerror="javascript:this.src='{__ASSETS__}/init/images/nonepic600x360.jpg';this.onerror=null;" style="width:200px;max-width:200px" />
+						<input type="hidden" name="headimg" value="{notempty name="$detail.headimg"}{$detail.headimg}{/notempty}" >
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">身份证正面</td>
+			<td colspan="5" style="vertical-align:top">
+				<div class="layui-upload">
+					<button type="button" class="layui-btn layui-btn-sm" id="upload_btn_idcardpos">选择上传图片</button>
+					<div class="layui-upload-list" id="upload_box_idcardpos">
+						<img src="{notempty name="$detail.idcardpos"}{$detail.idcardpos}{/notempty}" onerror="javascript:this.src='{__ASSETS__}/init/images/nonepic600x360.jpg';this.onerror=null;" style="width:200px;max-width:200px" />
+						<input type="hidden" name="idcardpos" value="{notempty name="$detail.idcardpos"}{$detail.idcardpos}{/notempty}" >
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">身份证反面</td>
+			<td colspan="5" style="vertical-align:top">
+				<div class="layui-upload">
+					<button type="button" class="layui-btn layui-btn-sm" id="upload_btn_idcardside">选择上传图片</button>
+					<div class="layui-upload-list" id="upload_box_idcardside">
+						<img src="{notempty name="$detail.idcardside"}{$detail.idcardside}{/notempty}" onerror="javascript:this.src='{__ASSETS__}/init/images/nonepic600x360.jpg';this.onerror=null;" style="width:200px;max-width:200px" />
+						<input type="hidden" name="idcardside" value="{notempty name="$detail.idcardside"}{$detail.idcardside}{/notempty}" >
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">银行卡照</td>
+			<td colspan="5" style="vertical-align:top">
+				<div class="layui-upload">
+					<button type="button" class="layui-btn layui-btn-sm" id="upload_btn_bankcardphoto">选择上传图片</button>
+					<div class="layui-upload-list" id="upload_box_bankcardphoto">
+						<img src="{notempty name="$detail.bankcardphoto"}{$detail.bankcardphoto}{/notempty}" onerror="javascript:this.src='{__ASSETS__}/init/images/nonepic600x360.jpg';this.onerror=null;" style="width:200px;max-width:200px" />
+						<input type="hidden" name="bankcardphoto" value="{notempty name="$detail.bankcardphoto"}{$detail.bankcardphoto}{/notempty}" >
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">修改密码</td>
+			<td colspan="5">
+				<div class="layui-input-inline" style="float: left;">
+					<input type="password" name="password" placeholder="请输入密码" autocomplete="off" class="layui-input">
+				</div>
+				<div class="layui-form-mid layui-text-em">只有修改密码时，才填写此项，为空则为不修改密码。</div>			  
+			</td>			
+		</tr>
+	</table>
+	<div class="py-3">
+		<input type="hidden" name="id" value="{$detail.id}"/>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script type="text/javascript" src="{__STATIC__}/author/js/address.js"></script>
+<script>
+	var moduleInit = ['tool'];
+	var province = "{notempty name="$detail.province"}{$detail['province']}{/notempty}";
+	var bankprovince = "{notempty name="$detail.bankprovince"}{$detail['bankprovince']}{/notempty}";
+	var bankcity = "{notempty name="$detail.bankcity"}{$detail['bankcity']}{/notempty}";
+	var bankcounty = "{notempty name="$detail.bankcounty"}{$detail['bankcounty']}{/notempty}";
+    var city = "{notempty name="$detail.city"}{$detail['city']}{/notempty}";
+    var county = "{notempty name="$detail.county"}{$detail['county']}{/notempty}";
+	function feiniaoInit() {
+		var form = layui.form, tool = layui.tool;
+		var provincecode = '';
+		var pcode = '';
+		$("#bankprovince").empty();
+    	$("#province").empty();
+		var poption = "<option value=''>--请选择--</option>";
+		var html = "<option value=''>--请选择--</option>";
+		$.each(pdata,function(idx, item) {
+			if (parseInt(item.level) == 0) {
+				if(province == item.names) {
+					pcode = item.code;
+					poption += "<option value="+item.code+" selected>"+ item.names +"</option> ";
+				} else {
+					poption += "<option value="+item.code+">"+ item.names +"</option> ";
+				}
+				if(bankprovince == item.names) {
+					provincecode = item.code;
+					html += "<option value="+item.code+" selected>"+ item.names +"</option> ";
+				} else {
+					html += "<option value="+item.code+">"+ item.names +"</option> ";
+				}
+			}
+		});
+		$("#province").append(poption);
+		$("#bankprovince").append(html);
+		var ccode = '';    
+		if(pcode) {
+			var coption = "";
+			$("#city").empty();
+			$.each(pdata,function(idx,item){
+				var code = pcode.substring(0,2);
+				if (parseInt(item.level) == 1 && code == item.code.substring(0,2)) {
+					if(city == item.names) {
+						ccode = item.code;
+						coption += "<option value="+item.code+" selected>"+ item.names +"</option> ";
+					} else {
+						coption += "<option value="+item.code+">"+ item.names +"</option> ";
+					}
+				}
+			});
+			$("#city").append(coption);
+		}
+		if(ccode) {
+			var ccoption = "<option value=''>--请选择--</option>";
+			$("#county").empty();
+			$.each(pdata,function(idx,item){
+				var code = ccode.substring(0,4);
+				if (parseInt(item.level) == 2 && code == item.code.substring(0,4)) {
+					if(county == item.names) {
+						ccoption += "<option value="+item.code+" selected>"+ item.names +"</option> ";
+					} else {
+						ccoption += "<option value="+item.code+">"+ item.names +"</option> ";
+					}
+				}
+			});
+			$("#county").append(ccoption);
+		}
+		form.on('select(province)', function(data){
+			var value = data.value; // 获得被选中的值
+			if (value == "") return;
+			var code = value.substring(0,2);
+			$("#city").empty();
+			$("#county").empty();
+			var html = "<option value=''>--请选择--</option>";
+			$("#county").append(html);
+			$.each(pdata,function(idx,item){
+				if (parseInt(item.level) == 1 && code == item.code.substring(0,2)) {		
+					html += "<option value="+item.code+">"+ item.names +"</option> ";
+				}
+			});
+			province = this.innerHTML;
+			$("#city").append(html);
+			form.render('select');
+		});
+		form.on('select(city)', function(data){
+			var value = data.value; // 获得被选中的值
+			if (value == "") return;
+			var code = value.substring(0,4);
+			$("#county").empty();
+			var html = "<option value=''>--请选择--</option>";
+			$.each(pdata,function(idx,item){
+				if (parseInt(item.level) == 2 && code == item.code.substring(0,4)) {
+					html +="<option value="+item.code+" >"+ item.names +"</option> ";
+				}
+			});
+			city = this.innerHTML;
+			$("#county").append(html);
+			form.render('select');
+		});
+		form.on('select(county)', function(data){
+			county = this.innerHTML;
+		});		
+		var citycode = '';
+		if(provincecode) {
+			var html = "";
+			$("#bankcity").empty();
+			$.each(pdata,function(idx,item){
+				var code = provincecode.substring(0,2);
+				if (parseInt(item.level) == 1 && code == item.code.substring(0,2)) {
+					if(bankcity == item.names) {
+						citycode = item.code;
+						html += "<option value="+item.code+" selected>"+ item.names +"</option> ";
+					} else {
+						html += "<option value="+item.code+">"+ item.names +"</option> ";
+					}
+				}
+			});
+			$("#bankcity").append(html);
+		}
+		if(citycode) {
+			var html = "<option value=''>--请选择--</option>";
+			$("#bankcounty").empty();
+			$.each(pdata,function(idx,item){
+				var code = citycode.substring(0,4);
+				if (parseInt(item.level) == 2 && code == item.code.substring(0,4)) {
+					if(bankcounty == item.names) {
+						html += "<option value="+item.code+" selected>"+ item.names +"</option> ";
+					} else {
+						html += "<option value="+item.code+">"+ item.names +"</option> ";
+					}
+				}
+			});
+			$("#bankcounty").append(html);
+		}
+		form.on('select(bankprovince)', function(data){
+			var value = data.value; // 获得被选中的值
+			if (value == "") return;
+			var code = value.substring(0,2);
+			$("#bankcity").empty();
+			$("#bankcounty").empty();
+			var html = "<option value=''>--请选择--</option>";
+			$("#bankcounty").append(html);
+			$.each(pdata,function(idx,item){
+				if (parseInt(item.level) == 1 && code == item.code.substring(0,2)) {			
+					html += "<option value="+item.code+">"+ item.names +"</option> ";
+				}
+			});
+			bankprovince = this.innerHTML;
+			$("#bankcity").append(html);
+			form.render('select');
+		});
+		form.on('select(bankcity)', function(data){
+			var value = data.value; // 获得被选中的值
+			if (value == "") return;
+			var code = value.substring(0,4);
+			$("#bankcounty").empty();
+			var html = "<option value=''>--请选择--</option>";
+			$.each(pdata,function(idx,item){
+				if (parseInt(item.level) == 2 && code == item.code.substring(0,4)) {
+					html +="<option value="+item.code+" >"+ item.names +"</option> ";
+				}
+			});
+			bankcity = this.innerHTML;
+			$("#bankcounty").append(html);
+			form.render('select');
+		});
+		form.on('select(bankcounty)', function(data){
+			bankcounty = this.innerHTML;
+		});	
+		form.render('select');
+
+		//日期选择
+		layui.laydate.render({
+			elem: '#laydate_birth' //指定元素
+		});
+		
+		//上传头像
+		var upload_headimg = layui.upload.render({
+			elem: '#upload_btn_headimg',
+			url: "{:url('api/upload')}",
+			done: function (res) {
+				//如果上传失败
+				if (res.code == 1) {
+					return layer.msg('上传失败');
+				}
+				//上传成功
+				$('#upload_box_headimg input').attr('value', res.data.filepath);
+				$('#upload_box_headimg img').attr('src', res.data.filepath);
+			}
+		});
+		//上传身份证正面
+		var upload_idcardpos = layui.upload.render({
+			elem: '#upload_btn_idcardpos',
+			url: "{:url('api/upload')}",
+			done: function (res) {
+				//如果上传失败
+				if (res.code == 1) {
+					return layer.msg('上传失败');
+				}
+				//上传成功
+				$('#upload_box_idcardpos input').attr('value', res.data.filepath);
+				$('#upload_box_idcardpos img').attr('src', res.data.filepath);
+			}
+		});
+		//上传身份证反面
+		var upload_idcardside = layui.upload.render({
+			elem: '#upload_btn_idcardside',
+			url: "{:url('api/upload')}",
+			done: function (res) {
+				//如果上传失败
+				if (res.code == 1) {
+					return layer.msg('上传失败');
+				}
+				//上传成功
+				$('#upload_box_idcardside input').attr('value', res.data.filepath);
+				$('#upload_box_idcardside img').attr('src', res.data.filepath);
+			}
+		});
+		//上传银行卡照
+		var upload_bankcardphoto = layui.upload.render({
+			elem: '#upload_btn_bankcardphoto',
+			url: "{:url('api/upload')}",
+			done: function (res) {
+				//如果上传失败
+				if (res.code == 1) {
+					return layer.msg('上传失败');
+				}
+				//上传成功
+				$('#upload_box_bankcardphoto input').attr('value', res.data.filepath);
+				$('#upload_box_bankcardphoto img').attr('src', res.data.filepath);
+			}
+		});
+				
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			data.field.province = province;
+			data.field.city = city;
+			data.field.county = county;
+			data.field.bankprovince = bankprovince;
+			data.field.bankcity = bankcity;
+			data.field.bankcounty = bankcounty;
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
+				}
+			}
+			tool.post("{:url('author/edit')}", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

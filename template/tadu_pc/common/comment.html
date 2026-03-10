@@ -1,0 +1,44 @@
+<div class="comment-container">
+    <!-- 评论输入区域 -->
+    <div class="comment-card">
+        <div class="comment-body">
+            <div class="comment-input-group">
+                <textarea id="commentContent" class="comment-textarea" rows="3" placeholder="请输入您的评论..."></textarea>
+            </div>
+            <div class="comment-action-group">
+                <button class="comment-emoji-btn" id="btnEmoji">😀</button>
+                <button class="comment-submit-btn" id="btnSubmit">提交评论</button>
+            </div>
+        </div>
+    </div>
+    <div id="commentList"></div>
+    <div class="pagination" id="pagination"></div>
+</div>
+
+<!-- 表情面板 -->
+<div id="emojiPanel" class="emoji-panel" style="display: none;">
+    <div class="emoji-item">😀</div>
+    <div class="emoji-item">😁</div>
+    <div class="emoji-item">😂</div>
+    <div class="emoji-item">🤣</div>
+    <div class="emoji-item">😃</div>
+    <div class="emoji-item">😄</div>
+    <div class="emoji-item">😅</div>
+    <div class="emoji-item">😆</div>
+    <div class="emoji-item">😉</div>
+    <div class="emoji-item">😊</div>
+    <div class="emoji-item">😋</div>
+    <div class="emoji-item">😎</div>
+    <div class="emoji-item">😍</div>
+    <div class="emoji-item">😘</div>
+    <div class="emoji-item">😗</div>
+    <div class="emoji-item">😙</div>
+</div>
+<script>
+    const target_id = parseInt('{$target_id}');
+    const targetType = parseInt('{$targetType}');
+    const commentlistApi = '{$commentlistApi}';
+    const commentlikeApi = '{$commentlikeApi}';
+    const commentcreateApi = '{$commentcreateApi}';
+    const commentreplyApi = '{$commentreplyApi}';
+</script>

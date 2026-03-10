@@ -1,0 +1,1142 @@
+{extend name="common/base"/}
+{block name="style"}
+<link rel="stylesheet" href="{__STATIC__}/home/feiniao/css/info.css?v={$version}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{/block}
+{block name="title"}
+<title>VIP-{$conf.title|default=''}</title>
+{/block}
+
+<!-- 主体 -->
+{block name="body"}
+{php}
+    $vipconf = get_system_config('vip');
+    $is_open_recharge = 0;
+    $recharge_combo = $vipinfo = [];
+    if(!empty($vipconf)) {
+        $is_open_recharge = isset($vipconf['open']) ? $vipconf['open'] : 0;
+        unset($vipconf['open'],$vipconf['id']);
+        $recharge_combo = $vipconf;
+    }
+    $level = model('user_level')->where('status', 1)->order('create_time asc')->select()->toArray();
+    if($level) {
+        $level = array_column($level, null, 'id');
+    }
+    $userinfo = [];
+    if (defined('JWT_UID') && JWT_UID) {
+        $userinfo = model('user')->field('id,nickname,username,author_id,name,level,headimgurl,qrcode_invite,coin')->where('id', JWT_UID)->find();
+    }
+    if($userinfo) {
+        $vipinfo = model('vip_log')->field('id,expire_time,level')->where('status', 1)->where('user_id', JWT_UID)->order('expire_time desc')->find();
+    }
+    {/php}
+    {include file="common/header" nav='index' /}
+    <style>        
+        .vip-container {
+            margin: 20px auto;
+            padding: 20px 0;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }        
+        
+        .login-prompt {
+            text-align: center;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .login-prompt a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 10px;
+            padding: 8px 20px;
+            background-color: rgba(255, 255, 255, 0.25);
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+        
+        .login-prompt a:hover {
+            background-color: rgba(255, 255, 255, 0.35);
+        }
+        
+        /* 主要内容区 */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+        }
+        
+        @media (max-width: 992px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* 选项卡 */
+        .vip-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: #148AFF 1px solid;
+        }
+        
+        .vip-tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #666;
+        }
+        
+        .vip-tab.active {
+            background: var(--Linear, linear-gradient(159deg, #12C6FB 31.17%, #148AFF 72.66%));
+            color: white;
+        }
+        
+        .vip-tab:hover:not(.active) {
+            background-color: #f5f5f5;
+        }
+        
+        /* 修复内容区域跳动问题 */
+        .content-left {
+            position: relative;
+            transition: min-height 0.3s ease;
+        }
+
+        /* 确保两个内容区域位置一致 */
+        #membershipSection, #rechargeSection {
+            transition: opacity 0.3s ease;
+        }
+
+        /* 会员和充值选项 */
+        .section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title {
+            font-size: 22px;
+            margin-bottom: 25px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            color: #ffc13a;
+        }
+        
+        /* 套餐容器 */
+        .plans-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .plan {
+            border: 2px solid #eaeaea;
+            border-radius: 10px;
+            padding: 25px 20px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 悬停效果 - 只对未选中的套餐有效 */
+        .plan:not(.selected):not(.disabled):hover {
+            border-color: #148AFF;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(20, 138, 255, 0.1);
+        }
+
+        /* 选中状态 - 保持悬停效果 */
+        .plan.selected {
+            border-color: #148AFF;
+            background-color: rgba(20, 138, 255, 0.03);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(20, 138, 255, 0.1);
+        }
+
+        /* 禁用状态 */
+        .plan.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .plan.disabled:hover {
+            border-color: #eaeaea !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* 支付方式悬停效果 */
+        .payment-item a:not(.selected):hover {
+            border-color: #148AFF;
+        }
+
+        /* 按钮悬停效果 */
+        .btn-primary:not(:disabled):hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 14px rgba(20, 138, 255, 0.2);
+        }
+        
+        .plan-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: #ff4757;
+            color: white;
+            padding: 5px 15px;
+            font-size: 12px;
+            border-bottom-left-radius: 10px;
+        }
+        
+        .plan-icon {
+            font-size: 36px;
+            color: #6a11cb;
+            margin-bottom: 15px;
+        }
+
+        /* 会员图标样式 */
+        .plan-icon img {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            margin-bottom: 15px;
+        }
+        
+        .plan-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .plan-desc {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .plan-price {
+            font-size: 1.2rem;
+            color: #ff6b6b;
+            text-align: left;
+        }
+        
+        .plan-price span {
+            font-size: 14px;
+            color: #999;
+            font-weight: normal;
+        }
+        
+        /* 支付方式 */
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .payment-method {
+            border: 2px solid #eaeaea;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .payment-method:hover {
+            border-color: #148AFF;
+        }
+        
+        .payment-method.selected {
+            border-color: #148AFF;
+            background-color: rgba(106, 17, 203, 0.05);
+        }
+        
+        .payment-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .payment-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .payment-desc {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        .no-payment {
+            text-align: center;
+            padding: 20px;
+            background-color: #fff9e6;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .no-payment i {
+            color: #ffc107;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        /* 支付方式链接样式 */
+        .payment-item {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 0;
+        }
+
+        .payment-item a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #eaeaea;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #333;
+            text-decoration: none;
+            min-height: 100px;
+            background: white;
+        }
+
+        .payment-item a:hover {
+            border-color: #148AFF;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .payment-item a.selected {
+            border-color: #148AFF;
+            background-color: rgba(20, 138, 255, 0.05);
+        }
+
+        .payment-item a i {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #148AFF;
+        }
+
+        .payment-item a .payment-name {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .payment-item a .payment-desc {
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* 调整支付方式图标颜色 */
+        .payment-item a[href*="wechat"] i {
+            color: #07c160; /* 微信绿色 */
+        }
+
+        .payment-item a[href*="alipay"] i {
+            color: #1677ff; /* 支付宝蓝色 */
+        }
+
+        .payment-item a[href*="qq"] i {
+            color: #12b7f5; /* QQ蓝色 */
+        }
+
+        /* 支付方式悬停效果 */
+        .payment-item a:not(.selected):hover,
+        #paymentMethods a:not(.selected):hover {
+            border-color: #148AFF;
+        }
+
+        /* 按钮悬停效果 */
+        .btn-primary:not(:disabled):hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 14px rgba(20, 138, 255, 0.2);
+        }
+
+        /* 支付方式选中状态 */
+        .payment-item a.selected,
+        #paymentMethods a.selected {
+            border-color: #148AFF;
+            background-color: rgba(20, 138, 255, 0.05);
+        }
+        
+        /* 侧边栏 */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .help-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .help-title {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .help-title i {
+            color: #148AFF;
+        }
+        
+        .help-list {
+            list-style-type: none;
+        }
+        
+        .help-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .help-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .help-list i {
+            color: #9f9f9f;
+            font-size: 14px;
+            margin-top: 3px;
+        }
+        
+        /* 按钮 */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background: var(--Linear, linear-gradient(159deg, #12C6FB 31.17%, #148AFF 72.66%));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 14px rgba(106, 17, 203, 0.2);
+        }
+        
+        .btn-secondary {
+            background-color: #f1f3f9;
+            color: #666;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e4e8f4;
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .plans-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .payment-methods {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+
+            .modal {
+                padding: 10px;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+
+            .payment-item {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .payment-item a {
+                min-height: 80px;
+                padding: 10px;
+            }
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        /* 模拟弹窗 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 10000; /* 增加z-index确保在最上层 */
+            overflow-y: auto; /* 允许滚动 */
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            margin: 0 auto; /* 水平居中 */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            top: 50%; /* 垂直居中 */
+            transform: translateY(-50%); /* 垂直居中 */
+        }
+
+        .modal-title {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .modal-message {
+            margin-bottom: 25px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .modal-close {
+            background-color: #148AFF;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background-color: #0d7ae6;
+        }
+    </style>
+    
+    <div class="boxCenter">
+        <div class="location">
+            &nbsp;
+        </div>
+        <div class="vip-container">           
+            
+            <div class="main-content">
+                <!-- 左侧主要内容 -->
+                <div class="content-left">
+                    <!-- 选项卡 -->
+                    <div class="vip-tabs">
+                        <div class="vip-tab active" data-tab="membership">购买会员</div>
+                        <div class="vip-tab" data-tab="recharge">充值金币</div>
+                    </div>
+                    <!-- 会员购买区域 -->
+                    <div id="membershipSection" class="section fade-in">
+                        <h2 class="section-title"><i class="fas fa-crown"></i> 选择会员套餐</h2>
+                        <div id="membershipPlans" class="plans-container">
+                            {notempty name="level"}
+                                {volist name="$level" id="v"}                        
+                                    <div class="plan {if $userinfo && isset($userinfo['level']) && $userinfo['level'] >= $v['id']}disabled{/if}" data-id="{$v['id']}" data-price="{$v['price']|default='0'}" data-type="membership" data-level="{$v['id']}">
+                                    {if $userinfo && isset($userinfo['level']) && $userinfo['level'] === $v['id']}
+                                        <div class="plan-badge">当前会员</div>
+                                    {/if}
+                                    <div class="plan-icon">
+                                        {notempty name="v.icons"}
+                                            <img src="{$v['icons']}" alt="{$v.title}">
+                                        {else/}
+                                            <i class="fas fa-crown"></i>
+                                        {/notempty}
+                                    </div>
+                                    <h3 class="plan-title">{$v.title}</h3>
+                                    <p class="plan-desc">{$v.desc|default="暂无"}</p>
+                                    <div class="plan-price"><span>购买价格：</span>{$v.price|default="0"}<span> 元 / {$v.duration|default="0"}天</span></div>
+                                    <div class="plan-price"><span>金币兑换：</span>{$v.coin|default="0"}<span> 个 / {$v.duration|default="0"}天</span></div>                                
+                                </div>
+                                {/volist}
+                            {else/}
+                                <div style="background-color: #f8f9fa; padding: 12px; border-radius: 6px; font-size: 14px;">
+                                    <i class="fas fa-info-circle" style="color: #148AFF ;"></i>
+                                    <span>暂无会员套餐</span>
+                                </div>  
+                            {/notempty}
+                        </div>
+                    </div>
+                    
+                    <!-- 充值区域 -->
+                    <div id="rechargeSection" class="section" style="display: none;">
+                        <h2 class="section-title"><i class="fas fa-coins"></i> 选择充值套餐</h2>
+                        <div id="rechargePlans" class="plans-container">
+                            {if $is_open_recharge}
+                                {notempty name="recharge_combo"}
+                                    {for start="1" end="7"}
+                                        {if isset($recharge_combo['price_' . $i]) && $recharge_combo['price_' . $i]}
+                                            <div class="plan" data-id="{$i}" data-price="{$recharge_combo['price_' . $i]}" data-type="recharge">                    
+                                                <div class="plan-icon"><i class="fas fa-coins"></i></div>
+                                                <h3 class="plan-title">{$recharge_combo['title_' . $i]}</h3>
+                                                <div class="plan-price" style="text-align: center;">¥{$recharge_combo['price_' . $i]}</div>                                     
+                                            </div>
+                                        {/if}
+                                    {/for}
+                                {else/}
+                                    <div style="background-color: #f8f9fa; padding: 12px; border-radius: 6px; font-size: 14px;">
+                                        <i class="fas fa-info-circle" style="color: #148AFF ;"></i>
+                                        <span>暂无充值套餐</span>
+                                    </div>  
+                                {/notempty}
+                            {else/}
+                                <div style="background-color: #f8f9fa; padding: 12px; border-radius: 6px; font-size: 14px;">
+                                    <i class="fas fa-info-circle" style="color: #148AFF ;"></i>
+                                    <span>未开启充值功能</span>
+                                </div>  
+                            {/if}
+                        </div>
+                    </div>
+                    
+                    <!-- 支付方式区域 -->
+                    <div class="section">
+                        <h2 class="section-title"><i class="fas fa-credit-card"></i> 选择支付方式</h2>
+                        {php}$payment = auto_run_addons('pay');{/php}
+                        {if (array_filter($payment))}
+                            <div id="paymentMethods" class="payment-methods">                            
+                                <div class="layui-form-item payment-item">
+                                    {volist name="$payment" id="v"}
+                                        {notempty name="$v"}
+                                            {volist name="$v" id="item"}
+                                                {eq name="$item.name" value="wechat"}
+                                                    <a href="{$item['link']}">{$item['title']}</a>
+                                                {/eq}
+                                                {eq name="$item.name" value="wechatweb"}
+                                                    <a href="{$item['link']}">{$item['title']}</a>
+                                                {/eq}
+                                                {eq name="$item.name" value="weibo"}
+                                                    <a href="{$item['link']}">{$item['title']}</a>
+                                                {/eq}
+                                                {eq name="$item.name" value="qq"}
+                                                    <a href="{$item['link']}">{$item['title']}</a>
+                                                {/eq}
+                                            {/volist}
+                                        {/notempty}
+                                    {/volist}
+                                </div>                                
+                            </div>
+                        {else/}                            
+                            <div id="noPaymentWarning" class="no-payment">
+                                <p>当前支付通道暂时无法支付。但您仍然可以将选择的套餐信息提交给管理员，我们将尽快为您人工处理。</p>
+                            </div>
+                        {/if}
+                    </div>
+                    
+                    <!-- 操作按钮 -->
+                    <div class="action-buttons">
+                        <button id="submitBtn" class="btn btn-primary"{if !$userinfo} disabled{/if}>
+                            <i class="fas fa-shopping-cart"></i> 立即购买
+                        </button>
+                        <button id="cancelBtn" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> 取消
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 右侧侧边栏 -->
+                <div class="sidebar">
+                    <!-- 用户信息侧边栏 -->
+                    <div class="help-section">
+                        <h3 class="help-title"><i class="fas fa-user-circle"></i> 账户信息</h3>
+                        <div id="sidebarUserInfo">
+                            {if $userinfo}
+                                <div style="margin-bottom: 15px;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span>会员级别:</span>
+                                        <span style="font-weight: 600; color: #148AFF ;">
+                                            {if isset($userinfo['level']) && isset($level[$userinfo['level']])}
+                                                {$level[$userinfo['level']]['title']|default='无级别'}
+                                            {else/}
+                                                {$userinfo.level|default='无级别'}
+                                            {/if}
+                                        </span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span>金币余额:</span>
+                                        <span style="font-weight: 600; color: #ff6b6b;">{$userinfo.coin|default='0'}个</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span>会员到期:</span>
+                                        {if $vipinfo}
+                                            <span>{:time_format($vipinfo['expire_time'], 'Y-m-d')}</span>
+                                        {else/}
+                                            <span>--</span>
+                                        {/if}
+                                    </div>
+                                </div>
+                            {else/}
+                                <div style="background-color: #f8f9fa; padding: 12px; border-radius: 6px; font-size: 14px;">
+                                    <i class="fas fa-info-circle" style="color: #148AFF ;"></i>
+                                    <span>请先登录</span>
+                                </div>  
+                            {/if}
+                        </div>
+                    </div>
+                    
+                    <!-- 帮助区域 -->
+                    <div class="help-section">
+                        <h3 class="help-title"><i class="fas fa-question-circle"></i> 充值与会员说明</h3>
+                        <ul class="help-list">
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <span>会员级别，可通过直购买，也可用金币来兑换。</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <span>购买会员级别，只能购买比当前更高级别的会员。</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <span>金币可通过每天完成一些任务来获得，每天0点更新任务。</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <span>购买高级别会员后，低级别会员剩余时间将自动覆盖。</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <span>在线支付成功后，会员/金币将会实时到账，如没有到账，请联系管理员。</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <span>支付通道如全未开启，您仍然可以将选择的套餐信息进行提交，我们会以订单提交的时间，按顺序尽快为您人工处理。</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 提交成功模态框 -->
+            <div id="successModal" class="modal">
+                <div class="modal-content">
+                    <h3 class="modal-title" id="modalTitle">提交成功</h3>
+                    <p class="modal-message" id="modalMessage">您的订单已提交，管理员将在24小时内为您处理。</p>
+                    <button id="modalCloseBtn" class="modal-close">确定</button>
+                </div>
+            </div>
+
+        </div>
+    </div>   
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script src="{__STATIC__}/home/feiniao/js/jquery-1-22.min.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/purify.min.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/common.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/userinfo.js?v={$version}"></script>
+<script>
+$(document).ready(function() {
+    // 全局变量
+    let selectedPlan = null;
+    let selectedPayment = null;
+    let currentTab = "membership";
+    let paymentEnabled = {$payment ? 1 : 0}; // 判断是否有支付方式
+    let userLoggedIn = {$userinfo ? 1 : 0}; // 判断用户是否登录
+    
+    // 修复页面跳动问题 - 统一设置内容区域最小高度
+    function fixContentHeight() {
+        const membershipHeight = $('#membershipSection').outerHeight();
+        const rechargeHeight = $('#rechargeSection').outerHeight();
+        const maxHeight = Math.max(membershipHeight, rechargeHeight);
+        
+        // 设置统一的容器高度
+        $('.content-left').css('min-height', maxHeight + 'px');
+    }
+    
+    // 初始化页面交互
+    function initPage() {
+        // 设置选项卡切换
+        $('.vip-tab').off('click').on('click', function() {
+            const tabId = $(this).data('tab');
+            
+            // 更新选项卡状态
+            $('.vip-tab').removeClass('active');
+            $(this).addClass('active');
+            
+            // 切换内容显示
+            if (tabId === 'membership') {
+                $('#membershipSection').show();
+                $('#rechargeSection').hide();
+            } else {
+                $('#membershipSection').hide();
+                $('#rechargeSection').show();
+            }
+            
+            currentTab = tabId;
+            
+            // 修复高度问题
+            fixContentHeight();
+        });
+        
+        // 套餐选择 - 统一处理
+        $(document).on('click', '.plan:not(.disabled)', function() {
+            selectPlan($(this));
+        });
+        
+        // 支付方式选择
+        $(document).on('click', '.payment-item a, #paymentMethods a', function(e) {
+            e.preventDefault();
+            selectPaymentMethod($(this));
+        });
+        
+        // 提交按钮事件
+        $('#submitBtn').off('click').on('click', function() {
+            if ($(this).prop('disabled')) return;
+            submitOrder();
+        });
+        
+        // 取消按钮事件
+        $('#cancelBtn').off('click').on('click', function() {
+            resetSelections();
+        });
+        
+        // 模态框关闭事件
+        $('#modalCloseBtn').off('click').on('click', function() {
+            $('#successModal').hide();
+        });
+        
+        // 点击模态框外部关闭
+        $(window).on('click', function(e) {
+            if ($(e.target).hasClass('modal')) {
+                $('#successModal').hide();
+            }
+        });
+        
+        // 如果没有支付方式，显示提示
+        if (!paymentEnabled) {
+            $('#noPaymentWarning').show();
+        }
+        
+        // 初始化按钮状态
+        updateSubmitButton();
+        
+        // 初始化内容区域高度
+        fixContentHeight();
+        
+        // 默认选中第一个支付方式（如果有）
+        if (paymentEnabled && ($('.payment-item a, #paymentMethods a').length > 0)) {
+            selectPaymentMethod($('.payment-item a:first, #paymentMethods a:first'));
+        }
+    }
+    
+    // 选择套餐
+    function selectPlan(planElement) {
+        
+        const planType = planElement.data('type');
+        const planId = planElement.data('id');
+        const planLevel = planElement.data('level');
+        const planPrice = planElement.data('price');
+        
+        // 如果是会员套餐，检查级别限制（只有登录后才能检查）
+        if (planType === 'membership' && userLoggedIn) {
+            const userLevel = {$userinfo['level'] ?? 0};
+            if (planLevel <= userLevel) {
+                showModal("无法购买", "您只能购买比当前更高级别的会员");
+                return;
+            }
+        }
+        
+        // 清除所有套餐的选中状态
+        $('.plan').removeClass('selected');
+        
+        // 设置新的选择 - 只添加selected类，不添加内联样式
+        planElement.addClass('selected');
+        
+        // 保存选择的套餐信息
+        selectedPlan = {
+            type: planType,
+            id: planId,
+            level: planLevel,
+            price: planPrice,
+            element: planElement
+        };
+        
+        // 更新提交按钮状态
+        updateSubmitButton();
+        
+        // 如果选择了套餐但未选择支付方式，选择第一个支付方式
+        if (!selectedPayment && paymentEnabled && ($('.payment-item a, #paymentMethods a').length > 0)) {
+            selectPaymentMethod($('.payment-item a:first, #paymentMethods a:first'));
+        }
+    }
+    
+    // 选择支付方式
+    function selectPaymentMethod(paymentElement) {
+        if (!paymentEnabled) return;
+        
+        // 清除之前的选择
+        $('.payment-item a, #paymentMethods a').removeClass('selected');
+        
+        // 设置新的选择
+        paymentElement.addClass('selected');
+        
+        // 保存选择的支付方式信息
+        selectedPayment = {
+            name: paymentElement.text(),
+            url: paymentElement.attr('href'),
+            element: paymentElement
+        };
+        
+        // 更新提交按钮状态
+        updateSubmitButton();
+    }
+    
+    // 更新提交按钮状态
+    function updateSubmitButton() {
+        const submitBtn = $('#submitBtn');
+        
+        if (!selectedPlan) {
+            submitBtn.prop('disabled', true);
+            submitBtn.html('<i class="fas fa-shopping-cart"></i> 请选择套餐');
+            return;
+        }
+        
+        if (!selectedPayment && paymentEnabled) {
+            submitBtn.prop('disabled', true);
+            submitBtn.html('<i class="fas fa-shopping-cart"></i> 请选择支付方式');
+            return;
+        }
+        
+        // 如果未登录，按钮显示需要登录
+        if (!userLoggedIn) {
+            submitBtn.prop('disabled', true);
+            submitBtn.html('<i class="fas fa-shopping-cart"></i> 请先登录');
+            return;
+        }
+        
+        submitBtn.prop('disabled', false);
+        
+        let buttonText = '立即购买';
+        if (selectedPlan.type === 'recharge') {
+            buttonText = '立即充值';
+        } else {
+            const planTitle = selectedPlan.element.find('.plan-title').text();
+            buttonText = `购买${planTitle}`;
+        }
+        
+        submitBtn.html(`<i class="fas fa-shopping-cart"></i> ${buttonText}`);
+    }
+    
+    // 重置选择
+    function resetSelections() {
+        selectedPlan = null;
+        selectedPayment = null;
+        $('.plan').removeClass('selected');
+        $('.payment-item a, #paymentMethods a').removeClass('selected');
+        updateSubmitButton();
+    }
+    
+    // 提交订单
+    function submitOrder() {
+        // 检查是否已登录
+        if (!userLoggedIn) {
+            showModal("请先登录", "您需要先登录才能进行购买或充值");
+            return;
+        }
+        
+        // 检查是否选择了套餐
+        if (!selectedPlan) {
+            showModal("请选择套餐", "请先选择一个套餐");
+            return;
+        }
+        
+        // 如果是会员套餐，检查级别限制
+        if (selectedPlan.type === 'membership') {
+            const userLevel = {$userinfo['level'] ?? 0};
+            if (selectedPlan.level <= userLevel) {
+                showModal("无法购买", "您只能购买比当前更高级别的会员");
+                return;
+            }
+        }
+        
+        // 构建订单数据
+        const orderData = {
+            planType: selectedPlan.type,
+            planId: selectedPlan.id,
+            price: selectedPlan.price,
+            paymentMethod: selectedPayment ? selectedPayment.name : '无',
+            timestamp: new Date().getTime()
+        };
+        
+        // 显示提交结果
+        if (paymentEnabled && selectedPayment) {
+            // 正常支付流程 - 跳转到支付页面
+            showModal(
+                "正在跳转支付", 
+                `即将跳转到${selectedPayment.name}支付页面，请完成支付...<br><br>
+                订单详情：<br>
+                • 套餐类型：${selectedPlan.type === 'membership' ? '会员购买' : '金币充值'}<br>
+                • 套餐ID：${selectedPlan.id}<br>
+                • 价格：¥${selectedPlan.price}<br>
+                • 支付方式：${selectedPayment.name}`
+            );
+            
+            // 延迟跳转到支付页面
+            setTimeout(function() {
+                window.location.href = selectedPayment.url + '?plan_id=' + selectedPlan.id + '&type=' + selectedPlan.type + '&price=' + selectedPlan.price;
+            }, 2000);
+            
+        } else {
+            // 支付通道关闭，提交给管理员
+            showModal(
+                "订单已提交", 
+                `由于支付通道维护中，您的订单已提交给管理员处理。<br><br>
+                订单详情：<br>
+                • 套餐类型：${selectedPlan.type === 'membership' ? '会员购买' : '金币充值'}<br>
+                • 套餐ID：${selectedPlan.id}<br>
+                • 价格：¥${selectedPlan.price}<br>
+                • 支付方式：管理员人工处理<br><br>
+                我们将在24小时内为您处理，请耐心等待。`
+            );
+            
+            // 在实际应用中，这里应该发送订单数据到后端
+            console.log("提交订单:", orderData);
+            
+            // 模拟提交到后端
+            submitOrderToBackend(orderData);
+        }
+        
+        // 重置选择
+        setTimeout(function() {
+            resetSelections();
+        }, 3000);
+    }
+    
+    // 模拟提交订单到后端
+    function submitOrderToBackend(orderData) {
+        // 这里应该使用AJAX提交订单数据到后端
+        // 由于是示例，只模拟提交
+        $.ajax({
+            url: "{:url('vip/submit_order')}",
+            type: "POST",
+            data: orderData,
+            success: function(response) {
+                console.log("订单提交成功:", response);
+            },
+            error: function(xhr, status, error) {
+                console.error("订单提交失败:", error);
+            }
+        });
+    }
+    
+    // 显示模态框
+    function showModal(title, message) {
+        $('#modalTitle').text(title);
+        $('#modalMessage').html(message);
+        $('#successModal').show();
+    }
+    
+    // 初始化页面
+    initPage();
+    
+    // 移除所有动态内联样式，改用CSS类
+    
+    // 响应式调整
+    $(window).on('resize', function() {
+        // 在小屏幕上调整布局
+        if ($(window).width() <= 768) {
+            $('.plans-container').css('grid-template-columns', '1fr');
+            $('.payment-methods').css('grid-template-columns', 'repeat(2, 1fr)');
+        } else {
+            $('.plans-container').css('grid-template-columns', 'repeat(auto-fill, minmax(250px, 1fr))');
+            $('.payment-methods').css('grid-template-columns', 'repeat(auto-fill, minmax(150px, 1fr))');
+        }
+        
+        // 重新计算内容高度
+        fixContentHeight();
+    });
+    
+    // 触发一次窗口调整事件以应用初始样式
+    $(window).trigger('resize');
+});
+</script>
+{/block}
+<!-- /脚本 -->

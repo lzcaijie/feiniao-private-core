@@ -1,0 +1,113 @@
+{extend name="common/base"/}
+{block name="style"}
+<link rel="stylesheet" href="{__STATIC__}/home/feiniao/css/login.css?v={$version}">
+{/block}
+{block name="title"}
+<title>登录-{:get_seo_str('home','home_title')}</title>	
+{/block}
+{block name="keywords"}
+<meta name="keywords" content="{:get_seo_str('home','home_keywords')}"/>
+<meta name="description" content="{:get_seo_str('home','home_description')}"/>
+{/block}
+
+<!-- 主体 -->
+{block name="body"}
+{php}
+$power = get_system_config('power');
+$isSmsLogin = get_addons_type('smssend');
+{/php}
+    <header class="header">    
+        <div class="header-left">
+            <img src="{$conf.logo|default=''}" alt="{$conf.title|default=''}" class="logo">
+            <h1 class="site-name">{$conf.title|default=''}登录</h1>
+        </div>
+        <a href="{:url('/')}" class="home-link">返回首页</a>
+    </header>
+    {if !empty($power['login_open'])}
+        <div class="login-container">
+            <nav class="tab-nav">
+                <div class="tab-item active" data-tab="account">账号登录</div>
+                {if($isSmsLogin)}
+                <div class="tab-item" data-tab="sms">短信登录</div>
+                {/if}
+            </nav>
+
+            <!-- 账号登录表单 -->
+            <form id="accountForm" class="login-form" data-url="{:furl('v1/login', [], true, 'api')}" data-refererUrl="{$refererUrl}">
+                <div class="form-group">
+                    <input type="text" class="form-input" placeholder="邮箱/用户名/手机号" id="account">
+                    <div class="error-tip" id="accountError"></div>
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-input" placeholder="密码" id="password">
+                    <div class="error-tip" id="passwordError"></div>
+                </div>
+                <button type="submit" class="submit-btn" data-refererUrl="{$refererUrl}">立即登录</button>
+            </form>
+            {if($isSmsLogin)}
+                <!-- 短信登录表单 -->
+                <form id="smsForm" class="login-form" data-url="{:furl('v1/login', [], true, 'api')}" data-refererUrl="{$refererUrl}" style="display: none;">
+                    <div class="form-group">
+                        <input type="tel" class="form-input" placeholder="手机号码" id="phone">
+                        <div class="error-tip" id="phoneError"></div>
+                    </div>
+                    <div class="form-group">
+                        <div class="code-group">
+                            <input type="text" class="form-input code-input" placeholder="短信验证码" id="code">
+                            <button type="button" class="send-btn" id="sendCode" data-url="{:furl('v1/smssend', [], true, 'api')}">获取验证码</button>
+                        </div>
+                        <div class="error-tip" id="codeError"></div>
+                    </div>
+                    <button type="submit" class="submit-btn">立即登录</button>
+                </form>
+            {else/}
+                <form id="smsForm" class="login-form" style="display: none;">
+                    <input type="hidden" class="send-btn" id="sendCode">
+                </form>                
+            {/if}
+            {php}$thirdlogin = auto_run_addons('login');{/php}
+            {if (array_filter($thirdlogin))}
+                <div class="third-login">
+                    <div class="divider">
+                        <span class="divider-line"></span>
+                        <span class="divider-text">其他方式登录</span>
+                        <span class="divider-line"></span>
+                    </div>            
+                    <div class="third-buttons">                
+                        <div class="layui-form-item other-login">
+                            {volist name="$thirdlogin" id="v"}
+                                {notempty name="$v"}
+                                    {volist name="$v" id="item"}
+                                        <a href="{$item.link}" class="link"><em>{$item.title}</em></a>
+                                    {/volist}
+                                {/notempty}                        
+                            {/volist}
+                        </div>             
+                    </div>
+                </div>
+            {/if}
+        </div>
+    {else/}
+        <div class="login-container">
+            <div style="font-size: 20px; color: #000;text-align: center;">未开启登录</div>
+         </div>        
+    {/if}
+    {if !empty($power['register_open'])}
+    <div class="footer-links">
+        <span>还没有账号？</span>
+        <a href="{:furl('register', [], true, 'home')}" class="link">立即注册</a>
+    </div>
+    {/if}
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script src="{__STATIC__}/home/feiniao/js/jquery-1-22.min.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/common.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/dialog.js?v={$version}"></script>
+{if !empty($power['login_open'])}
+<script src="{__STATIC__}/home/feiniao/js/login.js?v={$version}"></script>
+{/if}
+{/block}
+<!-- /脚本 -->

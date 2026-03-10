@@ -1,0 +1,93 @@
+{extend name="common/base"/}
+{block name="style"}
+<link rel="stylesheet" href="{__STATIC__}/home/feiniao/css/search.css?v={$version}">
+{/block}
+{block name="title"}
+<title>搜索{$keyword}-{$conf.title|default=''}</title>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<div class="navSecond">
+    {include file="common/headermini" /}
+</div>
+
+<div class="boxCenter seach_box clearfix">
+    <div class="search_left">
+        <div class="search_top clearfix">
+            <p class="search_tp">共搜索到{$total|default='0'} 条与<span>"{$keyword|default=''}"</span>相关的结果</p>
+            <form class="search_form" action="{:url('search')}" method="get">
+                <input type="text" name="keyword" value="{$keyword|default=''}" placeholder="{$header_keywords.title|default='请输入书名、作者、关键词'}" class="text">
+                <input type="submit" class="submit" id="searchSubmit">
+                <div for="searchSubmit" class="searchBtn"><em></em></div>
+            </form>
+        </div>
+        {notempty name="list"}
+            <ul class="bookList bookBgList">
+                {volist name="list" id="novel"}
+                    <li class="lastLine">
+                        <a href="{:url('book_detail', ['id' => $novel['filename'] ? $novel['filename'] : $novel['id']])}" class="bookImg" target="_blank">
+                            <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($novel.cover)}" />
+                        </a>
+                        <div class="rtList">
+                            <a href="{:url('book_detail', ['id' => $novel['filename'] ? $novel['filename'] : $novel['id']])}" target="_blank" class="bookNm">{$novel->title|raw}</a>
+                            <a href="{:url('book_detail', ['id' => $novel['filename'] ? $novel['filename'] : $novel['id']])}" target="_blank" class="bookIntro">{if $novel.remark}{:dsubstr($novel.remark,200,'……')}{else/}暂无简介{/if}</a>
+                            <div class="bot_list clearfix">
+                                <div class="condition">
+                                    <a href="javascript:void(0);" class="authorNm"><i></i>{$novel->author|raw}</a>
+                                    <span>{:wordCount($novel.words)}</span>
+                                    <span>{$novel.isfinish == 2 ? '完结' : '连载'}</span>
+                                </div>
+                                <a href="{:url('book_detail', ['id' => $novel['filename'] ? $novel['filename'] : $novel['id']])}" target="_blank" class="look_readBtn">作品详情</a>
+                            </div>
+                        </div>
+                    </li>               
+                {/volist}
+            </ul>
+            <div>
+                {$list->render()|raw}
+            </div>
+        {else/}
+            <div class="search_kong">
+                <div class="kong_bg"></div>
+                <p>很抱歉，没有找到与 <span>"{$keyword|default=''}"</span> 相关的作品</p>
+            </div>
+        {/notempty}
+    </div>
+    <div class="search_right clearfix">
+        <div class="search_rCon">
+            <h4>
+                <i></i>
+                <span>热门搜索</span>
+            </h4>
+            {notempty name="hotNovels"}
+                {volist name="hotNovels" id="novel"}
+                <a href="{:url('book_detail', ['id' => $novel['filename'] ? $novel['filename'] : $novel['id']])}" class="hot_searchList clearfix">
+                    <div class="bookImg">
+                        <img src="{__STATIC__}/home/feiniao/images/coverBg.jpg" data-src="{:get_file($novel.cover)}" alt="{$novel.title|default='--'}" />
+                    </div>
+                    <div class="book">
+                        <h3>{$novel.title|default='--'}</h3>
+                        <p>{if $novel.remark}{:dsubstr($novel.remark,100,'……')}{else/}暂无简介{/if}</p>
+                        <div class="authorNm"><i></i>{$novel.author|default='--'}</div> 
+                    </div>
+                </a>
+                {/volist}
+            {/notempty}            
+        </div>
+    </div>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script src="{__STATIC__}/home/feiniao/js/jquery-1-22.min.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/purify.min.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/common.js?v={$version}"></script>
+<script src="{__STATIC__}/home/feiniao/js/userinfo.js?v={$version}"></script>
+<script>
+$(function() {
+});
+</script>
+{/block}
+<!-- /脚本 -->

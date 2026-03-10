@@ -1,0 +1,60 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>{:furl('/', [], true, 'home')}</loc>
+        <lastmod>{:time_format(time(), 'Y-m-d')}</lastmod>
+        <changefreq>hourly</changefreq>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>{:furl('novel', [], true, 'home')}</loc>
+        <lastmod>{:time_format(time(), 'Y-m-d')}</lastmod>
+        <changefreq>hourly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>{:furl('rank', [], true, 'home')}</loc>
+        <lastmod>{:time_format(time(), 'Y-m-d')}</lastmod>
+        <changefreq>hourly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>{:furl('quanben', [], true, 'home')}</loc>
+        <lastmod>{:time_format(time(), 'Y-m-d')}</lastmod>
+        <changefreq>hourly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    {volist name=":model('category')->field('id,key')->where(['status' => 1,'pid' => 0])->order('ordernum asc')->select()" id="vo"}
+<url>
+    {php}
+    if($vo['id'] == $params['girlgenre']) {
+        $genrelink = url('girls');
+    } else {
+        $genrelink = url('novelfilter', [
+                        'channel' => 1,
+                        'status'  => 'a',
+                        'cat'     => $vo['id'],
+                        'word'    => 0,
+                        'order'   => 'a',
+                        'page'    => 1,
+                        'cid'     => 0,
+                        'mode'    => 1
+                    ]);
+    }
+    {/php}
+        <loc>{$genrelink}</loc>
+        <lastmod>{:time_format(time(), 'Y-m-d')}</lastmod>
+        <changefreq>hourly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    {/volist}
+    {volist name=":model('book')->field('id,filename')->where(['status' => 1])->order('create_time desc')->select()" id="v"}
+<url>
+        <loc>{:furl('book_detail', ['id' => $v['filename'] ? $v['filename'] : $v['id']], true, 'home')}</loc>
+        <lastmod>{:time_format(time(), 'Y-m-d')}</lastmod>
+        <changefreq>hourly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    {/volist}
+</urlset>

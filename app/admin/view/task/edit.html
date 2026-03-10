@@ -1,0 +1,48 @@
+{extend name="common/base"/}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-4">
+	<h3 class="pb-3">编辑任务</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td>
+				<input type="radio" name="status" {eq name="$detail.status" value="1"}disabled{/eq} value="0" title="完成中" {eq name="$detail.status" value="0"} checked{/eq}>
+				<input type="radio" name="status" {eq name="$detail.status" value="1"}disabled{/eq} value="1" title="已完成" {eq name="$detail.status" value="1"} checked{/eq}>
+				<input type="radio" name="status" {eq name="$detail.status" value="1"}disabled{/eq} value="2" title="未完成" {eq name="$detail.status" value="2"} checked{/eq}>
+			</td>
+			<td class="layui-td-gray-2">奖励</td>
+			<td><input type="text" name="reward" {eq name="$detail.status" value="1"}readonly{/eq} value="{$detail.reward}" autocomplete="off" placeholder="请输入奖励" class="layui-input"></td>
+		</tr>
+	</table>
+	<div class="py-3">
+		<input type="hidden" name="taskid" value="{$detail.taskid}"/>
+		<input type="hidden" name="user_id" value="{$detail.user_id}"/>
+		<input type="hidden" name="id" value="{$detail.id}"/>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool'];
+	function feiniaoInit() {
+		var form = layui.form, tool = layui.tool;	
+		//监听提交
+		form.on('submit(webform)', function (data) {			
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
+				}
+			}
+			tool.post("{:url('task/edit')}", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->
