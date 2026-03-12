@@ -255,12 +255,35 @@ class ThinkCacheDetectionService
     private static function detectRedisCache(array $result): array
     {
         try {
+            $config = Config::get('cache.stores.redis', []);
             $redis = new \Redis();
-            
+
+            $host = $config['host'] ?? '127.0.0.1';
+            $port = (int)($config['port'] ?? 6379);
+            $timeout = (float)($config['timeout'] ?? 5);
+            $password = $config['password'] ?? '';
+            $select = isset($config['select']) ? (int)$config['select'] : null;
+            $persistent = !empty($config['persistent']);
+
             // 尝试连接
-            if (!$redis->connect('127.0.0.1', 6379, 5)) {
+            $connected = $persistent
+                ? $redis->pconnect($host, $port, $timeout)
+                : $redis->connect($host, $port, $timeout);
+
+            if (!$connected) {
                 $result['error'] = 'Redis连接失败';
                 return $result;
+            }
+
+            if ($password !== '') {
+                if (!$redis->auth($password)) {
+                    $result['error'] = 'Redis认证失败';
+                    return $result;
+                }
+            }
+
+            if ($select !== null) {
+                $redis->select($select);
             }
 
             // 获取版本信息
