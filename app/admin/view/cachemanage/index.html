@@ -77,19 +77,17 @@
                                     </div>
                                     
                                     <div class="layui-btn-group" style="margin-top: auto; width: 100%;">
-                                        {if $type.available}
-                                            <button class="layui-btn layui-btn-sm layui-btn-normal" onclick="configureCache('{$key}')">
-                                                <i class="layui-icon layui-icon-set"></i> 配置
+                                        <button class="layui-btn layui-btn-sm layui-btn-normal" onclick="configureCache('{$key}')">
+                                            <i class="layui-icon layui-icon-set"></i> 配置
+                                        </button>
+                                        {if $key == $current_config.current_type}
+                                            <button class="layui-btn layui-btn-sm layui-btn-disabled" disabled>
+                                                <i class="layui-icon layui-icon-ok"></i> 当前
                                             </button>
-                                            {if $key != $current_config.current_type}
-                                                <button class="layui-btn layui-btn-sm" onclick="switchCache('{$key}')">
-                                                    <i class="layui-icon layui-icon-ok"></i> 启用
-                                                </button>
-                                            {else}
-                                                <button class="layui-btn layui-btn-sm layui-btn-disabled" disabled>
-                                                    <i class="layui-icon layui-icon-ok"></i> 当前
-                                                </button>
-                                            {/if}                                    
+                                        {elseif $type.available}
+                                            <button class="layui-btn layui-btn-sm" onclick="switchCache('{$key}')">
+                                                <i class="layui-icon layui-icon-ok"></i> 启用
+                                            </button>
                                         {/if}
                                     </div>
                                 </div>
