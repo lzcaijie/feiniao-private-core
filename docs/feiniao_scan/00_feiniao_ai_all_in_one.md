@@ -1481,3 +1481,45 @@ Web 页正文口径：
 - 长尾第一版最小表结构设计
 - 目标：
   - 在不大改现有系统的前提下，设计最稳的 `Longtail主表 + Pages承载` 方案
+
+## 15. v13 复核补丁（Pages / 长尾承载链，2026-03-12）
+
+> 本节仅补充“本轮重新看源码后能坐实的结论”，不推翻已正确内容。
+
+### 15.1 路由链复核（已核）
+1. 前台 `pages` 路由仍是从 `route` 表（或 sitegroup hook 返回的路由数组）取 `name=pages` 的 `rule`，再绑定到 `pages/detail`，且对 `name` 参数做 `pattern(['name' => '[a-z-]+'])` 约束。  
+2. 因为 `pages.rule` 在数据库里，本仓源码无法直接静态证明默认值是否一定是 `page-:name`，该点本轮不再写死为已确认事实。  
+3. 前台仍并存 `about / agreement / privacy` 三条专用路由，映射到 `user/about`、`user/agreement`、`user/privacy`。  
+
+### 15.2 专用单页链复核（已核）
+1. `User` 控制器当前只实现了 `about()`，未看到 `agreement()` / `privacy()` 方法。  
+2. 三套主题中也未发现 `user/agreement.html` / `user/privacy.html` 模板。  
+3. 但模板内确实有多处直接 `model('pages')->where(['name' => 'agreement'|'privacy'|'about'])` 取内容（登录弹窗、关于页等），说明“专用页语义 + 模板内直查 pages 表”口径仍成立。  
+
+### 15.3 Pages.template 与模板来源复核（已核）
+1. 后台新增/编辑 Pages 时，模板候选来源固定为：`template/<theme.template_pc>/pages/`。  
+2. 前台 `Pages::detail()` 最终执行 `view($detail['template'])`，因此 `template` 字段当前语义是“当前主题下的页面模板文件名（如 default.html）”。  
+3. 三套主题 `default_mobile/default_pc/tadu_pc` 的 `pages/` 目录本轮都只看到 `default.html`。  
+
+### 15.4 Pages.name 边界复核（已核）
+1. 后台校验：`name` 使用 `lower|min:3|unique:pages`。  
+2. 前台 pages 路由匹配：`[a-z-]+`。  
+3. 后台校验与前台路由匹配规则并非同一口径：后台当前只看到 `lower|min:3|unique:pages`，前台通用 pages 路由匹配是 `[a-z-]+`。因此两边允许的字符集合并未在源码层完全收敛，后续若作为长尾主入口，需统一规则。  
+
+### 15.5 前台 / API / 后台三套口径复核（已核）
+1. 前台：`Pages::detail()` 取 `Db::name('Pages')->where(['name' => $name])`，当前未附加 `status=1`。  
+2. API：`api/v1.common/pages` 走 `Common::pages()`，按 `status=1 + name` 取数。  
+3. 后台：模板候选目录固定跟随 `theme.template_pc/pages`，与前台运行时按端/站点选主题口径并不完全一致。  
+
+### 15.6 furl / sitegroup / 导航硬编码复核（已核）
+1. 本轮源码未检索到现成 `furl('pages', ...)` 调用样例。  
+2. sitegroup 对 pages 没有额外“专门 pages 规则”，核心机制是复制总站 `route` 到 `addons_site_route`，并在运行时整体接管路由集。  
+3. sitegroup 新建站点会复制 `nav_info` 到 `addons_site_nav`（保留 src 结果），不是动态重建 pages 链接。  
+4. 本仓源码未找到 `/home/page-*` 字面量（此前文档里该项改为“待数据库/运行环境复核”）。
+
+### 15.7 本轮收口判断
+- `Pages` 仍适合作为长尾第一版“承载层”；
+- 不适合作为长尾主业务表；
+- 结论仍支持：
+
+**Longtail主表 + Pages承载 + PagesKeywords挂词 + Keywords词池 + Route输出 + pages模板展示**。

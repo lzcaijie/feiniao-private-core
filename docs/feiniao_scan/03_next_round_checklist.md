@@ -1,12 +1,13 @@
 # 飞鸟下一轮核对清单（v13）
 
-## 第一优先：Pages / 长尾承载链最后收尾
-1. `addons_site_route` 里 `pages` 在子站是否存在实际差异化 rule 样例
-2. 总站 nav / 子站 nav 里哪些 Pages URL 仍是写死 src
-3. 是否还有模板或配置继续硬编码 `/home/page-*`
-4. 长尾第一版是否应单独新开 route name，而不是直接复用 `pages`
+> 仅保留本轮复核后仍未完全坐实、且值得继续核对的点。
 
-## 第二优先：进入结构定稿
-1. 把 Pages/长尾承载链整理成最终定稿口径
-2. 输出“最小改造顺序”
-3. 明确哪些旧单页应继续保留专用 route，哪些新长尾页走通用承载链
+## P0（仍需数据库/运行态确认）
+1. `route` 表里 `name=pages` 的当前实际 rule 是否仍为 `page-:name`（源码只看到“从表读取并注册”，看不到数据库现值）。
+2. `route` / `addons_site_route` 中 `about / agreement / privacy` 在各站点是否都启用、规则是否一致。
+3. `/home/page-*` 这类历史 URL 是否仍存在于线上数据库（`route`、`nav_info`、`addons_site_nav`、配置项）而非仓库源码。
+
+## P1（结构收口）
+1. 统一 `Pages.name` 约束：后台校验（`lower|min:3`）与前台路由（`[a-z-]+`）是否需要收敛为同一规则。
+2. 专用页 `agreement/privacy` 的真实落地方案：补齐控制器/视图，或统一改为模板弹窗/通用页承载。
+3. 长尾第一版 route 命名是否独立于现有 `pages`（避免与历史单页语义耦合）。
